@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flytr - AI-Driven Flight Intelligence</title>
+    <meta name="description" content="Flytr helps you discover the smartest routes, real-time insights, and airport amenities — all in one place.">
+    <meta name="keywords" content="flight search, travel deals, delay predictor, flight intelligence, travel planning">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0066FF',
+                        secondary: '#00C9A7',
+                        dark: '#1A1F36',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        .hero-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .nav-link {
+            position: relative;
+        }
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #0066FF;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover:after {
+            width: 100%;
+        }
+        .sticky-nav {
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .delay-indicator {
+            height: 8px;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .calendar-day {
+            transition: all 0.2s ease;
+        }
+        .calendar-day:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-light font-sans text-gray-800">
+    <!-- Header -->
+    <header class="fixed w-full z-50 transition-all duration-300 sticky-nav">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <!-- Logo -->
+                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                    <i class="fas fa-plane text-white text-lg"></i>
+                </div>
+                <span class="text-xl font-bold text-dark">Flytr</span>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex space-x-8">
+                <a href="#home" class="nav-link text-gray-600 hover:text-primary font-medium">Home</a>
+                <a href="#features" class="nav-link text-gray-600 hover:text-primary font-medium">Features</a>
+                <a href="#search" class="nav-link text-gray-600 hover:text-primary font-medium">Search</a>
+                <a href="#why" class="nav-link text-gray-600 hover:text-primary font-medium">Why Flytr</a>
+                <a href="#faq" class="nav-link text-gray-600 hover:text-primary font-medium">FAQ</a>
+            </nav>
+            
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden text-gray-600">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu fixed inset-0 bg-white z-40 md:hidden p-6">
+            <div class="flex justify-between items-center mb-8">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                        <i class="fas fa-plane text-white text-lg"></i>
+                    </div>
+                    <span class="text-xl font-bold text-dark">Flytr</span>
+                </div>
+                <button id="close-menu" class="text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <nav class="flex flex-col space-y-6">
+                <a href="#home" class="text-lg font-medium text-gray-600 hover:text-primary">Home</a>
+                <a href="#features" class="text-lg font-medium text-gray-600 hover:text-primary">Features</a>
+                <a href="#search" class="text-lg font-medium text-gray-600 hover:text-primary">Search</a>
+                <a href="#why" class="text-lg font-medium text-gray-600 hover:text-primary">Why Flytr</a>
+                <a href="#faq" class="text-lg font-medium text-gray-600 hover:text-primary">FAQ</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg pt-32 pb-20 text-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">Fly Smarter with AI-Driven Flight Intelligence</h1>
+                <p class="text-xl mb-8">Discover the smartest routes, real-time insights, and airport amenities — all in one place.</p>
+                <a href="#search" class="bg-primary hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 inline-block">Start Your Search</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Overview -->
+    <section id="features" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Comprehensive Flight Intelligence</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-light rounded-2xl p-6 card-hover">
+                    <div class="feature-icon bg-blue-100 text-primary">
+                        <i class="fas fa-clock text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Delay Predictor</h3>
+                    <p class="text-gray-600">Advanced AI predicts flight delays with up to 85% accuracy based on historical data and real-time conditions.</p>
+                </div>
+                <div class="bg-light rounded-2xl p-6 card-hover">
+                    <div class="feature-icon bg-green-100 text-secondary">
+                        <i class="fas fa-calendar-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Smart Fare Calendar</h3>
+                    <p class="text-gray-600">Visualize the cheapest days to fly with our interactive calendar and heatmap technology.</p>
+                </div>
+                <div class="bg-light rounded-2xl p-6 card-hover">
+                    <div class="feature-icon bg-purple-100 text-purple-600">
+                        <i class="fas fa-suitcase text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Packing Intelligence</h3>
+                    <p class="text-gray-600">Personalized packing lists based on destination weather, trip duration, and travel purpose.</p>
+                </div>
+                <div class="bg-light rounded-2xl p-6 card-hover">
+                    <div class="feature-icon bg-yellow-100 text-yellow-600">
+                        <i class="fas fa-passport text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Travel Requirements</h3>
+                    <p class="text-gray-600">Comprehensive visa, vaccination, and entry requirement details for your destination.</p>
+                </div>
+                <div class="bg-light rounded-2xl p-6 card-hover">
+                    <div class="feature-icon bg-red-100 text-red-600">
+                        <i class="fas fa-map-marked-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Airport Intelligence</h3>
+                    <p class="text-gray-600">Terminal maps, amenities, lounge access, and layover suggestions for stress-free travel.</p>
+                </div>
+                <div class="bg-light rounded-2xl p-6 card-hover">
+                    <div class="feature-icon bg-indigo-100 text-indigo-600">
+                        <i class="fas fa-leaf text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Carbon Footprint</h3>
+                    <p class="text-gray-600">Eco-conscious travel with CO2 emission estimates and lower-impact alternatives.</p>
+                </div>
+                <!-- New Feature: Loyalty Optimizer -->
+                <div class="bg-light rounded-2xl p-6 card-hover">
+                    <div class="feature-icon bg-orange-100 text-orange-600">
+                        <i class="fas fa-crown text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Loyalty Optimizer</h3>
+                    <p class="text-gray-600">Maximize your frequent flyer benefits, lounge access, and upgrade opportunities across all your loyalty programs.</p>
+                </div>
+                <!-- New Feature: Layover Suggestions -->
+                <div class="bg-light rounded-2xl p-6 card-hover">
+                    <div class="feature-icon bg-blue-100 text-blue-500">
+                        <i class="fas fa-bed text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Layover Suggestions</h3>
+                    <p class="text-gray-600">Discover nearby hotels, lounges, transit options, and sightseeing for stress-free layovers.</p>
+                </div>
+                <!-- New Feature: Travel Risk Assessment -->
+                <div class="bg-light rounded-2xl p-6 card-hover">
+                    <div class="feature-icon bg-orange-100 text-orange-500">
+                        <i class="fas fa-shield-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Travel Risk Assessment</h3>
+                    <p class="text-gray-600">Get insights on weather, strikes, safety advisories, and travel insurance recommendations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Flight Search & Intelligence Dashboard -->
+    <section id="search" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Flight Intelligence Dashboard</h2>
+            
+            <!-- Search Form -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 max-w-4xl mx-auto">
+                <form id="flight-search-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label for="from" class="block text-sm font-medium text-gray-700 mb-1">From</label>
+                        <input type="text" id="from" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="City or airport" required>
+                    </div>
+                    <div>
+                        <label for="to" class="block text-sm font-medium text-gray-700 mb-1">To</label>
+                        <input type="text" id="to" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="City or airport" required>
+                    </div>
+                    <div>
+                        <label for="departure" class="block text-sm font-medium text-gray-700 mb-1">Departure</label>
+                        <input type="date" id="departure" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" required>
+                    </div>
+                    <div>
+                        <label for="travelers" class="block text-sm font-medium text-gray-700 mb-1">Travelers</label>
+                        <select id="travelers" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
+                            <option value="1">1 Traveler</option>
+                            <option value="2">2 Travelers</option>
+                            <option value="3">3 Travelers</option>
+                            <option value="4">4 Travelers</option>
+                            <option value="5">5+ Travelers</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-4 flex justify-center mt-4">
+                        <button type="submit" class="bg-primary hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">Search Flights</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Intelligence Results (Initially Hidden) -->
+            <div id="intelligence-results" class="hidden max-w-6xl mx-auto">
+                <!-- Delay Predictor - Positioned prominently as a key feature -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-clock text-primary mr-2"></i> 
+                        Flight Delay Predictor
+                    </h3>
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium">Delay Probability</span>
+                            <span id="delay-percentage" class="text-sm font-medium">--%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div id="delay-indicator" class="delay-indicator bg-primary h-2.5 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div id="delay-insights" class="text-gray-600">
+                        <p>Our AI analyzes historical data, weather conditions, and airline performance to predict potential delays.</p>
+                    </div>
+                    <div id="alternative-flights" class="mt-4 p-4 bg-blue-50 rounded-lg hidden">
+                        <h4 class="font-semibold text-primary mb-2">Consider These Alternatives</h4>
+                        <p id="alt-flights-text" class="text-sm"></p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Fare Calendar -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-calendar-alt text-secondary mr-2"></i> 
+                            Cheapest Fare Calendar
+                        </h3>
+                        <div id="fare-calendar" class="text-center text-gray-500">
+                            <p>Enter your route to see the best days to fly</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Packing Checklist -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-suitcase text-purple-600 mr-2"></i> 
+                            Smart Packing List
+                        </h3>
+                        <div id="packing-checklist" class="text-gray-500">
+                            <p>We'll generate a personalized packing list based on your destination and travel dates</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Travel Requirements -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-passport text-yellow-600 mr-2"></i> 
+                            Travel Requirements
+                        </h3>
+                        <div id="travel-requirements" class="text-gray-500">
+                            <p>Get detailed visa, vaccination, and entry requirement information</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Airport Intelligence -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-map-marked-alt text-red-600 mr-2"></i> 
+                            Airport Intelligence
+                        </h3>
+                        <div id="airport-info" class="text-gray-500">
+                            <p>Discover terminal layouts, amenities, and layover suggestions</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Additional Intelligence Features -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                    <!-- Carbon Footprint -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-leaf text-indigo-600 mr-2"></i> 
+                            Carbon Footprint
+                        </h3>
+                        <div id="carbon-info" class="text-gray-500">
+                            <p>See the environmental impact of your flight and discover greener alternatives</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced Travel Timeline -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-road text-green-600 mr-2"></i> 
+                            Travel Day Planner
+                        </h3>
+                        <div id="travel-timeline" class="text-gray-500">
+                            <p>Get a personalized timeline for your travel day with optimal airport arrival times</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- New Features Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                    <!-- Layover Suggestions -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-bed text-blue-500 mr-2"></i> 
+                            Layover Suggestions
+                        </h3>
+                        <div id="layover-suggestions" class="text-gray-500">
+                            <p>For long layovers, discover nearby hotels, lounges, and sightseeing options</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Travel Risk Assessment -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-shield-alt text-orange-500 mr-2"></i> 
+                            Travel Risk Assessment
+                        </h3>
+                        <div id="risk-snapshot" class="text-gray-500">
+                            <p>Get insights on weather, strikes, safety advisories, and travel insurance recommendations</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Loyalty Benefits Optimizer -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mt-8">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-crown text-orange-600 mr-2"></i> 
+                        Loyalty Benefits Optimizer
+                    </h3>
+                    <div id="loyalty-optimizer" class="text-gray-500">
+                        <p>Maximize your frequent flyer benefits, lounge access, and upgrade opportunities</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Flytr Section -->
+    <section id="why" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Why Choose Flytr?</h2>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-light rounded-2xl p-8 mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-primary">Comprehensive Flight Intelligence</h3>
+                    <p class="text-gray-600 mb-4">Flytr goes beyond basic flight search to deliver a complete travel intelligence platform. Our AI-powered system analyzes thousands of data points to provide insights that save you time, money, and stress.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <div class="flex items-start">
+                            <div class="bg-primary rounded-full p-2 mr-4 flex-shrink-0">
+                                <i class="fas fa-bolt text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">Real-Time Decision Support</h4>
+                                <p class="text-gray-600 text-sm">Get instant insights on delays, alternatives, and optimal booking times.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-secondary rounded-full p-2 mr-4 flex-shrink-0">
+                                <i class="fas fa-chart-line text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">Predictive Analytics</h4>
+                                <p class="text-gray-600 text-sm">Our algorithms forecast price trends and delay probabilities with remarkable accuracy.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-purple-600 rounded-full p-2 mr-4 flex-shrink-0">
+                                <i class="fas fa-robot text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">AI-Powered Personalization</h4>
+                                <p class="text-gray-600 text-sm">Receive tailored recommendations based on your travel preferences and history.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-yellow-500 rounded-full p-2 mr-4 flex-shrink-0">
+                                <i class="fas fa-globe-americas text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">Global Coverage</h4>
+                                <p class="text-gray-600 text-sm">Comprehensive data on airlines, airports, and routes worldwide.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SEO Content -->
+                <div class="prose max-w-none">
+                    <h3 class="text-2xl font-semibold mb-4">Flytr: Your Intelligent Flight Companion</h3>
+                    <p class="text-gray-600 mb-4">In today's complex travel landscape, having the right information at the right time can transform your journey. Flytr leverages cutting-edge artificial intelligence to deliver flight intelligence that goes far beyond basic search and booking.</p>
+                    
+                    <h4 class="text-xl font-semibold mb-3 mt-6">Who Is Flytr For?</h4>
+                    <ul class="text-gray-600 mb-6 list-disc pl-5">
+                        <li class="mb-2"><strong>Frequent Business Travelers:</strong> Maximize productivity with delay predictions and alternative routing suggestions.</li>
+                        <li class="mb-2"><strong>Budget-Conscious Vacationers:</strong> Find the absolute best deals with our fare calendar and price prediction technology.</li>
+                        <li class="mb-2"><strong>International Travelers:</strong> Navigate complex visa requirements and travel restrictions with confidence.</li>
+                        <li class="mb-2"><strong>Eco-Conscious Flyers:</strong> Make informed decisions about your carbon footprint with our emission calculations.</li>
+                        <li class="mb-2"><strong>Anxious Travelers:</strong> Reduce stress with comprehensive travel planning tools and real-time updates.</li>
+                    </ul>
+                    
+                    <h4 class="text-xl font-semibold mb-3">Key Benefits & Use Cases</h4>
+                    <div class="bg-light rounded-xl p-5 mb-6">
+                        <h5 class="font-semibold text-primary mb-2">Cost Savings</h5>
+                        <p class="text-gray-600 mb-4">Our fare prediction technology identifies the optimal booking window, saving travelers an average of 23% on flight costs compared to booking at random times.</p>
+                        
+                        <h5 class="font-semibold text-primary mb-2">Time Efficiency</h5>
+                        <p class="text-gray-600 mb-4">By predicting delays and suggesting alternatives, Flytr helps business travelers avoid missed connections and costly rescheduling.</p>
+                        
+                        <h5 class="font-semibold text-primary mb-2">Stress Reduction</h5>
+                        <p class="text-gray-600">Comprehensive packing lists, airport information, and travel requirement details ensure you're fully prepared for your journey.</p>
+                    </div>
+                    
+                    <p class="text-gray-600">Flytr represents the next evolution in travel technology – moving from simple search tools to intelligent travel companions that anticipate your needs and deliver actionable insights throughout your journey.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+            
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">How accurate is the delay predictor?</h3>
+                            <p class="text-gray-600">Our delay predictor analyzes historical data, weather patterns, airline performance, and real-time conditions to achieve up to 85% accuracy for predictions made 24 hours before departure.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Is Flytr completely free to use?</h3>
+                            <p class="text-gray-600">Yes, the core Flytr platform is completely free. We may introduce premium features in the future, but the flight intelligence dashboard, delay predictor, and basic search functionality will always remain free.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">How does Flytr make money if it's free?</h3>
+                            <p class="text-gray-600">Flytr operates on a affiliate model where we may receive commissions when users book through our partner links. This allows us to keep the platform free while providing valuable service.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Can I use Flytr for international travel?</h3>
+                            <p class="text-gray-600">Absolutely! Flytr provides comprehensive international travel intelligence including visa requirements, currency information, and country-specific travel advisories.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">How often is the flight data updated?</h3>
+                            <p class="text-gray-600">Our flight data is updated in real-time using multiple reliable sources. Price information refreshes every 2 hours, while delay predictions are recalculated continuously as new data becomes available.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-gray-400 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-gray-700">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                            <i class="fas fa-plane text-white text-lg"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white">Flytr</span>
+                    </div>
+                    <p class="text-sm">Intelligent flight search and travel planning powered by AI.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#features" class="hover:text-white transition">Features</a></li>
+                        <li><a href="#why" class="hover:text-white transition">Why Flytr</a></li>
+                        <li><a href="#faq" class="hover:text-white transition">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition">About Us</a></li>
+                        <li><a href="#" class="hover:text-white transition">Blog</a></li>
+                        <li><a href="#" class="hover:text-white transition">Careers</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white transition">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 text-center text-sm">
+                <p>&copy; 2023 Flytr. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeMenuButton = document.getElementById('close-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.add('open');
+        });
+        
+        closeMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.remove('open');
+        });
+        
+        // Close mobile menu when clicking on a link
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+            });
+        });
+        
+        // Sticky header
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.classList.add('sticky-nav');
+                header.classList.add('shadow-md');
+            } else {
+                header.classList.remove('sticky-nav');
+                header.classList.remove('shadow-md');
+            }
+        });
+        
+        // Form submission
+        const searchForm = document.getElementById('flight-search-form');
+        const intelligenceResults = document.getElementById('intelligence-results');
+        const delayIndicator = document.getElementById('delay-indicator');
+        const delayPercentage = document.getElementById('delay-percentage');
+        const alternativeFlights = document.getElementById('alternative-flights');
+        const altFlightsText = document.getElementById('alt-flights-text');
+        
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Show intelligence results
+            intelligenceResults.classList.remove('hidden');
+            
+            // Scroll to results
+            intelligenceResults.scrollIntoView({ behavior: 'smooth' });
+            
+            // Simulate delay prediction (in a real app, this would come from an API)
+            const delayProb = Math.floor(Math.random() * 60) + 10; // Random between 10-70%
+            delayIndicator.style.width = `${delayProb}%`;
+            delayPercentage.textContent = `${delayProb}%`;
+            
+            // Show alternative flights if delay probability is high
+            if (delayProb > 50) {
+                alternativeFlights.classList.remove('hidden');
+                altFlightsText.textContent = `Due to high delay probability (${delayProb}%), consider flights departing 2 hours earlier or the following day for more reliable travel.`;
+            } else {
+                alternativeFlights.classList.add('hidden');
+            }
+            
+            // Update other sections with mock data
+            updateFareCalendar();
+            updatePackingList();
+            updateTravelRequirements();
+            updateAirportInfo();
+            updateCarbonInfo();
+            updateTravelTimeline();
+            updateLayoverSuggestions();
+            updateRiskSnapshot();
+            updateLoyaltyOptimizer();
+        });
+        
+        // Mock data functions (in a real app, these would fetch from APIs)
+        function updateFareCalendar() {
+            const calendar = document.getElementById('fare-calendar');
+            calendar.innerHTML = `
+                <div class="mb-4">
+                    <p class="text-sm text-gray-600 mb-2">Best prices typically found 3-6 weeks before departure</p>
+                    <div class="flex justify-between text-xs text-gray-500 mb-1">
+                        <span>Lowest</span>
+                        <span>Average</span>
+                        <span>Highest</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                        <div class="bg-secondary h-2 rounded-full" style="width: 70%"></div>
+                    </div>
+                </div>
+                <p class="text-sm">Your selected date falls within the optimal booking window. Prices are expected to remain stable for the next 7 days.</p>
+            `;
+        }
+        
+        function updatePackingList() {
+            const packingList = document.getElementById('packing-checklist');
+            packingList.innerHTML = `
+                <p class="text-sm text-gray-600 mb-3">Based on your destination and travel dates:</p>
+                <ul class="list-disc pl-5 text-sm space-y-1">
+                    <li>Light jacket or sweater</li>
+                    <li>Comfortable walking shoes</li>
+                    <li>Universal power adapter</li>
+                    <li>Portable charger</li>
+                    <li>Reusable water bottle</li>
+                </ul>
+                <p class="text-xs text-gray-500 mt-3">Weather forecast: Mild with chance of rain</p>
+            `;
+        }
+        
+        function updateTravelRequirements() {
+            const requirements = document.getElementById('travel-requirements');
+            requirements.innerHTML = `
+                <p class="text-sm text-gray-600 mb-3">For your destination:</p>
+                <ul class="list-disc pl-5 text-sm space-y-1">
+                    <li>Passport valid for at least 6 months</li>
+                    <li>No visa required for stays under 90 days</li>
+                    <li>No COVID-19 vaccination proof required</li>
+                    <li>Travel insurance recommended</li>
+                </ul>
+            `;
+        }
+        
+        function updateAirportInfo() {
+            const airportInfo = document.getElementById('airport-info');
+            airportInfo.innerHTML = `
+                <p class="text-sm text-gray-600 mb-3">Airport amenities include:</p>
+                <ul class="list-disc pl-5 text-sm space-y-1">
+                    <li>Free Wi-Fi throughout terminals</li>
+                    <li>Multiple dining options post-security</li>
+                    <li>Lounges available for premium passengers</li>
+                    <li>Charging stations near all gates</li>
+                </ul>
+            `;
+        }
+        
+        function updateCarbonInfo() {
+            const carbonInfo = document.getElementById('carbon-info');
+            carbonInfo.innerHTML = `
+                <p class="text-sm text-gray-600 mb-2">Estimated CO2 emissions for your flight:</p>
+                <div class="flex items-center mb-3">
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+                        <div class="bg-indigo-600 h-2.5 rounded-full" style="width: 65%"></div>
+                    </div>
+                    <span class="text-sm font-medium">245 kg</span>
+                </div>
+                <p class="text-xs text-gray-500">This is approximately 15% lower than the average for this route.</p>
+            `;
+        }
+        
+        function updateTravelTimeline() {
+            const timeline = document.getElementById('travel-timeline');
+            timeline.innerHTML = `
+                <p class="text-sm text-gray-600 mb-3">Your personalized travel timeline:</p>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-home text-green-600 text-sm"></i>
+                            </div>
+                            <span class="text-sm font-medium">Leave home</span>
+                        </div>
+                        <span class="font-semibold text-green-700">2.5 hours before flight</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-luggage-cart text-blue-600 text-sm"></i>
+                            </div>
+                            <span class="text-sm font-medium">Check-in & Security</span>
+                        </div>
+                        <span class="font-semibold text-blue-700">2 hours before flight</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-door-open text-purple-600 text-sm"></i>
+                            </div>
+                            <span class="text-sm font-medium">Boarding closes</span>
+                        </div>
+                        <span class="font-semibold text-purple-700">20 min before departure</span>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-gray-500">
+                    <p>✈️ Based on current traffic and typical security wait times at your departure airport</p>
+                </div>
+            `;
+        }
+        
+        // New feature functions
+        function updateLayoverSuggestions() {
+            const layover = document.getElementById('layover-suggestions');
+            layover.innerHTML = `
+                <p class="text-sm text-gray-600 mb-3">For layovers longer than 4 hours:</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-medium text-gray-800 mb-2">Airport Hotels</h4>
+                        <ul class="text-sm space-y-1 text-gray-600">
+                            <li>• Transit Hotel Terminal B (5 min walk)</li>
+                            <li>• Airport Inn (Free shuttle every 15 min)</li>
+                            <li>• Day rooms available (4-hour blocks)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-800 mb-2">Nearby Attractions</h4>
+                        <ul class="text-sm space-y-1 text-gray-600">
+                            <li>• City Center (25 min by train)</li>
+                            <li>• Observation Deck Terminal C</li>
+                            <li>• Museum (Free entry with boarding pass)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                    <p class="text-xs text-blue-700">💡 <strong>Pro tip:</strong> Lounges available for $35/day with shower facilities</p>
+                </div>
+            `;
+        }
+        
+        function updateRiskSnapshot() {
+            const risk = document.getElementById('risk-snapshot');
+            risk.innerHTML = `
+                <div class="flex items-center mb-4">
+                    <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                    <span class="font-medium text-gray-800">Overall Risk: Low</span>
+                </div>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between">
+                        <span>Weather Conditions</span>
+                        <span class="font-medium text-yellow-600">Moderate</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Political Stability</span>
+                        <span class="font-medium text-green-600">Low</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Health Advisory</span>
+                        <span class="font-medium text-green-600">Low</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Transport Strikes</span>
+                        <span class="font-medium text-green-600">None</span>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 bg-orange-50 rounded-lg">
+                    <p class="text-xs text-orange-700">🛡️ <strong>Travel insurance recommended</strong> for comprehensive coverage of trip cancellation, medical emergencies, and baggage loss.</p>
+                </div>
+            `;
+        }
+        
+        function updateLoyaltyOptimizer() {
+            const loyalty = document.getElementById('loyalty-optimizer');
+            loyalty.innerHTML = `
+                <div class="mb-4">
+                    <p class="text-sm text-gray-600 mb-3">Track your frequent flyer status and benefits:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-3 bg-orange-50 rounded-lg">
+                            <h4 class="font-medium text-orange-800 mb-1">Status Benefits</h4>
+                            <ul class="text-xs space-y-1 text-orange-700">
+                                <li>✓ Priority boarding</li>
+                                <li>✓ Extra baggage allowance</li>
+                                <li>✓ Lounge access</li>
+                            </ul>
+                        </div>
+                        <div class="p-3 bg-blue-50 rounded-lg">
+                            <h4 class="font-medium text-blue-800 mb-1">Earning Potential</h4>
+                            <ul class="text-xs space-y-1 text-blue-700">
+                                <li>• 1,250 miles on this route</li>
+                                <li>• 500 bonus miles with status</li>
+                                <li>• Qualifies for elite status</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <button class="w-full bg-orange-100 text-orange-700 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition duration-300">
+                    + Add Your Loyalty Programs
+                </button>
+            `;
+        }
+        
+        // Fade in animation on scroll
+        const fadeElements = document.querySelectorAll('.fade-in');
+        
+        const fadeInObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        fadeElements.forEach(element => {
+            fadeInObserver.observe(element);
+        });
+    </script>
+</body>
+</html>
