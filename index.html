@@ -4,21 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flytr - AI-Driven Flight Intelligence</title>
-
-    <!-- Favicon Section - Paste this in the <head> section after the <title> tag -->
-<link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIGZpbGw9IiMwMDY2RkYiLz4KICA8cGF0aCBkPSJNMzAsNTBINzBNNTAsMzBINzBNNTAsNzBINzAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIvPgogIDxwYXRoIGQ9Ik03MCw1MEw1MCw3MEw3MCw1MEw1MCwzMFoiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=">
-<link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjQ1IiBmaWxsPSIjMDA2NkZGIi8+CiAgPHBhdGggZD0iTTMwLDUwSDcwTTUwLDMwSDcwTTUwLDcwSDcwIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjgiLz4KICA8cGF0aCBkPSJNNzAsNTBMNTAsNzBNNzAsNTBMNTAsMzAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=">
-<link rel="icon" type="image/png" sizes="16x16" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjQ1IiBmaWxsPSIjMDA2NkZGIi8+CiAgPHBhdGggZD0iTTMwLDUwSDcwTTUwLDMwSDcwTTUwLDcwSDcwIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjgiLz4KICA8cGF0aCBkPSJNNzAsNTBMNTAsNzBNNzAsNTBMNTAsMzAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=">
-<link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkZseXRyIiwKICAic2hvcnRfbmFtZSI6ICJGbHl0ciIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDA2NkZGIiwKICAidGhlbWVfY29sb3IiOiAiIzAwNjZGRiIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIZHBaSFJvUFNJeE1pSWdlRzFzYm5NOUltaDBkSEE2THk5M2QzY3Vkek11TDJsdVpHVjRMbkJvY0M5MGFYUnNaWEl0YzNsemRHVnRJaUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSEJ5YjJacGJHVXRiM1Z1WkdWa0lqNDhjR0YwYUNCa1BTSWlMejQ4TDNOMlp6ND0iLAogICAgICAic2l6ZXMiOiAiMTgweDE4MCIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9Cg==">
-<meta name="theme-color" content="#0066FF">
-<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIGZpbGw9IiMwMDY2RkYiLz4KICA8cGF0aCBkPSJNMzAsNTBINzBNNTAsMzBINzBNNTAsNzBINzAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIvPgogIDxwYXRoIGQ9Ik03MCw1MEw1MCw3MEw3MCw1MEw1MCwzMFoiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=" type="image/svg+xml">
-<!-- End Favicon Section -->
+    
+    <!-- Favicon Section -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIGZpbGw9IiMwMDY2RkYiLz4KICA8cGF0aCBkPSJNMzAsNTBINzBNNTAsMzBINzBNNTAsNzBINzAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIvPgogIDxwYXRoIGQ9Ik03MCw1MEw1MCw3MEw3MCw1MEw1MCwzMFoiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=">
+    <link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjQ1IiBmaWxsPSIjMDA2NkZGIi8+CiAgPHBhdGggZD0iTTMwLDUwSDcwTTUwLDMwSDcwTTUwLDcwSDcwIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjgiLz4KICA8cGF0aCBkPSJNNzAsNTBMNTAsNzBNNzAsNTBMNTAsMzEiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=">
+    <link rel="icon" type="image/png" sizes="16x16" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjQ1IiBmaWxsPSIjMDA2NkZGIi8+CiAgPHBhdGggZD0iTTMwLDUwSDcwTTUwLDMwSDcwTTUwLDcwSDcwIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjgiLz4KICA8cGF0aCBkPSJNNzAsNTBMNTAsNzBNNzAsNTBMNTAsMzEiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkZseXRyIiwKICAic2hvcnRfbmFtZSI6ICJGbHl0ciIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDA2NkZGIiwKICAidGhlbWVfY29sb3IiOiAiIzAwNjZGRiIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIZHBaSFJvUFNJeE1pSWdlRzFzYm5NOUltaDBkSEE2THk5M2QzY3Vkek11TDJsdVpHVjRMbkJvY0M5MGFYUnNaWEl0YzNsemRHVnRJaUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSEJ5YjJacGJHVXRiM1Z1WkdWa0lqNDhjR0YwYUNCa1BTSWlMejQ4TDNOMlp6ND0iLAogICAgICAic2l6ZXMiOiAiMTgweDE4MCIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9Cg==">
+    <meta name="theme-color" content="#0066FF">
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIGZpbGw9IiMwMDY2RkYiLz4KICA8cGF0aCBkPSJNMzAsNTBINzBNNTAsMzBINzBNNTAsNzBINzAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIvPgogIDxwYXRoIGQ9Ik03MCw1MEw1MCw3MEw3MCw1MEw1MCwzMFoiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=" type="image/svg+xml">
+    <!-- End Favicon Section -->
     
     <meta name="description" content="Flytr helps you discover the smartest routes, real-time insights, and airport amenities — all in one place.">
     <meta name="keywords" content="flight search, travel deals, delay predictor, flight intelligence, travel planning">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Include Supabase JS -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -608,7 +610,7 @@
                 </div>
             </div>
             <div class="pt-8 text-center text-sm">
-                <p>&copy; 2023 Flytr. All rights reserved.</p>
+                <p>&copy; 2024 Flytr. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -649,21 +651,38 @@
         });
         
         // API Configuration - Replace with your actual API keys
-        // These keys should be stored in Vercel environment variables in production
         const API_CONFIG = {
             aviationstack: {
-                key: 'YOUR_AVIATIONSTACK_API_KEY_HERE', // Replace with your key
+                key: 'YOUR_AVIATIONSTACK_API_KEY_HERE',
                 base: 'https://api.aviationstack.com/v1'
             },
             openweather: {
-                key: 'YOUR_OPENWEATHER_API_KEY_HERE', // Replace with your key
+                key: 'YOUR_OPENWEATHER_API_KEY_HERE',
                 base: 'https://api.openweathermap.org/data/2.5'
             },
             currencyfreaks: {
-                key: 'YOUR_CURRENCYFREAKS_API_KEY_HERE', // Replace with your key
+                key: 'YOUR_CURRENCYFREAKS_API_KEY_HERE',
                 base: 'https://api.currencyfreaks.com/v2.0'
+            },
+            googleTim: {
+                key: 'YOUR_GOOGLE_TIM_API_KEY_HERE',
+                base: 'https://travelimpactmodel.googleapis.com/v1'
+            },
+            gnews: {
+                key: 'YOUR_GNEWS_API_KEY_HERE',
+                base: 'https://gnews.io/api/v4'
+            },
+            supabase: {
+                url: 'YOUR_SUPABASE_URL_HERE',
+                key: 'YOUR_SUPABASE_ANON_KEY_HERE'
             }
         };
+        
+        // Initialize Supabase client
+        let supabaseClient = null;
+        if (API_CONFIG.supabase.url !== 'YOUR_SUPABASE_URL_HERE' && API_CONFIG.supabase.key !== 'YOUR_SUPABASE_ANON_KEY_HERE') {
+            supabaseClient = supabase.createClient(API_CONFIG.supabase.url, API_CONFIG.supabase.key);
+        }
         
         // Form submission with real API calls
         const searchForm = document.getElementById('flight-search-form');
@@ -694,7 +713,7 @@
             showLoadingStates();
             
             try {
-                // Extract airport codes (simple extraction - could be enhanced)
+                // Extract airport codes
                 const fromCode = extractAirportCode(from);
                 const toCode = extractAirportCode(to);
                 
@@ -703,9 +722,10 @@
                     fetchFlightData(fromCode, toCode, date),
                     fetchWeatherData(to),
                     fetchTravelAdvisory(to),
-                    fetchExchangeRate('USD', 'EUR'), // Example: USD to EUR
+                    fetchExchangeRate('USD', 'EUR'),
                     fetchLayoverSuggestions(toCode),
-                    fetchRiskAssessment(to)
+                    fetchGNewsRiskAssessment(to),
+                    fetchUserLoyaltyData() // Fetch from Supabase
                 ]);
                 
             } catch (error) {
@@ -715,11 +735,53 @@
             }
         });
         
+        // Helper function to extract IATA airport code
+        function extractIATACode(input) {
+            // Try to extract 3-letter IATA code
+            const iataMatch = input.match(/\b[A-Z]{3}\b/);
+            if (iataMatch) return iataMatch[0];
+            
+            // Try to get from city name mapping
+            const cityMapping = {
+                'new york': 'JFK',
+                'london': 'LHR',
+                'los angeles': 'LAX',
+                'chicago': 'ORD',
+                'dallas': 'DFW',
+                'tokyo': 'HND',
+                'paris': 'CDG',
+                'frankfurt': 'FRA',
+                'dubai': 'DXB',
+                'singapore': 'SIN',
+                'sydney': 'SYD',
+                'toronto': 'YYZ',
+                'miami': 'MIA',
+                'atlanta': 'ATL',
+                'beijing': 'PEK',
+                'shanghai': 'PVG',
+                'hong kong': 'HKG',
+                'seoul': 'ICN',
+                'bangkok': 'BKK',
+                'amsterdam': 'AMS',
+                'istanbul': 'IST',
+                'madrid': 'MAD',
+                'rome': 'FCO'
+            };
+            
+            const lowerInput = input.toLowerCase();
+            for (const [city, code] of Object.entries(cityMapping)) {
+                if (lowerInput.includes(city)) {
+                    return code;
+                }
+            }
+            
+            // Return first 3 letters uppercase as fallback
+            return input.substring(0, 3).toUpperCase();
+        }
+        
         // Helper function to extract airport code
         function extractAirportCode(input) {
-            // Simple extraction - assumes 3-letter airport code
-            const match = input.match(/\b[A-Z]{3}\b/);
-            return match ? match[0] : input.substring(0, 3).toUpperCase();
+            return extractIATACode(input);
         }
         
         // Show loading states in all sections
@@ -791,8 +853,8 @@
                     // Update travel timeline with real flight data
                     updateTravelTimelineWithRealData(flight);
                     
-                    // Update carbon info with real distance
-                    updateCarbonInfoWithRealData(flight);
+                    // Update carbon info using Google TIM API
+                    await updateCarbonInfoWithRealData(flight);
                     
                 } else {
                     throw new Error('No flight data found');
@@ -934,7 +996,7 @@
         // Fetch layover suggestions
         async function fetchLayoverSuggestions(airportCode) {
             try {
-                // Simulated API call - would use real airport data API
+                // Simulated API call
                 setTimeout(() => {
                     document.getElementById('layover-suggestions').innerHTML = `
                         <p class="text-sm text-gray-600 mb-3">For layovers at ${airportCode}:</p>
@@ -967,42 +1029,324 @@
             }
         }
         
-        // Fetch risk assessment
-        async function fetchRiskAssessment(destination) {
+        // Fetch GNews risk assessment
+        async function fetchGNewsRiskAssessment(destination) {
             try {
-                // Simulated risk assessment
-                setTimeout(() => {
-                    document.getElementById('risk-snapshot').innerHTML = `
-                        <div class="flex items-center mb-4">
-                            <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                            <span class="font-medium text-gray-800">Overall Risk: Low</span>
+                if (API_CONFIG.gnews.key === 'YOUR_GNEWS_API_KEY_HERE') {
+                    throw new Error('GNews API key not configured');
+                }
+                
+                const url = `${API_CONFIG.gnews.base}/search?q=${encodeURIComponent(destination + " travel safety strike")}&token=${API_CONFIG.gnews.key}&lang=en&max=5`;
+                const response = await fetch(url);
+                
+                if (!response.ok) throw new Error('GNews API failed');
+                
+                const data = await response.json();
+                
+                let riskLevel = 'Low';
+                let riskArticles = [];
+                
+                if (data.articles && data.articles.length > 0) {
+                    // Analyze articles for risk indicators
+                    const riskKeywords = ['strike', 'protest', 'unrest', 'warning', 'danger', 'attack', 'violence', 'crisis'];
+                    riskArticles = data.articles.filter(article => {
+                        const title = article.title.toLowerCase();
+                        return riskKeywords.some(keyword => title.includes(keyword));
+                    });
+                    
+                    if (riskArticles.length > 2) {
+                        riskLevel = 'High';
+                    } else if (riskArticles.length > 0) {
+                        riskLevel = 'Moderate';
+                    }
+                }
+                
+                // Get color based on risk level
+                const riskColor = riskLevel === 'High' ? 'text-red-600' : (riskLevel === 'Moderate' ? 'text-yellow-600' : 'text-green-600');
+                const riskBgColor = riskLevel === 'High' ? 'bg-red-100' : (riskLevel === 'Moderate' ? 'bg-yellow-100' : 'bg-green-100');
+                
+                document.getElementById('risk-snapshot').innerHTML = `
+                    <div class="flex items-center mb-4">
+                        <div class="w-3 h-3 ${riskLevel === 'High' ? 'bg-red-500' : (riskLevel === 'Moderate' ? 'bg-yellow-500' : 'bg-green-500')} rounded-full mr-2"></div>
+                        <span class="font-medium text-gray-800">Overall Risk: <span class="${riskColor}">${riskLevel}</span></span>
+                    </div>
+                    <div class="space-y-3 text-sm mb-4">
+                        <div class="flex justify-between">
+                            <span>Travel Safety</span>
+                            <span class="font-medium ${riskColor}">${riskLevel}</span>
                         </div>
-                        <div class="space-y-3 text-sm">
-                            <div class="flex justify-between">
-                                <span>Weather Conditions</span>
-                                <span class="font-medium text-yellow-600">Moderate</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Political Stability</span>
-                                <span class="font-medium text-green-600">Low</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Health Advisory</span>
-                                <span class="font-medium text-green-600">Low</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Transport Strikes</span>
-                                <span class="font-medium text-green-600">None</span>
-                            </div>
+                        <div class="flex justify-between">
+                            <span>Political Stability</span>
+                            <span class="font-medium ${riskLevel === 'High' ? 'text-red-600' : 'text-green-600'}">${riskLevel === 'High' ? 'Unstable' : 'Stable'}</span>
                         </div>
-                        <div class="mt-4 p-3 bg-orange-50 rounded-lg">
-                            <p class="text-xs text-orange-700">🛡️ <strong>Travel insurance recommended</strong> for comprehensive coverage.</p>
+                        <div class="flex justify-between">
+                            <span>News Alerts</span>
+                            <span class="font-medium">${riskArticles.length} found</span>
                         </div>
-                    `;
-                }, 1000);
+                    </div>
+                    ${riskArticles.length > 0 ? `
+                    <div class="p-3 ${riskBgColor} rounded-lg mb-3">
+                        <p class="text-xs font-medium mb-1">Recent News:</p>
+                        <ul class="text-xs space-y-1">
+                            ${riskArticles.slice(0, 2).map(article => `<li>• ${article.title.substring(0, 60)}...</li>`).join('')}
+                        </ul>
+                    </div>
+                    ` : ''}
+                    <div class="p-3 bg-orange-50 rounded-lg">
+                        <p class="text-xs text-orange-700">
+                            <i class="fas fa-shield-alt mr-1"></i>
+                            <strong>Travel insurance recommended</strong> for comprehensive coverage of trip cancellation, medical emergencies, and baggage loss.
+                        </p>
+                    </div>
+                `;
                 
             } catch (error) {
-                console.error('Risk API Error:', error);
+                console.error('GNews API Error:', error);
+                // Fallback to static risk assessment
+                document.getElementById('risk-snapshot').innerHTML = `
+                    <div class="flex items-center mb-4">
+                        <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                        <span class="font-medium text-gray-800">Overall Risk: Low</span>
+                    </div>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span>Weather Conditions</span>
+                            <span class="font-medium text-yellow-600">Moderate</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Political Stability</span>
+                            <span class="font-medium text-green-600">Low</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Health Advisory</span>
+                            <span class="font-medium text-green-600">Low</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Transport Strikes</span>
+                            <span class="font-medium text-green-600">None</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-orange-50 rounded-lg">
+                        <p class="text-xs text-orange-700">🛡️ <strong>Travel insurance recommended</strong> for comprehensive coverage.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Fetch user loyalty data from Supabase
+        async function fetchUserLoyaltyData() {
+            try {
+                if (!supabaseClient) {
+                    throw new Error('Supabase not configured');
+                }
+                
+                // Check if user has loyalty data (simulated - in real app, you'd have authentication)
+                const { data, error } = await supabaseClient
+                    .from('user_loyalty')
+                    .select('*')
+                    .limit(1);
+                
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    const loyalty = data[0];
+                    document.getElementById('loyalty-optimizer').innerHTML = `
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-3">Your loyalty programs:</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-3 bg-orange-50 rounded-lg">
+                                    <h4 class="font-medium text-orange-800 mb-1">${loyalty.airline || 'Airline'} Status</h4>
+                                    <ul class="text-xs space-y-1 text-orange-700">
+                                        <li>✓ ${loyalty.status || 'Silver'} Tier</li>
+                                        <li>✓ ${loyalty.benefits || 'Priority boarding'}</li>
+                                        <li>✓ Lounge access available</li>
+                                    </ul>
+                                </div>
+                                <div class="p-3 bg-blue-50 rounded-lg">
+                                    <h4 class="font-medium text-blue-800 mb-1">Earning Potential</h4>
+                                    <ul class="text-xs space-y-1 text-blue-700">
+                                        <li>• ${loyalty.miles || '1,250'} miles on this route</li>
+                                        <li>• ${loyalty.bonus || '500'} bonus miles with status</li>
+                                        <li>• Qualifies for elite status</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="showLoyaltyForm()" class="w-full bg-orange-100 text-orange-700 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition duration-300">
+                            Manage Loyalty Programs
+                        </button>
+                    `;
+                } else {
+                    // No loyalty data found
+                    document.getElementById('loyalty-optimizer').innerHTML = `
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-3">Track your frequent flyer status and benefits:</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-3 bg-orange-50 rounded-lg">
+                                    <h4 class="font-medium text-orange-800 mb-1">Status Benefits</h4>
+                                    <ul class="text-xs space-y-1 text-orange-700">
+                                        <li>✓ Priority boarding</li>
+                                        <li>✓ Extra baggage allowance</li>
+                                        <li>✓ Lounge access</li>
+                                    </ul>
+                                </div>
+                                <div class="p-3 bg-blue-50 rounded-lg">
+                                    <h4 class="font-medium text-blue-800 mb-1">Earning Potential</h4>
+                                    <ul class="text-xs space-y-1 text-blue-700">
+                                        <li>• 1,250 miles on this route</li>
+                                        <li>• 500 bonus miles with status</li>
+                                        <li>• Qualifies for elite status</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="showLoyaltyForm()" class="w-full bg-orange-100 text-orange-700 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition duration-300">
+                            + Add Your Loyalty Programs
+                        </button>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Supabase Error:', error);
+                // Fallback to static loyalty optimizer
+                updateLoyaltyOptimizer();
+            }
+        }
+        
+        // Update carbon info using Google Travel Impact Model API
+        async function updateCarbonInfoWithRealData(flight) {
+            try {
+                // Get airport codes
+                const origin = flight.departure.iata || extractAirportCode(flight.departure.airport);
+                const destination = flight.arrival.iata || extractAirportCode(flight.arrival.airport);
+                
+                if (!origin || !destination) {
+                    throw new Error('Missing airport codes');
+                }
+                
+                // Create request body for Google TIM API
+                const requestBody = {
+                    "flights": [{
+                        "origin": origin,
+                        "destination": destination,
+                        "operatingCarrierCode": flight.airline.iata || "AA",
+                        "flightNumber": flight.flight.number || parseInt(flight.flight.iata) || 0,
+                        "departureDate": {
+                            "year": new Date(flight.departure.scheduled).getFullYear(),
+                            "month": new Date(flight.departure.scheduled).getMonth() + 1,
+                            "day": new Date(flight.departure.scheduled).getDate()
+                        },
+                        "aircraft": flight.aircraft ? {
+                            "code": flight.aircraft.iata || "B738"
+                        } : {
+                            "code": "B738"
+                        },
+                        "class": "ECONOMY",
+                        "passengerCount": parseInt(document.getElementById('travelers').value) || 1
+                    }]
+                };
+                
+                // Call Google TIM API
+                const response = await fetch(
+                    `${API_CONFIG.googleTim.base}/flights:computeFlightEmissions?key=${API_CONFIG.googleTim.key}`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestBody)
+                    }
+                );
+                
+                if (!response.ok) {
+                    throw new Error(`TIM API error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.flightEmissions && data.flightEmissions.length > 0) {
+                    const emissionData = data.flightEmissions[0];
+                    const kgPerPax = emissionData.emissionsGramsPerPax / 1000;
+                    const totalKg = kgPerPax * (parseInt(document.getElementById('travelers').value) || 1);
+                    
+                    // Get emission factors for comparison
+                    const factors = {
+                        co2: emissionData.co2ePerPax?.co2 || 0,
+                        ch4: emissionData.co2ePerPax?.ch4 || 0,
+                        n2o: emissionData.co2ePerPax?.n2o || 0
+                    };
+                    
+                    // Calculate percentage width for visual indicator (max 1000kg = 100%)
+                    const percentageWidth = Math.min(100, (totalKg / 1000) * 100);
+                    
+                    document.getElementById('carbon-info').innerHTML = `
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-2">Carbon footprint per passenger:</p>
+                            <div class="flex items-center mb-3">
+                                <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+                                    <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${percentageWidth}%"></div>
+                                </div>
+                                <span class="text-sm font-medium">${kgPerPax.toFixed(1)} kg CO₂e</span>
+                            </div>
+                            
+                            <p class="text-sm text-gray-600 mb-2">Total for all passengers:</p>
+                            <div class="text-2xl font-bold text-indigo-700 mb-3">${totalKg.toFixed(1)} kg CO₂e</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2 text-xs mb-4">
+                            <div class="text-center p-2 bg-blue-50 rounded">
+                                <div class="font-medium">CO₂</div>
+                                <div class="text-blue-600">${(factors.co2 / 1000).toFixed(1)} kg</div>
+                            </div>
+                            <div class="text-center p-2 bg-green-50 rounded">
+                                <div class="font-medium">CH₄</div>
+                                <div class="text-green-600">${(factors.ch4 / 1000).toFixed(3)} kg</div>
+                            </div>
+                            <div class="text-center p-2 bg-purple-50 rounded">
+                                <div class="font-medium">N₂O</div>
+                                <div class="text-purple-600">${(factors.n2o / 1000).toFixed(3)} kg</div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-3 bg-indigo-50 rounded-lg">
+                            <p class="text-xs text-indigo-700">
+                                <i class="fas fa-leaf mr-1"></i>
+                                <strong>Eco-tip:</strong> Consider offsetting ${totalKg.toFixed(0)} kg CO₂e for approximately $${(totalKg * 0.02).toFixed(2)} via certified carbon offset programs.
+                            </p>
+                        </div>
+                    `;
+                } else {
+                    throw new Error('No emission data returned');
+                }
+                
+            } catch (error) {
+                console.error('TIM API Error:', error);
+                
+                // Fallback to approximate calculation
+                const duration = flight.flight.duration || 180;
+                const carbonPerHour = 90;
+                const passengers = parseInt(document.getElementById('travelers').value) || 1;
+                const kgPerPax = Math.round((duration / 60) * carbonPerHour);
+                const totalKg = kgPerPax * passengers;
+                const percentageWidth = Math.min(100, (totalKg / 1000) * 100);
+                
+                document.getElementById('carbon-info').innerHTML = `
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-2">Estimated carbon footprint:</p>
+                        <div class="flex items-center mb-3">
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+                                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${percentageWidth}%"></div>
+                            </div>
+                            <span class="text-sm font-medium">${totalKg} kg CO₂e</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-yellow-50 rounded-lg">
+                        <p class="text-xs text-yellow-700">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Using approximate calculation. Enable Google TIM API for precise emissions data.
+                        </p>
+                    </div>
+                `;
             }
         }
         
@@ -1048,24 +1392,6 @@
                 <div class="mt-4 text-xs text-gray-500">
                     <p>✈️ Flight ${flight.flight.iata} departs at ${depTime}</p>
                 </div>
-            `;
-        }
-        
-        // Update carbon info with real data
-        function updateCarbonInfoWithRealData(flight) {
-            // Simplified carbon calculation based on flight duration
-            const duration = flight.flight.duration || 180; // Default 3 hours
-            const carbon = Math.round(duration * 80); // Rough estimate: 80kg per hour
-            
-            document.getElementById('carbon-info').innerHTML = `
-                <p class="text-sm text-gray-600 mb-2">Estimated CO2 emissions for your flight:</p>
-                <div class="flex items-center mb-3">
-                    <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
-                        <div class="bg-indigo-600 h-2.5 rounded-full" style="width: 65%"></div>
-                    </div>
-                    <span class="text-sm font-medium">${carbon} kg</span>
-                </div>
-                <p class="text-xs text-gray-500">This is approximately ${carbon < 250 ? '15% lower' : 'average'} compared to similar routes.</p>
             `;
         }
         
@@ -1125,12 +1451,181 @@
         
         // Loyalty form popup
         function showLoyaltyForm() {
-            alert('Loyalty program integration coming soon! This feature will allow you to track multiple frequent flyer programs.');
+            // Create modal for loyalty program entry
+            const modalHTML = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold">Add Loyalty Program</h3>
+                            <button onclick="closeLoyaltyForm()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Airline</label>
+                                <input type="text" id="loyalty-airline" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., Delta Airlines">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Loyalty Program</label>
+                                <input type="text" id="loyalty-program" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., SkyMiles">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status Tier</label>
+                                <select id="loyalty-status" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                    <option value="Silver">Silver</option>
+                                    <option value="Gold">Gold</option>
+                                    <option value="Platinum">Platinum</option>
+                                    <option value="Diamond">Diamond</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Member Number</label>
+                                <input type="text" id="loyalty-number" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., DL123456789">
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button onclick="closeLoyaltyForm()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                            <button onclick="saveLoyaltyProgram()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700">Save Program</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const modalDiv = document.createElement('div');
+            modalDiv.innerHTML = modalHTML;
+            document.body.appendChild(modalDiv);
         }
         
-        // Initialize loyalty optimizer
-        updateLoyaltyOptimizer();
+        // Close loyalty form
+        function closeLoyaltyForm() {
+            const modal = document.querySelector('.fixed.inset-0.bg-black');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Save loyalty program
+        async function saveLoyaltyProgram() {
+            try {
+                const airline = document.getElementById('loyalty-airline').value;
+                const program = document.getElementById('loyalty-program').value;
+                const status = document.getElementById('loyalty-status').value;
+                const memberNumber = document.getElementById('loyalty-number').value;
+                
+                if (!airline || !program) {
+                    alert('Please fill in required fields');
+                    return;
+                }
+                
+                if (supabaseClient) {
+                    // Save to Supabase
+                    const { data, error } = await supabaseClient
+                        .from('user_loyalty')
+                        .insert([
+                            {
+                                airline: airline,
+                                program: program,
+                                status: status,
+                                member_number: memberNumber,
+                                created_at: new Date().toISOString()
+                            }
+                        ]);
+                    
+                    if (error) throw error;
+                    
+                    alert('Loyalty program saved successfully!');
+                    closeLoyaltyForm();
+                    
+                    // Refresh loyalty data
+                    fetchUserLoyaltyData();
+                } else {
+                    // Store locally if Supabase not configured
+                    localStorage.setItem('flytr_loyalty', JSON.stringify({
+                        airline,
+                        program,
+                        status,
+                        memberNumber
+                    }));
+                    
+                    alert('Loyalty program saved locally!');
+                    closeLoyaltyForm();
+                    
+                    // Update UI
+                    document.getElementById('loyalty-optimizer').innerHTML = `
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-3">Your loyalty programs:</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-3 bg-orange-50 rounded-lg">
+                                    <h4 class="font-medium text-orange-800 mb-1">${airline}</h4>
+                                    <ul class="text-xs space-y-1 text-orange-700">
+                                        <li>✓ ${status} Tier</li>
+                                        <li>✓ Priority boarding</li>
+                                        <li>✓ Lounge access</li>
+                                    </ul>
+                                </div>
+                                <div class="p-3 bg-blue-50 rounded-lg">
+                                    <h4 class="font-medium text-blue-800 mb-1">${program}</h4>
+                                    <ul class="text-xs space-y-1 text-blue-700">
+                                        <li>• Member: ${memberNumber}</li>
+                                        <li>• 1,250 miles on this route</li>
+                                        <li>• 500 bonus miles with status</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="showLoyaltyForm()" class="w-full bg-orange-100 text-orange-700 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition duration-300">
+                            Manage Loyalty Programs
+                        </button>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Error saving loyalty program:', error);
+                alert('Error saving loyalty program. Please try again.');
+            }
+        }
+        
+        // Initialize sections
         updateAirportInfo();
+        
+        // Check for locally stored loyalty data
+        const localLoyalty = localStorage.getItem('flytr_loyalty');
+        if (localLoyalty && !supabaseClient) {
+            try {
+                const loyalty = JSON.parse(localLoyalty);
+                document.getElementById('loyalty-optimizer').innerHTML = `
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-3">Your loyalty programs:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-3 bg-orange-50 rounded-lg">
+                                <h4 class="font-medium text-orange-800 mb-1">${loyalty.airline}</h4>
+                                <ul class="text-xs space-y-1 text-orange-700">
+                                    <li>✓ ${loyalty.status} Tier</li>
+                                    <li>✓ Priority boarding</li>
+                                    <li>✓ Lounge access</li>
+                                </ul>
+                            </div>
+                            <div class="p-3 bg-blue-50 rounded-lg">
+                                <h4 class="font-medium text-blue-800 mb-1">${loyalty.program}</h4>
+                                <ul class="text-xs space-y-1 text-blue-700">
+                                    <li>• Member: ${loyalty.memberNumber}</li>
+                                    <li>• 1,250 miles on this route</li>
+                                    <li>• 500 bonus miles with status</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="showLoyaltyForm()" class="w-full bg-orange-100 text-orange-700 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition duration-300">
+                        Manage Loyalty Programs
+                    </button>
+                `;
+            } catch (e) {
+                updateLoyaltyOptimizer();
+            }
+        } else {
+            updateLoyaltyOptimizer();
+        }
         
         // Fade in animation on scroll
         const fadeElements = document.querySelectorAll('.fade-in');
@@ -1159,9 +1654,12 @@
             console.log('- AviationStack:', API_CONFIG.aviationstack.key !== 'YOUR_AVIATIONSTACK_API_KEY_HERE' ? 'Configured' : 'Not configured');
             console.log('- OpenWeatherMap:', API_CONFIG.openweather.key !== 'YOUR_OPENWEATHER_API_KEY_HERE' ? 'Configured' : 'Not configured');
             console.log('- CurrencyFreaks:', API_CONFIG.currencyfreaks.key !== 'YOUR_CURRENCYFREAKS_API_KEY_HERE' ? 'Configured' : 'Not configured');
+            console.log('- Google TIM:', API_CONFIG.googleTim.key !== 'YOUR_GOOGLE_TIM_API_KEY_HERE' ? 'Configured' : 'Not configured');
+            console.log('- GNews:', API_CONFIG.gnews.key !== 'YOUR_GNEWS_API_KEY_HERE' ? 'Configured' : 'Not configured');
+            console.log('- Supabase:', API_CONFIG.supabase.url !== 'YOUR_SUPABASE_URL_HERE' ? 'Configured' : 'Not configured');
             
             if (API_CONFIG.aviationstack.key === 'YOUR_AVIATIONSTACK_API_KEY_HERE') {
-                console.warn('⚠️ Remember to replace API keys with your actual keys!');
+                console.warn('⚠️ Remember to replace ALL API keys with your actual keys!');
             }
         });
     </script>
