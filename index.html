@@ -242,29 +242,31 @@
             <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 max-w-4xl mx-auto">
                 <form id="flight-search-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
-                        <label for="from" class="block text-sm font-medium text-gray-700 mb-1">From</label>
-                        <input type="text" id="from" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="City or airport" required>
+                        <label for="from" class="block text-sm font-medium text-gray-700 mb-1">From (City or Airport Code)</label>
+                        <input type="text" id="from" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="e.g., JFK or New York" required>
                     </div>
                     <div>
-                        <label for="to" class="block text-sm font-medium text-gray-700 mb-1">To</label>
-                        <input type="text" id="to" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="City or airport" required>
+                        <label for="to" class="block text-sm font-medium text-gray-700 mb-1">To (City or Airport Code)</label>
+                        <input type="text" id="to" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="e.g., LHR or London" required>
                     </div>
                     <div>
-                        <label for="departure" class="block text-sm font-medium text-gray-700 mb-1">Departure</label>
+                        <label for="departure" class="block text-sm font-medium text-gray-700 mb-1">Departure Date</label>
                         <input type="date" id="departure" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" required>
                     </div>
                     <div>
                         <label for="travelers" class="block text-sm font-medium text-gray-700 mb-1">Travelers</label>
                         <select id="travelers" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
                             <option value="1">1 Traveler</option>
-                            <option value="2">2 Travelers</option>
+                            <option value="2" selected>2 Travelers</option>
                             <option value="3">3 Travelers</option>
                             <option value="4">4 Travelers</option>
                             <option value="5">5+ Travelers</option>
                         </select>
                     </div>
                     <div class="md:col-span-2 lg:col-span-4 flex justify-center mt-4">
-                        <button type="submit" class="bg-primary hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300">Search Flights</button>
+                        <button type="submit" class="bg-primary hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 flex items-center">
+                            <i class="fas fa-search mr-2"></i> Search Flights
+                        </button>
                     </div>
                 </form>
             </div>
@@ -287,7 +289,7 @@
                         </div>
                     </div>
                     <div id="delay-insights" class="text-gray-600">
-                        <p>Our AI analyzes historical data, weather conditions, and airline performance to predict potential delays.</p>
+                        <p>Analyzing real-time flight data to predict potential delays...</p>
                     </div>
                     <div id="alternative-flights" class="mt-4 p-4 bg-blue-50 rounded-lg hidden">
                         <h4 class="font-semibold text-primary mb-2">Consider These Alternatives</h4>
@@ -302,8 +304,12 @@
                             <i class="fas fa-calendar-alt text-secondary mr-2"></i> 
                             Cheapest Fare Calendar
                         </h3>
-                        <div id="fare-calendar" class="text-center text-gray-500">
-                            <p>Enter your route to see the best days to fly</p>
+                        <div id="fare-calendar" class="text-center">
+                            <div class="animate-pulse">
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded"></div>
+                            </div>
                         </div>
                     </div>
                     
@@ -313,8 +319,12 @@
                             <i class="fas fa-suitcase text-purple-600 mr-2"></i> 
                             Smart Packing List
                         </h3>
-                        <div id="packing-checklist" class="text-gray-500">
-                            <p>We'll generate a personalized packing list based on your destination and travel dates</p>
+                        <div id="packing-checklist">
+                            <div class="animate-pulse">
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded"></div>
+                            </div>
                         </div>
                     </div>
                     
@@ -324,8 +334,12 @@
                             <i class="fas fa-passport text-yellow-600 mr-2"></i> 
                             Travel Requirements
                         </h3>
-                        <div id="travel-requirements" class="text-gray-500">
-                            <p>Get detailed visa, vaccination, and entry requirement information</p>
+                        <div id="travel-requirements">
+                            <div class="animate-pulse">
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded"></div>
+                            </div>
                         </div>
                     </div>
                     
@@ -335,8 +349,12 @@
                             <i class="fas fa-map-marked-alt text-red-600 mr-2"></i> 
                             Airport Intelligence
                         </h3>
-                        <div id="airport-info" class="text-gray-500">
-                            <p>Discover terminal layouts, amenities, and layover suggestions</p>
+                        <div id="airport-info">
+                            <div class="animate-pulse">
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -349,8 +367,12 @@
                             <i class="fas fa-leaf text-indigo-600 mr-2"></i> 
                             Carbon Footprint
                         </h3>
-                        <div id="carbon-info" class="text-gray-500">
-                            <p>See the environmental impact of your flight and discover greener alternatives</p>
+                        <div id="carbon-info">
+                            <div class="animate-pulse">
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded"></div>
+                            </div>
                         </div>
                     </div>
                     
@@ -360,8 +382,12 @@
                             <i class="fas fa-road text-green-600 mr-2"></i> 
                             Travel Day Planner
                         </h3>
-                        <div id="travel-timeline" class="text-gray-500">
-                            <p>Get a personalized timeline for your travel day with optimal airport arrival times</p>
+                        <div id="travel-timeline">
+                            <div class="animate-pulse">
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -374,8 +400,12 @@
                             <i class="fas fa-bed text-blue-500 mr-2"></i> 
                             Layover Suggestions
                         </h3>
-                        <div id="layover-suggestions" class="text-gray-500">
-                            <p>For long layovers, discover nearby hotels, lounges, and sightseeing options</p>
+                        <div id="layover-suggestions">
+                            <div class="animate-pulse">
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded"></div>
+                            </div>
                         </div>
                     </div>
                     
@@ -385,8 +415,12 @@
                             <i class="fas fa-shield-alt text-orange-500 mr-2"></i> 
                             Travel Risk Assessment
                         </h3>
-                        <div id="risk-snapshot" class="text-gray-500">
-                            <p>Get insights on weather, strikes, safety advisories, and travel insurance recommendations</p>
+                        <div id="risk-snapshot">
+                            <div class="animate-pulse">
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -397,8 +431,12 @@
                         <i class="fas fa-crown text-orange-600 mr-2"></i> 
                         Loyalty Benefits Optimizer
                     </h3>
-                    <div id="loyalty-optimizer" class="text-gray-500">
-                        <p>Maximize your frequent flyer benefits, lounge access, and upgrade opportunities</p>
+                    <div id="loyalty-optimizer">
+                        <div class="animate-pulse">
+                            <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                            <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                            <div class="h-4 bg-gray-200 rounded"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -600,7 +638,24 @@
             }
         });
         
-        // Form submission
+        // API Configuration - Replace with your actual API keys
+        // These keys should be stored in Vercel environment variables in production
+        const API_CONFIG = {
+            aviationstack: {
+                key: 'YOUR_AVIATIONSTACK_API_KEY_HERE', // Replace with your key
+                base: 'https://api.aviationstack.com/v1'
+            },
+            openweather: {
+                key: 'YOUR_OPENWEATHER_API_KEY_HERE', // Replace with your key
+                base: 'https://api.openweathermap.org/data/2.5'
+            },
+            currencyfreaks: {
+                key: 'YOUR_CURRENCYFREAKS_API_KEY_HERE', // Replace with your key
+                base: 'https://api.currencyfreaks.com/v2.0'
+            }
+        };
+        
+        // Form submission with real API calls
         const searchForm = document.getElementById('flight-search-form');
         const intelligenceResults = document.getElementById('intelligence-results');
         const delayIndicator = document.getElementById('delay-indicator');
@@ -608,115 +663,346 @@
         const alternativeFlights = document.getElementById('alternative-flights');
         const altFlightsText = document.getElementById('alt-flights-text');
         
-        searchForm.addEventListener('submit', (e) => {
+        searchForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Show intelligence results
-            intelligenceResults.classList.remove('hidden');
+            const from = document.getElementById('from').value.trim();
+            const to = document.getElementById('to').value.trim();
+            const date = document.getElementById('departure').value;
+            const travelers = document.getElementById('travelers').value;
             
-            // Scroll to results
-            intelligenceResults.scrollIntoView({ behavior: 'smooth' });
-            
-            // Simulate delay prediction (in a real app, this would come from an API)
-            const delayProb = Math.floor(Math.random() * 60) + 10; // Random between 10-70%
-            delayIndicator.style.width = `${delayProb}%`;
-            delayPercentage.textContent = `${delayProb}%`;
-            
-            // Show alternative flights if delay probability is high
-            if (delayProb > 50) {
-                alternativeFlights.classList.remove('hidden');
-                altFlightsText.textContent = `Due to high delay probability (${delayProb}%), consider flights departing 2 hours earlier or the following day for more reliable travel.`;
-            } else {
-                alternativeFlights.classList.add('hidden');
+            if (!from || !to || !date) {
+                alert('Please fill in all required fields');
+                return;
             }
             
-            // Update other sections with mock data
-            updateFareCalendar();
-            updatePackingList();
-            updateTravelRequirements();
-            updateAirportInfo();
-            updateCarbonInfo();
-            updateTravelTimeline();
-            updateLayoverSuggestions();
-            updateRiskSnapshot();
-            updateLoyaltyOptimizer();
+            // Show intelligence results with loading state
+            intelligenceResults.classList.remove('hidden');
+            intelligenceResults.scrollIntoView({ behavior: 'smooth' });
+            
+            // Show loading animation in all sections
+            showLoadingStates();
+            
+            try {
+                // Extract airport codes (simple extraction - could be enhanced)
+                const fromCode = extractAirportCode(from);
+                const toCode = extractAirportCode(to);
+                
+                // Fetch all data in parallel
+                await Promise.all([
+                    fetchFlightData(fromCode, toCode, date),
+                    fetchWeatherData(to),
+                    fetchTravelAdvisory(to),
+                    fetchExchangeRate('USD', 'EUR'), // Example: USD to EUR
+                    fetchLayoverSuggestions(toCode),
+                    fetchRiskAssessment(to)
+                ]);
+                
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                // Fallback to mock data if APIs fail
+                useMockData();
+            }
         });
         
-        // Mock data functions (in a real app, these would fetch from APIs)
-        function updateFareCalendar() {
-            const calendar = document.getElementById('fare-calendar');
-            calendar.innerHTML = `
-                <div class="mb-4">
-                    <p class="text-sm text-gray-600 mb-2">Best prices typically found 3-6 weeks before departure</p>
-                    <div class="flex justify-between text-xs text-gray-500 mb-1">
-                        <span>Lowest</span>
-                        <span>Average</span>
-                        <span>Highest</span>
+        // Helper function to extract airport code
+        function extractAirportCode(input) {
+            // Simple extraction - assumes 3-letter airport code
+            const match = input.match(/\b[A-Z]{3}\b/);
+            return match ? match[0] : input.substring(0, 3).toUpperCase();
+        }
+        
+        // Show loading states in all sections
+        function showLoadingStates() {
+            const sections = [
+                'fare-calendar',
+                'packing-checklist',
+                'travel-requirements',
+                'airport-info',
+                'carbon-info',
+                'travel-timeline',
+                'layover-suggestions',
+                'risk-snapshot',
+                'loyalty-optimizer'
+            ];
+            
+            sections.forEach(sectionId => {
+                const element = document.getElementById(sectionId);
+                if (element) {
+                    element.innerHTML = `
+                        <div class="animate-pulse">
+                            <div class="h-3 bg-gray-200 rounded mb-2"></div>
+                            <div class="h-3 bg-gray-200 rounded mb-2 w-5/6"></div>
+                            <div class="h-3 bg-gray-200 rounded w-4/6"></div>
+                        </div>
+                    `;
+                }
+            });
+            
+            // Update delay predictor loading
+            delayIndicator.style.width = '0%';
+            delayPercentage.textContent = '--%';
+            document.getElementById('delay-insights').innerHTML = '<p>Fetching real-time flight data...</p>';
+        }
+        
+        // Fetch real flight data
+        async function fetchFlightData(fromCode, toCode, date) {
+            try {
+                // Format date for API
+                const formattedDate = date.split('-').reverse().join('-');
+                
+                // Using AviationStack API
+                const url = `${API_CONFIG.aviationstack.base}/flights?access_key=${API_CONFIG.aviationstack.key}&dep_iata=${fromCode}&arr_iata=${toCode}&flight_date=${formattedDate}&limit=5`;
+                
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Flight API failed');
+                
+                const data = await response.json();
+                
+                if (data.data && data.data.length > 0) {
+                    const flight = data.data[0];
+                    const delay = flight.departure.delay || 0;
+                    const delayProb = Math.min(90, Math.max(10, Math.floor(delay / 10)));
+                    
+                    // Update delay predictor
+                    delayIndicator.style.width = `${delayProb}%`;
+                    delayPercentage.textContent = `${delayProb}%`;
+                    
+                    document.getElementById('delay-insights').innerHTML = `
+                        <p>Flight ${flight.flight.iata} by ${flight.airline.name} is ${delay > 0 ? `delayed by ${delay} minutes` : 'on time'}.</p>
+                        <p class="text-sm mt-2">Departure: ${flight.departure.scheduled} | Arrival: ${flight.arrival.scheduled}</p>
+                    `;
+                    
+                    if (delayProb > 50) {
+                        alternativeFlights.classList.remove('hidden');
+                        altFlightsText.textContent = `Due to delay probability (${delayProb}%), consider alternative flights or arriving at the airport earlier.`;
+                    }
+                    
+                    // Update travel timeline with real flight data
+                    updateTravelTimelineWithRealData(flight);
+                    
+                    // Update carbon info with real distance
+                    updateCarbonInfoWithRealData(flight);
+                    
+                } else {
+                    throw new Error('No flight data found');
+                }
+                
+            } catch (error) {
+                console.error('Flight API Error:', error);
+                // Use mock data as fallback
+                const delayProb = Math.floor(Math.random() * 60) + 10;
+                delayIndicator.style.width = `${delayProb}%`;
+                delayPercentage.textContent = `${delayProb}%`;
+                document.getElementById('delay-insights').innerHTML = 
+                    '<p>Using estimated data. For real-time information, ensure your API keys are configured.</p>';
+            }
+        }
+        
+        // Fetch real weather data
+        async function fetchWeatherData(destination) {
+            try {
+                const url = `${API_CONFIG.openweather.base}/weather?q=${encodeURIComponent(destination)}&appid=${API_CONFIG.openweather.key}&units=metric`;
+                const response = await fetch(url);
+                
+                if (!response.ok) throw new Error('Weather API failed');
+                
+                const data = await response.json();
+                
+                const temp = Math.round(data.main.temp);
+                const weather = data.weather[0].main;
+                const humidity = data.main.humidity;
+                
+                document.getElementById('packing-checklist').innerHTML = `
+                    <p class="text-sm text-gray-600 mb-3">Current weather in ${destination}:</p>
+                    <div class="flex items-center mb-3">
+                        <div class="text-2xl font-bold text-gray-800 mr-3">${temp}°C</div>
+                        <div>
+                            <div class="font-medium">${weather}</div>
+                            <div class="text-xs text-gray-500">Humidity: ${humidity}%</div>
+                        </div>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-                        <div class="bg-secondary h-2 rounded-full" style="width: 70%"></div>
+                    <ul class="list-disc pl-5 text-sm space-y-1">
+                        <li>${temp > 25 ? 'Light clothing' : 'Jacket or sweater'}</li>
+                        <li>${weather.includes('Rain') ? 'Umbrella or raincoat' : 'Sunglasses'}</li>
+                        <li>Comfortable walking shoes</li>
+                        <li>${temp > 30 ? 'Sun protection cream' : 'Moisturizer'}</li>
+                    </ul>
+                `;
+                
+            } catch (error) {
+                console.error('Weather API Error:', error);
+                // Fallback to mock data
+                document.getElementById('packing-checklist').innerHTML = `
+                    <p class="text-sm text-gray-600 mb-3">Based on typical conditions:</p>
+                    <ul class="list-disc pl-5 text-sm space-y-1">
+                        <li>Light jacket or sweater</li>
+                        <li>Comfortable walking shoes</li>
+                        <li>Universal power adapter</li>
+                        <li>Portable charger</li>
+                        <li>Reusable water bottle</li>
+                    </ul>
+                    <p class="text-xs text-gray-500 mt-3">Weather data unavailable</p>
+                `;
+            }
+        }
+        
+        // Fetch travel advisory
+        async function fetchTravelAdvisory(destination) {
+            try {
+                // Using SafeTravel API (no key required)
+                const url = `https://www.safetravel.gov.nz/api/v1/travel-notices`;
+                const response = await fetch(url);
+                
+                if (!response.ok) throw new Error('Advisory API failed');
+                
+                const data = await response.json();
+                
+                // Find relevant advisory (simplified)
+                const hasAdvisory = data.notices && data.notices.length > 0;
+                
+                document.getElementById('travel-requirements').innerHTML = `
+                    <p class="text-sm text-gray-600 mb-3">Travel requirements for ${destination}:</p>
+                    <ul class="list-disc pl-5 text-sm space-y-1">
+                        <li>Passport valid for at least 6 months</li>
+                        <li>${hasAdvisory ? 'Check latest travel notices' : 'No special requirements'}</li>
+                        <li>Travel insurance recommended</li>
+                        <li>COVID-19 vaccination status may be required</li>
+                    </ul>
+                    ${hasAdvisory ? '<p class="text-xs text-yellow-600 mt-3">⚠️ Check government travel advisories before departure</p>' : ''}
+                `;
+                
+            } catch (error) {
+                console.error('Advisory API Error:', error);
+                document.getElementById('travel-requirements').innerHTML = `
+                    <p class="text-sm text-gray-600 mb-3">Standard requirements:</p>
+                    <ul class="list-disc pl-5 text-sm space-y-1">
+                        <li>Valid passport</li>
+                        <li>Check visa requirements</li>
+                        <li>Travel insurance recommended</li>
+                    </ul>
+                `;
+            }
+        }
+        
+        // Fetch exchange rates
+        async function fetchExchangeRate(base, target) {
+            try {
+                const url = `${API_CONFIG.currencyfreaks.base}/rates/latest?apikey=${API_CONFIG.currencyfreaks.key}&symbols=${target}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) throw new Error('Currency API failed');
+                
+                const data = await response.json();
+                const rate = data.rates[target];
+                
+                // Update fare calendar with currency info
+                document.getElementById('fare-calendar').innerHTML = `
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-2">Exchange rate: 1 ${base} = ${rate} ${target}</p>
+                        <div class="flex justify-between text-xs text-gray-500 mb-1">
+                            <span>Cheapest</span>
+                            <span>Average</span>
+                            <span>Expensive</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                            <div class="bg-secondary h-2 rounded-full" style="width: 70%"></div>
+                        </div>
                     </div>
-                </div>
-                <p class="text-sm">Your selected date falls within the optimal booking window. Prices are expected to remain stable for the next 7 days.</p>
-            `;
+                    <p class="text-sm">Best booking window: 3-6 weeks before departure. Consider currency fluctuations.</p>
+                `;
+                
+            } catch (error) {
+                console.error('Currency API Error:', error);
+                document.getElementById('fare-calendar').innerHTML = `
+                    <p class="text-sm text-gray-600 mb-3">Best prices typically found 3-6 weeks before departure</p>
+                    <p class="text-sm">Your selected date falls within the optimal booking window.</p>
+                `;
+            }
         }
         
-        function updatePackingList() {
-            const packingList = document.getElementById('packing-checklist');
-            packingList.innerHTML = `
-                <p class="text-sm text-gray-600 mb-3">Based on your destination and travel dates:</p>
-                <ul class="list-disc pl-5 text-sm space-y-1">
-                    <li>Light jacket or sweater</li>
-                    <li>Comfortable walking shoes</li>
-                    <li>Universal power adapter</li>
-                    <li>Portable charger</li>
-                    <li>Reusable water bottle</li>
-                </ul>
-                <p class="text-xs text-gray-500 mt-3">Weather forecast: Mild with chance of rain</p>
-            `;
+        // Fetch layover suggestions
+        async function fetchLayoverSuggestions(airportCode) {
+            try {
+                // Simulated API call - would use real airport data API
+                setTimeout(() => {
+                    document.getElementById('layover-suggestions').innerHTML = `
+                        <p class="text-sm text-gray-600 mb-3">For layovers at ${airportCode}:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="font-medium text-gray-800 mb-2">Airport Amenities</h4>
+                                <ul class="text-sm space-y-1 text-gray-600">
+                                    <li>• Free Wi-Fi throughout terminals</li>
+                                    <li>• Multiple dining options</li>
+                                    <li>• Lounges available</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800 mb-2">Nearby Options</h4>
+                                <ul class="text-sm space-y-1 text-gray-600">
+                                    <li>• City Center (30 min transit)</li>
+                                    <li>• Day rooms available</li>
+                                    <li>• Shopping areas nearby</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                            <p class="text-xs text-blue-700">💡 <strong>Pro tip:</strong> Lounges available for $35/day with shower facilities</p>
+                        </div>
+                    `;
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Layover API Error:', error);
+            }
         }
         
-        function updateTravelRequirements() {
-            const requirements = document.getElementById('travel-requirements');
-            requirements.innerHTML = `
-                <p class="text-sm text-gray-600 mb-3">For your destination:</p>
-                <ul class="list-disc pl-5 text-sm space-y-1">
-                    <li>Passport valid for at least 6 months</li>
-                    <li>No visa required for stays under 90 days</li>
-                    <li>No COVID-19 vaccination proof required</li>
-                    <li>Travel insurance recommended</li>
-                </ul>
-            `;
+        // Fetch risk assessment
+        async function fetchRiskAssessment(destination) {
+            try {
+                // Simulated risk assessment
+                setTimeout(() => {
+                    document.getElementById('risk-snapshot').innerHTML = `
+                        <div class="flex items-center mb-4">
+                            <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                            <span class="font-medium text-gray-800">Overall Risk: Low</span>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span>Weather Conditions</span>
+                                <span class="font-medium text-yellow-600">Moderate</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Political Stability</span>
+                                <span class="font-medium text-green-600">Low</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Health Advisory</span>
+                                <span class="font-medium text-green-600">Low</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Transport Strikes</span>
+                                <span class="font-medium text-green-600">None</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 p-3 bg-orange-50 rounded-lg">
+                            <p class="text-xs text-orange-700">🛡️ <strong>Travel insurance recommended</strong> for comprehensive coverage.</p>
+                        </div>
+                    `;
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Risk API Error:', error);
+            }
         }
         
-        function updateAirportInfo() {
-            const airportInfo = document.getElementById('airport-info');
-            airportInfo.innerHTML = `
-                <p class="text-sm text-gray-600 mb-3">Airport amenities include:</p>
-                <ul class="list-disc pl-5 text-sm space-y-1">
-                    <li>Free Wi-Fi throughout terminals</li>
-                    <li>Multiple dining options post-security</li>
-                    <li>Lounges available for premium passengers</li>
-                    <li>Charging stations near all gates</li>
-                </ul>
-            `;
-        }
-        
-        function updateCarbonInfo() {
-            const carbonInfo = document.getElementById('carbon-info');
-            carbonInfo.innerHTML = `
-                <p class="text-sm text-gray-600 mb-2">Estimated CO2 emissions for your flight:</p>
-                <div class="flex items-center mb-3">
-                    <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
-                        <div class="bg-indigo-600 h-2.5 rounded-full" style="width: 65%"></div>
-                    </div>
-                    <span class="text-sm font-medium">245 kg</span>
-                </div>
-                <p class="text-xs text-gray-500">This is approximately 15% lower than the average for this route.</p>
-            `;
-        }
-        
-        function updateTravelTimeline() {
+        // Update travel timeline with real flight data
+        function updateTravelTimelineWithRealData(flight) {
+            const depTime = flight.departure.scheduled;
+            const [hours, minutes] = depTime.split(':');
+            const depDate = new Date();
+            depDate.setHours(hours, minutes);
+            
             const timeline = document.getElementById('travel-timeline');
             timeline.innerHTML = `
                 <p class="text-sm text-gray-600 mb-3">Your personalized travel timeline:</p>
@@ -726,7 +1012,7 @@
                             <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
                                 <i class="fas fa-home text-green-600 text-sm"></i>
                             </div>
-                            <span class="text-sm font-medium">Leave home</span>
+                            <span class="text-sm font-medium">Leave for airport</span>
                         </div>
                         <span class="font-semibold text-green-700">2.5 hours before flight</span>
                     </div>
@@ -750,74 +1036,45 @@
                     </div>
                 </div>
                 <div class="mt-4 text-xs text-gray-500">
-                    <p>✈️ Based on current traffic and typical security wait times at your departure airport</p>
+                    <p>✈️ Flight ${flight.flight.iata} departs at ${depTime}</p>
                 </div>
             `;
         }
         
-        // New feature functions
-        function updateLayoverSuggestions() {
-            const layover = document.getElementById('layover-suggestions');
-            layover.innerHTML = `
-                <p class="text-sm text-gray-600 mb-3">For layovers longer than 4 hours:</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <h4 class="font-medium text-gray-800 mb-2">Airport Hotels</h4>
-                        <ul class="text-sm space-y-1 text-gray-600">
-                            <li>• Transit Hotel Terminal B (5 min walk)</li>
-                            <li>• Airport Inn (Free shuttle every 15 min)</li>
-                            <li>• Day rooms available (4-hour blocks)</li>
-                        </ul>
+        // Update carbon info with real data
+        function updateCarbonInfoWithRealData(flight) {
+            // Simplified carbon calculation based on flight duration
+            const duration = flight.flight.duration || 180; // Default 3 hours
+            const carbon = Math.round(duration * 80); // Rough estimate: 80kg per hour
+            
+            document.getElementById('carbon-info').innerHTML = `
+                <p class="text-sm text-gray-600 mb-2">Estimated CO2 emissions for your flight:</p>
+                <div class="flex items-center mb-3">
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+                        <div class="bg-indigo-600 h-2.5 rounded-full" style="width: 65%"></div>
                     </div>
-                    <div>
-                        <h4 class="font-medium text-gray-800 mb-2">Nearby Attractions</h4>
-                        <ul class="text-sm space-y-1 text-gray-600">
-                            <li>• City Center (25 min by train)</li>
-                            <li>• Observation Deck Terminal C</li>
-                            <li>• Museum (Free entry with boarding pass)</li>
-                        </ul>
-                    </div>
+                    <span class="text-sm font-medium">${carbon} kg</span>
                 </div>
-                <div class="mt-4 p-3 bg-blue-50 rounded-lg">
-                    <p class="text-xs text-blue-700">💡 <strong>Pro tip:</strong> Lounges available for $35/day with shower facilities</p>
-                </div>
+                <p class="text-xs text-gray-500">This is approximately ${carbon < 250 ? '15% lower' : 'average'} compared to similar routes.</p>
             `;
         }
         
-        function updateRiskSnapshot() {
-            const risk = document.getElementById('risk-snapshot');
-            risk.innerHTML = `
-                <div class="flex items-center mb-4">
-                    <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                    <span class="font-medium text-gray-800">Overall Risk: Low</span>
-                </div>
-                <div class="space-y-3 text-sm">
-                    <div class="flex justify-between">
-                        <span>Weather Conditions</span>
-                        <span class="font-medium text-yellow-600">Moderate</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>Political Stability</span>
-                        <span class="font-medium text-green-600">Low</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>Health Advisory</span>
-                        <span class="font-medium text-green-600">Low</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>Transport Strikes</span>
-                        <span class="font-medium text-green-600">None</span>
-                    </div>
-                </div>
-                <div class="mt-4 p-3 bg-orange-50 rounded-lg">
-                    <p class="text-xs text-orange-700">🛡️ <strong>Travel insurance recommended</strong> for comprehensive coverage of trip cancellation, medical emergencies, and baggage loss.</p>
-                </div>
+        // Update airport info
+        function updateAirportInfo() {
+            document.getElementById('airport-info').innerHTML = `
+                <p class="text-sm text-gray-600 mb-3">Airport amenities include:</p>
+                <ul class="list-disc pl-5 text-sm space-y-1">
+                    <li>Free Wi-Fi throughout terminals</li>
+                    <li>Multiple dining options post-security</li>
+                    <li>Lounges available for premium passengers</li>
+                    <li>Charging stations near all gates</li>
+                </ul>
             `;
         }
         
+        // Update loyalty optimizer
         function updateLoyaltyOptimizer() {
-            const loyalty = document.getElementById('loyalty-optimizer');
-            loyalty.innerHTML = `
+            document.getElementById('loyalty-optimizer').innerHTML = `
                 <div class="mb-4">
                     <p class="text-sm text-gray-600 mb-3">Track your frequent flyer status and benefits:</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -839,11 +1096,31 @@
                         </div>
                     </div>
                 </div>
-                <button class="w-full bg-orange-100 text-orange-700 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition duration-300">
+                <button onclick="showLoyaltyForm()" class="w-full bg-orange-100 text-orange-700 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition duration-300">
                     + Add Your Loyalty Programs
                 </button>
             `;
         }
+        
+        // Fallback to mock data if APIs fail
+        function useMockData() {
+            // Update all sections with mock data
+            updateAirportInfo();
+            updateLoyaltyOptimizer();
+            
+            // Show error message
+            const delayInsights = document.getElementById('delay-insights');
+            delayInsights.innerHTML = '<p class="text-yellow-600">⚠️ Using demo data. Configure API keys for real-time information.</p>';
+        }
+        
+        // Loyalty form popup
+        function showLoyaltyForm() {
+            alert('Loyalty program integration coming soon! This feature will allow you to track multiple frequent flyer programs.');
+        }
+        
+        // Initialize loyalty optimizer
+        updateLoyaltyOptimizer();
+        updateAirportInfo();
         
         // Fade in animation on scroll
         const fadeElements = document.querySelectorAll('.fade-in');
@@ -858,6 +1135,24 @@
         
         fadeElements.forEach(element => {
             fadeInObserver.observe(element);
+        });
+        
+        // Set default date to tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('departure').value = tomorrow.toISOString().split('T')[0];
+        
+        // Test API connections on load
+        window.addEventListener('load', () => {
+            console.log('Flytr Flight Intelligence loaded');
+            console.log('API Configuration Status:');
+            console.log('- AviationStack:', API_CONFIG.aviationstack.key !== 'YOUR_AVIATIONSTACK_API_KEY_HERE' ? 'Configured' : 'Not configured');
+            console.log('- OpenWeatherMap:', API_CONFIG.openweather.key !== 'YOUR_OPENWEATHER_API_KEY_HERE' ? 'Configured' : 'Not configured');
+            console.log('- CurrencyFreaks:', API_CONFIG.currencyfreaks.key !== 'YOUR_CURRENCYFREAKS_API_KEY_HERE' ? 'Configured' : 'Not configured');
+            
+            if (API_CONFIG.aviationstack.key === 'YOUR_AVIATIONSTACK_API_KEY_HERE') {
+                console.warn('⚠️ Remember to replace API keys with your actual keys!');
+            }
         });
     </script>
 </body>
