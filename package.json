@@ -1,0 +1,14 @@
+{
+  "name": "flytr",
+  "version": "1.0.0",
+  "description": "Flytr - AI-Driven Flight Intelligence",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.0"
+  },
+  "devDependencies": {
+    "@vercel/node": "^3.0.0"
+  }
+}
