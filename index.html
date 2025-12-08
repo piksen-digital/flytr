@@ -1430,49 +1430,48 @@
         }
         
         // Update travel timeline
-        function updateTravelTimeline(flight) {
-            const depTime = flight.departure.scheduled;
-            const [hours, minutes] = depTime.split(':');
-            const depDate = new Date();
-            depDate.setHours(hours, minutes);
-            
-            const timeline = document.getElementById('travel-timeline');
-            timeline.innerHTML = `
-                <p class="text-sm text-gray-600 mb-3">Your personalized travel timeline:</p>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-home text-green-600 text-sm"></i>
-                            </div>
-                            <span class="text-sm font-medium">Leave for airport</span>
-                        </div>
-                        <span class="font-semibold text-green-700">2.5 hours before flight</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-luggage-cart text-blue-600 text-sm"></i>
-                            </div>
-                            <span class="text-sm font-medium">Check-in & Security</span>
-                        </div>
-                        <span class="font-semibold text-blue-700">2 hours before flight</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-door-open text-purple-600 text-sm"></i>
-                            </div>
-                            <span class="text-sm font-medium">Boarding closes</span>
-                        </div>
-                        <span class="font-semibold text-purple-700">20 min before departure</span>
-                    </div>
-                </div>
-                <div class="mt-4 text-xs text-gray-500">
-                    <p>✈️ Flight ${flight.flight.iata} departs at ${depTime}</p>
-                </div>
-            `;
-        }
+       function updateTravelTimeline(flight) {
+  const depTime = flight?.departure?.scheduled || '10:00';
+  const flightNumber = flight?.flight?.iata || 'AA123';
+  
+  const timeline = document.getElementById('travel-timeline');
+  timeline.innerHTML = `
+    <p class="text-sm text-gray-600 mb-3">Your personalized travel timeline:</p>
+    <div class="space-y-3">
+      <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+        <div class="flex items-center">
+          <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+            <i class="fas fa-home text-green-600 text-sm"></i>
+          </div>
+          <span class="text-sm font-medium">Leave for airport</span>
+        </div>
+        <span class="font-semibold text-green-700">2.5 hours before flight</span>
+      </div>
+      <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+        <div class="flex items-center">
+          <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+            <i class="fas fa-luggage-cart text-blue-600 text-sm"></i>
+          </div>
+          <span class="text-sm font-medium">Check-in & Security</span>
+        </div>
+        <span class="font-semibold text-blue-700">2 hours before flight</span>
+      </div>
+      <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+        <div class="flex items-center">
+          <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+            <i class="fas fa-door-open text-purple-600 text-sm"></i>
+          </div>
+          <span class="text-sm font-medium">Boarding closes</span>
+        </div>
+        <span class="font-semibold text-purple-700">20 min before departure</span>
+      </div>
+    </div>
+    <div class="mt-4 text-xs text-gray-500">
+      <p>✈️ Flight ${flightNumber} departs at ${depTime}</p>
+      <p class="mt-1">Based on standard airport recommendations</p>
+    </div>
+  `;
+}
         
         // Update airport info via serverless function
         async function updateAirportInfo() {
@@ -1511,37 +1510,148 @@
         
         // Update loyalty optimizer
         function updateLoyaltyOptimizer() {
-            document.getElementById('loyalty-optimizer').innerHTML = `
-                <div class="mb-4">
-                    <p class="text-sm text-gray-600 mb-3">Track your frequent flyer status and benefits:</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-3 bg-orange-50 rounded-lg">
-                            <h4 class="font-medium text-orange-800 mb-1">Status Benefits</h4>
-                            <ul class="text-xs space-y-1 text-orange-700">
-                                <li>✓ Priority boarding</li>
-                                <li>✓ Extra baggage allowance</li>
-                                <li>✓ Lounge access</li>
-                            </ul>
-                        </div>
-                        <div class="p-3 bg-blue-50 rounded-lg">
-                            <h4 class="font-medium text-blue-800 mb-1">Earning Potential</h4>
-                            <ul class="text-xs space-y-1 text-blue-700">
-                                <li>• 1,250 miles on this route</li>
-                                <li>• 500 bonus miles with status</li>
-                                <li>• Qualifies for elite status</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-3 bg-blue-50 rounded-lg mb-3">
-                    <p class="text-xs text-blue-700">
-                        <i class="fas fa-info-circle mr-1"></i>
-                        Connect your loyalty accounts in Settings to see personalized benefits
-                    </p>
-                </div>
-            `;
-        }
-        
+  // Check if user has loyalty data in localStorage
+  const loyaltyData = localStorage.getItem('flytr_loyalty');
+  
+  if (loyaltyData) {
+    try {
+      const loyalty = JSON.parse(loyaltyData);
+      document.getElementById('loyalty-optimizer').innerHTML = `
+        <div class="mb-4">
+          <p class="text-sm text-gray-600 mb-3">Your loyalty programs:</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-3 bg-orange-50 rounded-lg">
+              <h4 class="font-medium text-orange-800 mb-1">${loyalty.airline}</h4>
+              <ul class="text-xs space-y-1 text-orange-700">
+                <li>✓ ${loyalty.status} Tier</li>
+                <li>✓ Priority boarding</li>
+                <li>✓ Lounge access available</li>
+              </ul>
+            </div>
+            <div class="p-3 bg-blue-50 rounded-lg">
+              <h4 class="font-medium text-blue-800 mb-1">${loyalty.program}</h4>
+              <ul class="text-xs space-y-1 text-blue-700">
+                <li>• Member: ${loyalty.memberNumber}</li>
+                <li>• 1,250 miles on this route</li>
+                <li>• 500 bonus miles with status</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <button onclick="showLoyaltyForm()" class="w-full bg-orange-100 text-orange-700 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition duration-300">
+          Edit Loyalty Programs
+        </button>
+      `;
+      return;
+    } catch (e) {
+      // If parsing fails, show default
+    }
+  }
+  
+  // Default static content
+  document.getElementById('loyalty-optimizer').innerHTML = `
+    <div class="mb-4">
+      <p class="text-sm text-gray-600 mb-3">Track your frequent flyer status and benefits:</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-3 bg-orange-50 rounded-lg">
+          <h4 class="font-medium text-orange-800 mb-1">Status Benefits</h4>
+          <ul class="text-xs space-y-1 text-orange-700">
+            <li>✓ Priority boarding</li>
+            <li>✓ Extra baggage allowance</li>
+            <li>✓ Lounge access available</li>
+          </ul>
+        </div>
+        <div class="p-3 bg-blue-50 rounded-lg">
+          <h4 class="font-medium text-blue-800 mb-1">Earning Potential</h4>
+          <ul class="text-xs space-y-1 text-blue-700">
+            <li>• 1,250 miles on this route</li>
+            <li>• 500 bonus miles with status</li>
+            <li>• Qualifies for elite status</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <button onclick="showLoyaltyForm()" class="w-full bg-orange-100 text-orange-700 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition duration-300">
+      + Add Your Loyalty Programs
+    </button>
+  `;
+}
+
+        // Add this function for the loyalty form
+        function showLoyaltyForm() {
+  const formHTML = `
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-semibold">Add Loyalty Program</h3>
+          <button onclick="closeLoyaltyForm()" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Airline</label>
+            <input type="text" id="loyalty-airline" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., Delta Airlines">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Loyalty Program</label>
+            <input type="text" id="loyalty-program" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., SkyMiles">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Status Tier</label>
+            <select id="loyalty-status" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+              <option value="Silver">Silver</option>
+              <option value="Gold">Gold</option>
+              <option value="Platinum">Platinum</option>
+              <option value="Diamond">Diamond</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Member Number</label>
+            <input type="text" id="loyalty-number" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., DL123456789">
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end space-x-3">
+          <button onclick="closeLoyaltyForm()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+          <button onclick="saveLoyaltyProgram()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700">Save Program</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  const modalDiv = document.createElement('div');
+  modalDiv.innerHTML = formHTML;
+  document.body.appendChild(modalDiv);
+}
+
+function closeLoyaltyForm() {
+  const modal = document.querySelector('.fixed.inset-0.bg-black');
+  if (modal) modal.remove();
+}
+
+function saveLoyaltyProgram() {
+  const airline = document.getElementById('loyalty-airline').value;
+  const program = document.getElementById('loyalty-program').value;
+  const status = document.getElementById('loyalty-status').value;
+  const memberNumber = document.getElementById('loyalty-number').value;
+  
+  if (!airline || !program) {
+    alert('Please fill in airline and program name');
+    return;
+  }
+  
+  // Save to localStorage
+  localStorage.setItem('flytr_loyalty', JSON.stringify({
+    airline,
+    program,
+    status,
+    memberNumber
+  }));
+  
+  alert('Loyalty program saved!');
+  closeLoyaltyForm();
+  updateLoyaltyOptimizer();
+}
         // Fallback to mock data if APIs fail
         function useMockData() {
             // Update all sections with mock data
