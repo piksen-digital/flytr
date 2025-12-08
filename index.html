@@ -176,7 +176,7 @@
         <div class="container mx-auto px-4">
             <div class="max-w-3xl mx-auto text-center">
                 <h1 class="text-4xl md:text-5xl font-bold mb-4">Fly Smarter with AI-Driven Flight Intelligence</h1>
-                <p class="text-xl mb-8">Discover the smartest routes, real-time insights, and airport amenities — all in one place.</p>
+                <p class="text-xl mb-8">Discover the smartest routes, real-time insights, airport amenities, and more — all in one place.</p>
                 <a href="#search" class="bg-primary hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 inline-block">Start Your Search</a>
             </div>
         </div>
@@ -821,61 +821,75 @@
         }
         
         // Fetch flight data via serverless function
-        async function fetchFlightData(fromCode, toCode, date) {
-            try {
-                const response = await fetch(API_CONFIG.serverless.flights, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        from: fromCode,
-                        to: toCode,
-                        date: date,
-                        travelers: document.getElementById('travelers').value
-                    })
-                });
-                
-                if (!response.ok) throw new Error('Flight API failed');
-                
-                const data = await response.json();
-                
-                if (data.success && data.data && data.data.length > 0) {
-                    const flight = data.data[0];
-                    const delay = flight.departure.delay || 0;
-                    const delayProb = Math.min(90, Math.max(10, Math.floor(delay / 10)));
-                    
-                    // Update delay predictor
-                    delayIndicator.style.width = `${delayProb}%`;
-                    delayPercentage.textContent = `${delayProb}%`;
-                    
-                    document.getElementById('delay-insights').innerHTML = `
-                        <p>Flight ${flight.flight.iata} by ${flight.airline.name} is ${delay > 0 ? `delayed by ${delay} minutes` : 'on time'}.</p>
-                        <p class="text-sm mt-2">Departure: ${flight.departure.scheduled} | Arrival: ${flight.arrival.scheduled}</p>
-                    `;
-                    
-                    if (delayProb > 50) {
-                        alternativeFlights.classList.remove('hidden');
-                        altFlightsText.textContent = `Due to delay probability (${delayProb}%), consider alternative flights or arriving at the airport earlier.`;
-                    }
-                    
-                    // Update travel timeline with real flight data
-                    updateTravelTimeline(flight);
-                    
-                } else {
-                    throw new Error('No flight data found');
-                }
-                
-            } catch (error) {
-                console.error('Flight API Error:', error);
-                // Use mock data as fallback
-                const delayProb = Math.floor(Math.random() * 60) + 10;
-                delayIndicator.style.width = `${delayProb}%`;
-                delayPercentage.textContent = `${delayProb}%`;
-                document.getElementById('delay-insights').innerHTML = 
-                    '<p>Using estimated data. For real-time information, ensure your serverless functions are configured.</p>';
-            }
-        }
+        // Fetch flight data via serverless function
+async function fetchFlightData(fromCode, toCode, date) {
+  try {
+    const response = await fetch(API_CONFIG.serverless.flights, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: fromCode,
+        to: toCode,
+        date: date,
+        travelers: document.getElementById('travelers').value
+      })
+    });
+    
+    if (!response.ok) throw new Error('Flight API failed');
+    
+    const data = await response.json();
+    
+    if (data.success && data.data && data.data.length > 0) {
+      const flight = data.data[0];
+      const delay = flight.departure.delay || 0;
+      const delayProb = Math.min(90, Math.max(10, Math.floor(delay / 10)));
+      
+      // Update delay predictor
+      delayIndicator.style.width = `${delayProb}%`;
+      delayPercentage.textContent = `${delayProb}%`;
+      
+      document.getElementById('delay-insights').innerHTML = `
+        <p>Flight ${flight.flight.iata} by ${flight.airline.name} is ${delay > 0 ? `delayed by ${delay} minutes` : 'on time'}.</p>
+        <p class="text-sm mt-2">Departure: ${flight.departure.scheduled} | Arrival: ${flight.arrival.scheduled}</p>
+      `;
+      
+      if (delayProb > 50) {
+        alternativeFlights.classList.remove('hidden');
+        altFlightsText.textContent = `Due to delay probability (${delayProb}%), consider alternative flights or arriving at the airport earlier.`;
+      }
+      
+      // ===== ADD THIS LINE =====
+      updateTravelTimeline(flight);  // Call the travel timeline function
+      // ========================
+      
+      // Update carbon info
+      await updateCarbonInfo(fromCode, toCode);
+      
+    } else {
+      throw new Error('No flight data found');
+    }
+    
+  } catch (error) {
+    console.error('Flight API Error:', error);
+    // Use mock data as fallback
+    const delayProb = Math.floor(Math.random() * 60) + 10;
+    delayIndicator.style.width = `${delayProb}%`;
+    delayPercentage.textContent = `${delayProb}%`;
+    document.getElementById('delay-insights').innerHTML = 
+      '<p>Using estimated data.</p>';
+    
+    // ===== ALSO ADD HERE FOR FALLBACK =====
+    // Create a mock flight object for the travel timeline
+    const mockFlight = {
+      flight: { iata: 'AA' + Math.floor(Math.random() * 1000) },
+      departure: { scheduled: '10:00' }
+    };
+    updateTravelTimeline(mockFlight);
+    // =====================================
+  }
+}
         
         // Fetch weather data via serverless function
         async function fetchWeatherData(destination) {
@@ -1430,11 +1444,13 @@
         }
         
         // Update travel timeline
-       function updateTravelTimeline(flight) {
+function updateTravelTimeline(flight) {
   const depTime = flight?.departure?.scheduled || '10:00';
   const flightNumber = flight?.flight?.iata || 'AA123';
   
   const timeline = document.getElementById('travel-timeline');
+  if (!timeline) return;
+  
   timeline.innerHTML = `
     <p class="text-sm text-gray-600 mb-3">Your personalized travel timeline:</p>
     <div class="space-y-3">
