@@ -78,6 +78,19 @@ export default async function handler(req, res) {
     
   } catch (error) {
     console.error('Flights API error:', error);
+
+    // Add to the flight data before returning
+if (data.data && data.data.length > 0) {
+  data.data = data.data.map(flight => ({
+    ...flight,
+    estimated_price: {
+      economy: 150 + Math.floor(Math.random() * 300),
+      business: 500 + Math.floor(Math.random() * 800),
+      currency: 'USD'
+    },
+    booking_link: `https://www.example.com/search?flight=${flight.flight.iata}`
+  }));
+}
     
     // Return mock data as fallback
     return res.status(200).json({
