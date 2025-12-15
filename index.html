@@ -1635,17 +1635,176 @@ function updateTravelTimeline(flight) {
     </div>
   `;
   
+// ===== LOYALTY OPTIMIZER FUNCTIONS =====
+
+// Initialize loyalty optimizer on page load
+function initLoyaltyOptimizer() {
+  // First check localStorage for existing data
+  const localLoyalty = localStorage.getItem('flytr_loyalty');
+  
+  if (localLoyalty) {
+    try {
+      const loyalty = JSON.parse(localLoyalty);
+      displayLoyaltyData(loyalty);
+    } catch (e) {
+      showDefaultLoyalty();
+    }
+  } else {
+    // Try to fetch from Supabase
+    fetchLoyaltyFromSupabase();
+  }
+}
+
+// Fetch from Supabase
+async function fetchLoyaltyFromSupabase() {
+  try {
+    const response = await fetch('/api/loyalty', {
+      method: 'GET'
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success && data.data.length > 0) {
+        const loyalty = data.data[0];
+        // Save to localStorage for faster access
+        localStorage.setItem('flytr_loyalty', JSON.stringify({
+          airline: loyalty.airline,
+          program: loyalty.program,
+          status: loyalty.status,
+          memberNumber: loyalty.member_number
+        }));
+        displayLoyaltyData(loyalty);
+        return;
+      }
+    }
+  } catch (error) {
+    console.log('Could not fetch from Supabase, using local storage');
+  }
+  
+  showDefaultLoyalty();
+}
+
+// Display loyalty data
+function displayLoyaltyData(loyalty) {
+  const loyaltyElement = document.getElementById('loyalty-optimizer');
+  if (!loyaltyElement) return;
+  
+  loyaltyElement.innerHTML = `
+    <div class="mb-4">
+      <p class="text-sm text-gray-600 mb-3">Your loyalty programs:</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-3 bg-orange-50 rounded-lg">
+          <h4 class="font-medium text-orange-800 mb-1">${loyalty.airline || 'Airline'}</h4>
+          <ul class="text-xs space-y-1 text-orange-700">
+            <li>✓ ${loyalty.status || 'Silver'} Tier</li>
+            <li>✓ Priority boarding</li>
+            <li>✓ Lounge access available</li>
+          </ul>
+        </div>
+        <div class="p-3 bg-blue-50 rounded-lg">
+          <h4 class="font-medium text-blue-800 mb-1">${loyalty.program || 'Loyalty Program'}</h4>
+          <ul class="text-xs space-y-1 text-blue-700">
+            <li>• Member: ${loyalty.member_number || loyalty.memberNumber || 'Not set'}</li>
+            <li>• 1,250 miles on this route</li>
+            <li>• 500 bonus miles with status</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <button onclick="showLoyaltyForm()" class="w-full bg-orange-100 text-orange-700 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition duration-300">
+      Edit Loyalty Programs
+    </button>
+  `;
+}
+
+// Show default loyalty content
+function showDefaultLoyalty() {
+  const loyaltyElement = document.getElementById('loyalty-optimizer');
+  if (!loyaltyElement) return;
+  
+  loyaltyElement.innerHTML = `
+    <div class="mb-4">
+      <p class="text-sm text-gray-600 mb-3">Track your frequent flyer status and benefits:</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-3 bg-orange-50 rounded-lg">
+          <h4 class="font-medium text-orange-800 mb-1">Status Benefits</h4>
+          <ul class="text-xs space-y-1 text-orange-700">
+            <li>✓ Priority boarding</li>
+            <li>✓ Extra baggage allowance</li>
+            <li>✓ Lounge access available</li>
+          </ul>
+        </div>
+        <div class="p-3 bg-blue-50 rounded-lg">
+          <h4 class="font-medium text-blue-800 mb-1">Earning Potential</h4>
+          <ul class="text-xs space-y-1 text-blue-700">
+            <li>• 1,250 miles on this route</li>
+            <li>• 500 bonus miles with status</li>
+            <li>• Qualifies for elite status</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <button onclick="showLoyaltyForm()" class="w-full bg-orange-100 text-orange-700 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition duration-300">
+      + Add Your Loyalty Programs
+    </button>
+  `;
+}
+
+// Show loyalty form modal
+function showLoyaltyForm() {
+  const formHTML = `
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-semibold">Add Loyalty Program</h3>
+          <button onclick="closeLoyaltyForm()" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Airline</label>
+            <input type="text" id="loyalty-airline" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., Delta Airlines" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Loyalty Program</label>
+            <input type="text" id="loyalty-program" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., SkyMiles" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Status Tier</label>
+            <select id="loyalty-status" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+              <option value="Silver">Silver</option>
+              <option value="Gold">Gold</option>
+              <option value="Platinum">Platinum</option>
+              <option value="Diamond">Diamond</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Member Number</label>
+            <input type="text" id="loyalty-number" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., DL123456789">
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end space-x-3">
+          <button onclick="closeLoyaltyForm()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+          <button onclick="saveLoyaltyProgram()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700">Save Program</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
   const modalDiv = document.createElement('div');
   modalDiv.innerHTML = formHTML;
   document.body.appendChild(modalDiv);
 }
 
+// Close loyalty form
 function closeLoyaltyForm() {
   const modal = document.querySelector('.fixed.inset-0.bg-black');
   if (modal) modal.remove();
 }
 
-function saveLoyaltyProgram() {
+// Save loyalty program
+async function saveLoyaltyProgram() {
   const airline = document.getElementById('loyalty-airline').value;
   const program = document.getElementById('loyalty-program').value;
   const status = document.getElementById('loyalty-status').value;
@@ -1656,63 +1815,63 @@ function saveLoyaltyProgram() {
     return;
   }
   
-  // Save to localStorage
-  localStorage.setItem('flytr_loyalty', JSON.stringify({
-    airline,
-    program,
-    status,
-    memberNumber
-  }));
-  
-  alert('Loyalty program saved!');
-  closeLoyaltyForm();
-  updateLoyaltyOptimizer();
+  try {
+    // Save to Supabase
+    const response = await fetch('/api/loyalty', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        airline,
+        program,
+        status,
+        member_number: memberNumber
+      })
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      if (result.success) {
+        // Also save to localStorage for immediate access
+        localStorage.setItem('flytr_loyalty', JSON.stringify({
+          airline,
+          program,
+          status,
+          memberNumber
+        }));
+        
+        alert('Loyalty program saved successfully!');
+        closeLoyaltyForm();
+        displayLoyaltyData(result.data);
+      } else {
+        throw new Error(result.error);
+      }
+    } else {
+      throw new Error('Failed to save to server');
+    }
+    
+  } catch (error) {
+    console.error('Error saving to Supabase:', error);
+    
+    // Fallback: Save to localStorage only
+    localStorage.setItem('flytr_loyalty', JSON.stringify({
+      airline,
+      program,
+      status,
+      memberNumber
+    }));
+    
+    alert('Saved locally! (Server connection failed)');
+    closeLoyaltyForm();
+    displayLoyaltyData({ airline, program, status, member_number: memberNumber });
+  }
 }
-        // Fallback to mock data if APIs fail
-        function useMockData() {
-            // Update all sections with mock data
-            updateAirportInfo();
-            updateLoyaltyOptimizer();
-            
-            // Show error message
-            const delayInsights = document.getElementById('delay-insights');
-            delayInsights.innerHTML = '<p class="text-yellow-600">⚠️ Using demo data. Configure serverless functions for real-time information.</p>';
-        }
-        
-        // Select fare date from calendar
-        function selectFareDate(date) {
-            const departureInput = document.getElementById('departure');
-            departureInput.value = date;
-            
-            // Show confirmation message
-            const fareCalendar = document.getElementById('fare-calendar-content');
-            const originalContent = fareCalendar.innerHTML;
-            
-            fareCalendar.innerHTML = `
-                <div class="p-4 bg-green-50 rounded-lg">
-                    <p class="text-green-700 font-medium mb-2">✓ Date updated to ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
-                    <p class="text-sm text-green-600 mb-3">This date offers better value. Click "Search Flights" again to update your results.</p>
-                    <button onclick="restoreFareCalendar()" class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded hover:bg-green-200">
-                        Back to calendar
-                    </button>
-                </div>
-            `;
-            
-            // Store original content for restoration
-            fareCalendar.dataset.originalContent = originalContent;
-        }
-        
-        // Restore fare calendar
-        function restoreFareCalendar() {
-            const fareCalendar = document.getElementById('fare-calendar-content');
-            if (fareCalendar.dataset.originalContent) {
-                fareCalendar.innerHTML = fareCalendar.dataset.originalContent;
-            }
-        }
-        
-        // Initialize sections
-        updateAirportInfo();
-        updateLoyaltyOptimizer();
+
+// Call this when page loads
+window.addEventListener('DOMContentLoaded', () => {
+  initLoyaltyOptimizer();
+});
         
         // Fade in animation on scroll
         const fadeElements = document.querySelectorAll('.fade-in');
