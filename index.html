@@ -107,6 +107,18 @@
         .calendar-day:hover {
             transform: scale(1.05);
         }
+        .price-cheap {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .price-moderate {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .price-expensive {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
     </style>
 </head>
 <body class="bg-light font-sans text-gray-800">
@@ -317,10 +329,15 @@
                             Cheapest Fare Calendar
                         </h3>
                         <div id="fare-calendar" class="text-center">
-                            <div class="animate-pulse">
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded"></div>
+                            <div id="fare-calendar-content">
+                                <div class="animate-pulse">
+                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div class="h-4 bg-gray-200 rounded"></div>
+                                </div>
+                            </div>
+                            <div id="calendar-heatmap" class="mt-4 hidden">
+                                <!-- Calendar heatmap will be generated here -->
                             </div>
                         </div>
                     </div>
@@ -650,8 +667,22 @@
             }
         });
         
-        // API Configuration - Replace with your actual API keys
+        // API Configuration - Serverless Functions with API Keys (Replace with actual keys for production)
         const API_CONFIG = {
+            // Serverless function endpoints (these will call the actual APIs on the server)
+            serverless: {
+                flights: '/api/flights',
+                weather: '/api/weather',
+                advisory: '/api/advisory',
+                currency: '/api/currency',
+                carbon: '/api/carbon',
+                news: '/api/news',
+                airport: '/api/airport',
+                layover: '/api/layover',
+                fares: '/api/fares'
+            },
+            
+            // Keyed APIs (keys will be stored in Vercel environment variables)
             aviationstack: {
                 key: 'YOUR_AVIATIONSTACK_API_KEY_HERE',
                 base: 'https://api.aviationstack.com/v1'
@@ -675,6 +706,15 @@
             supabase: {
                 url: 'YOUR_SUPABASE_URL_HERE',
                 key: 'YOUR_SUPABASE_ANON_KEY_HERE'
+            },
+            
+            // Unkeyed APIs (no API key required)
+            openstreetmap: {
+                nominatim: 'https://nominatim.openstreetmap.org/search',
+                overpass: 'https://overpass-api.de/api/interpreter'
+            },
+            travelAdvisory: {
+                base: 'https://www.travel-advisory.info/data-api'
             }
         };
         
@@ -684,7 +724,7 @@
             supabaseClient = supabase.createClient(API_CONFIG.supabase.url, API_CONFIG.supabase.key);
         }
         
-        // Form submission with real API calls
+        // Form submission with serverless API calls
         const searchForm = document.getElementById('flight-search-form');
         const intelligenceResults = document.getElementById('intelligence-results');
         const delayIndicator = document.getElementById('delay-indicator');
@@ -717,15 +757,16 @@
                 const fromCode = extractAirportCode(from);
                 const toCode = extractAirportCode(to);
                 
-                // Fetch all data in parallel
+                // Fetch all data in parallel using serverless functions
                 await Promise.all([
                     fetchFlightData(fromCode, toCode, date),
                     fetchWeatherData(to),
-                    fetchTravelAdvisory(to),
+                    fetchTravelAdvisoryData(to),
                     fetchExchangeRate('USD', 'EUR'),
                     fetchLayoverSuggestions(toCode),
-                    fetchGNewsRiskAssessment(to),
-                    fetchUserLoyaltyData() // Fetch from Supabase
+                    fetchTravelRiskAssessment(to),
+                    fetchUserLoyaltyData(),
+                    generateFareCalendar(fromCode, toCode, date)
                 ]);
                 
             } catch (error) {
@@ -787,7 +828,7 @@
         // Show loading states in all sections
         function showLoadingStates() {
             const sections = [
-                'fare-calendar',
+                'fare-calendar-content',
                 'packing-checklist',
                 'travel-requirements',
                 'airport-info',
@@ -811,27 +852,36 @@
                 }
             });
             
+            // Hide calendar heatmap during loading
+            document.getElementById('calendar-heatmap').classList.add('hidden');
+            
             // Update delay predictor loading
             delayIndicator.style.width = '0%';
             delayPercentage.textContent = '--%';
             document.getElementById('delay-insights').innerHTML = '<p>Fetching real-time flight data...</p>';
         }
         
-        // Fetch real flight data
+        // Fetch flight data via serverless function
         async function fetchFlightData(fromCode, toCode, date) {
             try {
-                // Format date for API
-                const formattedDate = date.split('-').reverse().join('-');
+                const response = await fetch(API_CONFIG.serverless.flights, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        from: fromCode,
+                        to: toCode,
+                        date: date,
+                        travelers: document.getElementById('travelers').value
+                    })
+                });
                 
-                // Using AviationStack API
-                const url = `${API_CONFIG.aviationstack.base}/flights?access_key=${API_CONFIG.aviationstack.key}&dep_iata=${fromCode}&arr_iata=${toCode}&flight_date=${formattedDate}&limit=5`;
-                
-                const response = await fetch(url);
                 if (!response.ok) throw new Error('Flight API failed');
                 
                 const data = await response.json();
                 
-                if (data.data && data.data.length > 0) {
+                if (data.success && data.data && data.data.length > 0) {
                     const flight = data.data[0];
                     const delay = flight.departure.delay || 0;
                     const delayProb = Math.min(90, Math.max(10, Math.floor(delay / 10)));
@@ -853,7 +903,7 @@
                     // Update travel timeline with real flight data
                     updateTravelTimelineWithRealData(flight);
                     
-                    // Update carbon info using Google TIM API
+                    // Update carbon info
                     await updateCarbonInfoWithRealData(flight);
                     
                 } else {
@@ -871,11 +921,18 @@
             }
         }
         
-        // Fetch real weather data
+        // Fetch weather data via serverless function
         async function fetchWeatherData(destination) {
             try {
-                const url = `${API_CONFIG.openweather.base}/weather?q=${encodeURIComponent(destination)}&appid=${API_CONFIG.openweather.key}&units=metric`;
-                const response = await fetch(url);
+                const response = await fetch(API_CONFIG.serverless.weather, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        destination: destination
+                    })
+                });
                 
                 if (!response.ok) throw new Error('Weather API failed');
                 
@@ -919,27 +976,38 @@
             }
         }
         
-        // Fetch travel advisory
-        async function fetchTravelAdvisory(destination) {
+        // Fetch travel advisory data via serverless function
+        async function fetchTravelAdvisoryData(destination) {
             try {
-                // Using SafeTravel API (no key required)
-                const url = `https://www.safetravel.gov.nz/api/v1/travel-notices`;
-                const response = await fetch(url);
+                const response = await fetch(API_CONFIG.serverless.advisory, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        destination: destination
+                    })
+                });
                 
                 if (!response.ok) throw new Error('Advisory API failed');
                 
                 const data = await response.json();
                 
-                // Find relevant advisory (simplified)
-                const hasAdvisory = data.notices && data.notices.length > 0;
+                // Process travel advisory data
+                const hasAdvisory = data.advisories && data.advisories.length > 0;
+                const riskLevel = data.riskLevel || 'Low';
                 
                 document.getElementById('travel-requirements').innerHTML = `
                     <p class="text-sm text-gray-600 mb-3">Travel requirements for ${destination}:</p>
+                    <div class="flex items-center mb-3">
+                        <div class="w-3 h-3 ${riskLevel === 'High' ? 'bg-red-500' : (riskLevel === 'Medium' ? 'bg-yellow-500' : 'bg-green-500')} rounded-full mr-2"></div>
+                        <span class="font-medium">Risk Level: ${riskLevel}</span>
+                    </div>
                     <ul class="list-disc pl-5 text-sm space-y-1">
                         <li>Passport valid for at least 6 months</li>
                         <li>${hasAdvisory ? 'Check latest travel notices' : 'No special requirements'}</li>
                         <li>Travel insurance recommended</li>
-                        <li>COVID-19 vaccination status may be required</li>
+                        <li>COVID-19 vaccination may be required</li>
                     </ul>
                     ${hasAdvisory ? '<p class="text-xs text-yellow-600 mt-3">⚠️ Check government travel advisories before departure</p>' : ''}
                 `;
@@ -957,117 +1025,129 @@
             }
         }
         
-        // Fetch exchange rates
+        // Fetch exchange rates via serverless function
         async function fetchExchangeRate(base, target) {
             try {
-                const url = `${API_CONFIG.currencyfreaks.base}/rates/latest?apikey=${API_CONFIG.currencyfreaks.key}&symbols=${target}`;
-                const response = await fetch(url);
+                const response = await fetch(API_CONFIG.serverless.currency, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        base: base,
+                        target: target
+                    })
+                });
                 
                 if (!response.ok) throw new Error('Currency API failed');
                 
                 const data = await response.json();
-                const rate = data.rates[target];
+                const rate = data.rate || 0.85;
                 
                 // Update fare calendar with currency info
-                document.getElementById('fare-calendar').innerHTML = `
+                document.getElementById('fare-calendar-content').innerHTML = `
                     <div class="mb-4">
                         <p class="text-sm text-gray-600 mb-2">Exchange rate: 1 ${base} = ${rate} ${target}</p>
-                        <div class="flex justify-between text-xs text-gray-500 mb-1">
-                            <span>Cheapest</span>
-                            <span>Average</span>
-                            <span>Expensive</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-                            <div class="bg-secondary h-2 rounded-full" style="width: 70%"></div>
-                        </div>
                     </div>
-                    <p class="text-sm">Best booking window: 3-6 weeks before departure. Consider currency fluctuations.</p>
                 `;
                 
             } catch (error) {
                 console.error('Currency API Error:', error);
-                document.getElementById('fare-calendar').innerHTML = `
-                    <p class="text-sm text-gray-600 mb-3">Best prices typically found 3-6 weeks before departure</p>
-                    <p class="text-sm">Your selected date falls within the optimal booking window.</p>
+            }
+        }
+        
+        // Fetch layover suggestions via serverless function
+        async function fetchLayoverSuggestions(airportCode) {
+            try {
+                const response = await fetch(API_CONFIG.serverless.layover, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        airport: airportCode
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Layover API failed');
+                
+                const data = await response.json();
+                
+                document.getElementById('layover-suggestions').innerHTML = `
+                    <p class="text-sm text-gray-600 mb-3">For layovers at ${airportCode}:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="font-medium text-gray-800 mb-2">Airport Amenities</h4>
+                            <ul class="text-sm space-y-1 text-gray-600">
+                                ${data.amenities ? data.amenities.map(amenity => `<li>• ${amenity}</li>`).join('') : '<li>• Free Wi-Fi</li><li>• Multiple dining options</li><li>• Lounges available</li>'}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-800 mb-2">Nearby Options</h4>
+                            <ul class="text-sm space-y-1 text-gray-600">
+                                ${data.nearby ? data.nearby.map(item => `<li>• ${item}</li>`).join('') : '<li>• City Center (30 min transit)</li><li>• Day rooms available</li><li>• Shopping areas nearby</li>'}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                        <p class="text-xs text-blue-700">💡 <strong>Pro tip:</strong> Lounges available for $35/day with shower facilities</p>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Layover API Error:', error);
+                document.getElementById('layover-suggestions').innerHTML = `
+                    <p class="text-sm text-gray-600 mb-3">For layovers at ${airportCode}:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="font-medium text-gray-800 mb-2">Airport Amenities</h4>
+                            <ul class="text-sm space-y-1 text-gray-600">
+                                <li>• Free Wi-Fi throughout terminals</li>
+                                <li>• Multiple dining options</li>
+                                <li>• Lounges available</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-800 mb-2">Nearby Options</h4>
+                            <ul class="text-sm space-y-1 text-gray-600">
+                                <li>• City Center (30 min transit)</li>
+                                <li>• Day rooms available</li>
+                                <li>• Shopping areas nearby</li>
+                            </ul>
+                        </div>
+                    </div>
                 `;
             }
         }
         
-        // Fetch layover suggestions
-        async function fetchLayoverSuggestions(airportCode) {
+        // Fetch travel risk assessment via serverless function
+        async function fetchTravelRiskAssessment(destination) {
             try {
-                // Simulated API call
-                setTimeout(() => {
-                    document.getElementById('layover-suggestions').innerHTML = `
-                        <p class="text-sm text-gray-600 mb-3">For layovers at ${airportCode}:</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <h4 class="font-medium text-gray-800 mb-2">Airport Amenities</h4>
-                                <ul class="text-sm space-y-1 text-gray-600">
-                                    <li>• Free Wi-Fi throughout terminals</li>
-                                    <li>• Multiple dining options</li>
-                                    <li>• Lounges available</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-gray-800 mb-2">Nearby Options</h4>
-                                <ul class="text-sm space-y-1 text-gray-600">
-                                    <li>• City Center (30 min transit)</li>
-                                    <li>• Day rooms available</li>
-                                    <li>• Shopping areas nearby</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="mt-4 p-3 bg-blue-50 rounded-lg">
-                            <p class="text-xs text-blue-700">💡 <strong>Pro tip:</strong> Lounges available for $35/day with shower facilities</p>
-                        </div>
-                    `;
-                }, 1000);
+                const response = await fetch(API_CONFIG.serverless.news, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        destination: destination,
+                        type: 'risk'
+                    })
+                });
                 
-            } catch (error) {
-                console.error('Layover API Error:', error);
-            }
-        }
-        
-        // Fetch GNews risk assessment
-        async function fetchGNewsRiskAssessment(destination) {
-            try {
-                if (API_CONFIG.gnews.key === 'YOUR_GNEWS_API_KEY_HERE') {
-                    throw new Error('GNews API key not configured');
-                }
-                
-                const url = `${API_CONFIG.gnews.base}/search?q=${encodeURIComponent(destination + " travel safety strike")}&token=${API_CONFIG.gnews.key}&lang=en&max=5`;
-                const response = await fetch(url);
-                
-                if (!response.ok) throw new Error('GNews API failed');
+                if (!response.ok) throw new Error('News API failed');
                 
                 const data = await response.json();
                 
-                let riskLevel = 'Low';
-                let riskArticles = [];
-                
-                if (data.articles && data.articles.length > 0) {
-                    // Analyze articles for risk indicators
-                    const riskKeywords = ['strike', 'protest', 'unrest', 'warning', 'danger', 'attack', 'violence', 'crisis'];
-                    riskArticles = data.articles.filter(article => {
-                        const title = article.title.toLowerCase();
-                        return riskKeywords.some(keyword => title.includes(keyword));
-                    });
-                    
-                    if (riskArticles.length > 2) {
-                        riskLevel = 'High';
-                    } else if (riskArticles.length > 0) {
-                        riskLevel = 'Moderate';
-                    }
-                }
+                let riskLevel = data.riskLevel || 'Low';
+                let riskArticles = data.articles || [];
                 
                 // Get color based on risk level
-                const riskColor = riskLevel === 'High' ? 'text-red-600' : (riskLevel === 'Moderate' ? 'text-yellow-600' : 'text-green-600');
-                const riskBgColor = riskLevel === 'High' ? 'bg-red-100' : (riskLevel === 'Moderate' ? 'bg-yellow-100' : 'bg-green-100');
+                const riskColor = riskLevel === 'High' ? 'text-red-600' : (riskLevel === 'Medium' ? 'text-yellow-600' : 'text-green-600');
+                const riskBgColor = riskLevel === 'High' ? 'bg-red-100' : (riskLevel === 'Medium' ? 'bg-yellow-100' : 'bg-green-100');
                 
                 document.getElementById('risk-snapshot').innerHTML = `
                     <div class="flex items-center mb-4">
-                        <div class="w-3 h-3 ${riskLevel === 'High' ? 'bg-red-500' : (riskLevel === 'Moderate' ? 'bg-yellow-500' : 'bg-green-500')} rounded-full mr-2"></div>
+                        <div class="w-3 h-3 ${riskLevel === 'High' ? 'bg-red-500' : (riskLevel === 'Medium' ? 'bg-yellow-500' : 'bg-green-500')} rounded-full mr-2"></div>
                         <span class="font-medium text-gray-800">Overall Risk: <span class="${riskColor}">${riskLevel}</span></span>
                     </div>
                     <div class="space-y-3 text-sm mb-4">
@@ -1101,7 +1181,7 @@
                 `;
                 
             } catch (error) {
-                console.error('GNews API Error:', error);
+                console.error('News API Error:', error);
                 // Fallback to static risk assessment
                 document.getElementById('risk-snapshot').innerHTML = `
                     <div class="flex items-center mb-4">
@@ -1130,6 +1210,255 @@
                         <p class="text-xs text-orange-700">🛡️ <strong>Travel insurance recommended</strong> for comprehensive coverage.</p>
                     </div>
                 `;
+            }
+        }
+        
+        // Generate fare calendar with heatmap
+        async function generateFareCalendar(fromCode, toCode, selectedDate) {
+            try {
+                // Try to get real fare data from serverless function
+                const response = await fetch(API_CONFIG.serverless.fares, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        from: fromCode,
+                        to: toCode,
+                        date: selectedDate
+                    })
+                });
+                
+                let fareData = [];
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    fareData = data.fares || [];
+                }
+                
+                // If no real data, generate mock fare data
+                if (fareData.length === 0) {
+                    fareData = generateMockFareData(selectedDate);
+                }
+                
+                // Display the fare calendar
+                displayFareCalendar(fareData, selectedDate);
+                
+            } catch (error) {
+                console.error('Fare calendar error:', error);
+                // Generate and display mock data
+                const mockData = generateMockFareData(selectedDate);
+                displayFareCalendar(mockData, selectedDate);
+            }
+        }
+        
+        // Generate mock fare data for calendar
+        function generateMockFareData(selectedDate) {
+            const selected = new Date(selectedDate);
+            const month = selected.getMonth();
+            const year = selected.getFullYear();
+            const today = new Date();
+            
+            // Generate data for 30 days around selected date
+            const fareData = [];
+            const basePrice = 500; // Base price for the route
+            
+            for (let i = -15; i <= 15; i++) {
+                const date = new Date(selected);
+                date.setDate(selected.getDate() + i);
+                
+                // Skip dates in the past
+                if (date < today) continue;
+                
+                // Generate price based on day of week and proximity to selected date
+                let priceMultiplier = 1.0;
+                const dayOfWeek = date.getDay();
+                
+                // Weekend flights are more expensive
+                if (dayOfWeek === 0 || dayOfWeek === 6) { // Sunday or Saturday
+                    priceMultiplier = 1.3;
+                } else if (dayOfWeek === 5) { // Friday
+                    priceMultiplier = 1.2;
+                } else if (dayOfWeek === 1 || dayOfWeek === 2) { // Monday or Tuesday
+                    priceMultiplier = 0.9; // Cheaper mid-week
+                }
+                
+                // Flights closer to selected date are more expensive
+                const daysDiff = Math.abs(i);
+                if (daysDiff <= 3) {
+                    priceMultiplier *= 1.1;
+                } else if (daysDiff <= 7) {
+                    priceMultiplier *= 1.05;
+                }
+                
+                // Add some randomness
+                priceMultiplier *= (0.95 + Math.random() * 0.1);
+                
+                const price = Math.round(basePrice * priceMultiplier);
+                
+                fareData.push({
+                    date: date.toISOString().split('T')[0],
+                    price: price,
+                    dayOfWeek: dayOfWeek,
+                    isSelected: i === 0,
+                    isCheapest: price <= basePrice * 0.9,
+                    isExpensive: price >= basePrice * 1.2
+                });
+            }
+            
+            return fareData;
+        }
+        
+        // Display fare calendar with heatmap
+        function displayFareCalendar(fareData, selectedDate) {
+            if (fareData.length === 0) return;
+            
+            // Sort by date
+            fareData.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Find cheapest and most expensive for color scaling
+            const prices = fareData.map(d => d.price);
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+            const priceRange = maxPrice - minPrice;
+            
+            // Group by week
+            const weeks = [];
+            let currentWeek = [];
+            
+            fareData.forEach((day, index) => {
+                const date = new Date(day.date);
+                const dayOfWeek = date.getDay();
+                
+                if (currentWeek.length === 0 && dayOfWeek !== 0) {
+                    // Add empty days for start of week
+                    for (let i = 0; i < dayOfWeek; i++) {
+                        currentWeek.push(null);
+                    }
+                }
+                
+                currentWeek.push(day);
+                
+                if (dayOfWeek === 6 || index === fareData.length - 1) {
+                    weeks.push([...currentWeek]);
+                    currentWeek = [];
+                }
+            });
+            
+            // Generate calendar HTML
+            const calendarHTML = `
+                <div class="mb-4">
+                    <p class="text-sm text-gray-600 mb-3">Best prices typically found 3-6 weeks before departure</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-green-500 rounded-sm"></div>
+                            <span class="text-xs">Cheapest</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-yellow-500 rounded-sm"></div>
+                            <span class="text-xs">Average</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-red-500 rounded-sm"></div>
+                            <span class="text-xs">Expensive</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr>
+                                <th class="p-2 text-xs text-gray-500">Sun</th>
+                                <th class="p-2 text-xs text-gray-500">Mon</th>
+                                <th class="p-2 text-xs text-gray-500">Tue</th>
+                                <th class="p-2 text-xs text-gray-500">Wed</th>
+                                <th class="p-2 text-xs text-gray-500">Thu</th>
+                                <th class="p-2 text-xs text-gray-500">Fri</th>
+                                <th class="p-2 text-xs text-gray-500">Sat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${weeks.map(week => `
+                                <tr>
+                                    ${Array.from({ length: 7 }).map((_, i) => {
+                                        const day = week[i];
+                                        if (!day) return '<td class="p-1"></td>';
+                                        
+                                        // Calculate color intensity
+                                        const priceRatio = (day.price - minPrice) / priceRange;
+                                        let bgColor = 'bg-green-100';
+                                        let textColor = 'text-green-800';
+                                        
+                                        if (priceRatio > 0.66) {
+                                            bgColor = 'bg-red-100';
+                                            textColor = 'text-red-800';
+                                        } else if (priceRatio > 0.33) {
+                                            bgColor = 'bg-yellow-100';
+                                            textColor = 'text-yellow-800';
+                                        }
+                                        
+                                        const isSelected = day.date === selectedDate;
+                                        const borderClass = isSelected ? 'border-2 border-primary' : '';
+                                        
+                                        return `
+                                            <td class="p-1">
+                                                <div class="calendar-day ${bgColor} ${textColor} ${borderClass} rounded-lg p-2 text-center cursor-pointer hover:shadow-md" 
+                                                     onclick="selectFareDate('${day.date}')"
+                                                     title="$${day.price} on ${new Date(day.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}">
+                                                    <div class="text-xs font-medium">${new Date(day.date).getDate()}</div>
+                                                    <div class="text-xs mt-1">$${day.price}</div>
+                                                    ${day.isCheapest ? '<div class="text-xs mt-1">💸</div>' : ''}
+                                                </div>
+                                            </td>
+                                        `;
+                                    }).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4 p-3 bg-secondary bg-opacity-10 rounded-lg">
+                    <p class="text-xs text-secondary">
+                        <i class="fas fa-lightbulb mr-1"></i>
+                        <strong>Pro tip:</strong> Mid-week flights (Tue-Wed) are typically 20-30% cheaper than weekend flights.
+                    </p>
+                </div>
+            `;
+            
+            document.getElementById('fare-calendar-content').innerHTML = calendarHTML;
+            document.getElementById('calendar-heatmap').classList.remove('hidden');
+        }
+        
+        // Select fare date from calendar
+        function selectFareDate(date) {
+            const departureInput = document.getElementById('departure');
+            departureInput.value = date;
+            
+            // Show confirmation message
+            const fareCalendar = document.getElementById('fare-calendar-content');
+            const originalContent = fareCalendar.innerHTML;
+            
+            fareCalendar.innerHTML = `
+                <div class="p-4 bg-green-50 rounded-lg">
+                    <p class="text-green-700 font-medium mb-2">✓ Date updated to ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+                    <p class="text-sm text-green-600 mb-3">This date offers better value. Click "Search Flights" again to update your results.</p>
+                    <button onclick="restoreFareCalendar()" class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded hover:bg-green-200">
+                        Back to calendar
+                    </button>
+                </div>
+            `;
+            
+            // Store original content for restoration
+            fareCalendar.dataset.originalContent = originalContent;
+        }
+        
+        // Restore fare calendar
+        function restoreFareCalendar() {
+            const fareCalendar = document.getElementById('fare-calendar-content');
+            if (fareCalendar.dataset.originalContent) {
+                fareCalendar.innerHTML = fareCalendar.dataset.originalContent;
             }
         }
         
@@ -1213,120 +1542,55 @@
             }
         }
         
-        // Update carbon info using Google Travel Impact Model API
+        // Update carbon info using serverless function
         async function updateCarbonInfoWithRealData(flight) {
             try {
-                // Get airport codes
-                const origin = flight.departure.iata || extractAirportCode(flight.departure.airport);
-                const destination = flight.arrival.iata || extractAirportCode(flight.arrival.airport);
+                const response = await fetch(API_CONFIG.serverless.carbon, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        flight: flight,
+                        travelers: document.getElementById('travelers').value
+                    })
+                });
                 
-                if (!origin || !destination) {
-                    throw new Error('Missing airport codes');
-                }
-                
-                // Create request body for Google TIM API
-                const requestBody = {
-                    "flights": [{
-                        "origin": origin,
-                        "destination": destination,
-                        "operatingCarrierCode": flight.airline.iata || "AA",
-                        "flightNumber": flight.flight.number || parseInt(flight.flight.iata) || 0,
-                        "departureDate": {
-                            "year": new Date(flight.departure.scheduled).getFullYear(),
-                            "month": new Date(flight.departure.scheduled).getMonth() + 1,
-                            "day": new Date(flight.departure.scheduled).getDate()
-                        },
-                        "aircraft": flight.aircraft ? {
-                            "code": flight.aircraft.iata || "B738"
-                        } : {
-                            "code": "B738"
-                        },
-                        "class": "ECONOMY",
-                        "passengerCount": parseInt(document.getElementById('travelers').value) || 1
-                    }]
-                };
-                
-                // Call Google TIM API
-                const response = await fetch(
-                    `${API_CONFIG.googleTim.base}/flights:computeFlightEmissions?key=${API_CONFIG.googleTim.key}`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(requestBody)
-                    }
-                );
-                
-                if (!response.ok) {
-                    throw new Error(`TIM API error: ${response.status}`);
-                }
+                if (!response.ok) throw new Error('Carbon API failed');
                 
                 const data = await response.json();
                 
-                if (data.flightEmissions && data.flightEmissions.length > 0) {
-                    const emissionData = data.flightEmissions[0];
-                    const kgPerPax = emissionData.emissionsGramsPerPax / 1000;
-                    const totalKg = kgPerPax * (parseInt(document.getElementById('travelers').value) || 1);
-                    
-                    // Get emission factors for comparison
-                    const factors = {
-                        co2: emissionData.co2ePerPax?.co2 || 0,
-                        ch4: emissionData.co2ePerPax?.ch4 || 0,
-                        n2o: emissionData.co2ePerPax?.n2o || 0
-                    };
-                    
-                    // Calculate percentage width for visual indicator (max 1000kg = 100%)
-                    const percentageWidth = Math.min(100, (totalKg / 1000) * 100);
-                    
-                    document.getElementById('carbon-info').innerHTML = `
-                        <div class="mb-4">
-                            <p class="text-sm text-gray-600 mb-2">Carbon footprint per passenger:</p>
-                            <div class="flex items-center mb-3">
-                                <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
-                                    <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${percentageWidth}%"></div>
-                                </div>
-                                <span class="text-sm font-medium">${kgPerPax.toFixed(1)} kg CO₂e</span>
+                const kgPerPax = data.kgPerPax || 150;
+                const totalKg = data.totalKg || (kgPerPax * (parseInt(document.getElementById('travelers').value) || 1));
+                const percentageWidth = Math.min(100, (totalKg / 1000) * 100);
+                
+                document.getElementById('carbon-info').innerHTML = `
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-2">Carbon footprint per passenger:</p>
+                        <div class="flex items-center mb-3">
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+                                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${percentageWidth}%"></div>
                             </div>
-                            
-                            <p class="text-sm text-gray-600 mb-2">Total for all passengers:</p>
-                            <div class="text-2xl font-bold text-indigo-700 mb-3">${totalKg.toFixed(1)} kg CO₂e</div>
+                            <span class="text-sm font-medium">${kgPerPax.toFixed(1)} kg CO₂e</span>
                         </div>
                         
-                        <div class="grid grid-cols-3 gap-2 text-xs mb-4">
-                            <div class="text-center p-2 bg-blue-50 rounded">
-                                <div class="font-medium">CO₂</div>
-                                <div class="text-blue-600">${(factors.co2 / 1000).toFixed(1)} kg</div>
-                            </div>
-                            <div class="text-center p-2 bg-green-50 rounded">
-                                <div class="font-medium">CH₄</div>
-                                <div class="text-green-600">${(factors.ch4 / 1000).toFixed(3)} kg</div>
-                            </div>
-                            <div class="text-center p-2 bg-purple-50 rounded">
-                                <div class="font-medium">N₂O</div>
-                                <div class="text-purple-600">${(factors.n2o / 1000).toFixed(3)} kg</div>
-                            </div>
-                        </div>
-                        
-                        <div class="p-3 bg-indigo-50 rounded-lg">
-                            <p class="text-xs text-indigo-700">
-                                <i class="fas fa-leaf mr-1"></i>
-                                <strong>Eco-tip:</strong> Consider offsetting ${totalKg.toFixed(0)} kg CO₂e for approximately $${(totalKg * 0.02).toFixed(2)} via certified carbon offset programs.
-                            </p>
-                        </div>
-                    `;
-                } else {
-                    throw new Error('No emission data returned');
-                }
+                        <p class="text-sm text-gray-600 mb-2">Total for all passengers:</p>
+                        <div class="text-2xl font-bold text-indigo-700 mb-3">${totalKg.toFixed(1)} kg CO₂e</div>
+                    </div>
+                    
+                    <div class="p-3 bg-indigo-50 rounded-lg">
+                        <p class="text-xs text-indigo-700">
+                            <i class="fas fa-leaf mr-1"></i>
+                            <strong>Eco-tip:</strong> Consider offsetting ${totalKg.toFixed(0)} kg CO₂e for approximately $${(totalKg * 0.02).toFixed(2)} via certified carbon offset programs.
+                        </p>
+                    </div>
+                `;
                 
             } catch (error) {
-                console.error('TIM API Error:', error);
-                
+                console.error('Carbon API Error:', error);
                 // Fallback to approximate calculation
-                const duration = flight.flight.duration || 180;
-                const carbonPerHour = 90;
                 const passengers = parseInt(document.getElementById('travelers').value) || 1;
-                const kgPerPax = Math.round((duration / 60) * carbonPerHour);
+                const kgPerPax = 150;
                 const totalKg = kgPerPax * passengers;
                 const percentageWidth = Math.min(100, (totalKg / 1000) * 100);
                 
@@ -1343,7 +1607,7 @@
                     <div class="p-3 bg-yellow-50 rounded-lg">
                         <p class="text-xs text-yellow-700">
                             <i class="fas fa-info-circle mr-1"></i>
-                            Using approximate calculation. Enable Google TIM API for precise emissions data.
+                            Using approximate calculation.
                         </p>
                     </div>
                 `;
@@ -1395,17 +1659,39 @@
             `;
         }
         
-        // Update airport info
-        function updateAirportInfo() {
-            document.getElementById('airport-info').innerHTML = `
-                <p class="text-sm text-gray-600 mb-3">Airport amenities include:</p>
-                <ul class="list-disc pl-5 text-sm space-y-1">
-                    <li>Free Wi-Fi throughout terminals</li>
-                    <li>Multiple dining options post-security</li>
-                    <li>Lounges available for premium passengers</li>
-                    <li>Charging stations near all gates</li>
-                </ul>
-            `;
+        // Update airport info via serverless function
+        async function updateAirportInfo() {
+            try {
+                const response = await fetch(API_CONFIG.serverless.airport, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('airport-info').innerHTML = `
+                        <p class="text-sm text-gray-600 mb-3">Airport amenities include:</p>
+                        <ul class="list-disc pl-5 text-sm space-y-1">
+                            ${data.amenities ? data.amenities.map(amenity => `<li>${amenity}</li>`).join('') : '<li>Free Wi-Fi throughout terminals</li><li>Multiple dining options post-security</li><li>Lounges available for premium passengers</li><li>Charging stations near all gates</li>'}
+                        </ul>
+                    `;
+                } else {
+                    throw new Error('Airport API failed');
+                }
+            } catch (error) {
+                console.error('Airport API Error:', error);
+                document.getElementById('airport-info').innerHTML = `
+                    <p class="text-sm text-gray-600 mb-3">Airport amenities include:</p>
+                    <ul class="list-disc pl-5 text-sm space-y-1">
+                        <li>Free Wi-Fi throughout terminals</li>
+                        <li>Multiple dining options post-security</li>
+                        <li>Lounges available for premium passengers</li>
+                        <li>Charging stations near all gates</li>
+                    </ul>
+                `;
+            }
         }
         
         // Update loyalty optimizer
@@ -1657,9 +1943,11 @@
             console.log('- Google TIM:', API_CONFIG.googleTim.key !== 'YOUR_GOOGLE_TIM_API_KEY_HERE' ? 'Configured' : 'Not configured');
             console.log('- GNews:', API_CONFIG.gnews.key !== 'YOUR_GNEWS_API_KEY_HERE' ? 'Configured' : 'Not configured');
             console.log('- Supabase:', API_CONFIG.supabase.url !== 'YOUR_SUPABASE_URL_HERE' ? 'Configured' : 'Not configured');
+            console.log('- OpenStreetMap: Unkeyed (Rate limited)');
+            console.log('- Travel Advisory API: Unkeyed');
             
             if (API_CONFIG.aviationstack.key === 'YOUR_AVIATIONSTACK_API_KEY_HERE') {
-                console.warn('⚠️ Remember to replace ALL API keys with your actual keys!');
+                console.warn('⚠️ Remember to replace ALL API keys with your actual keys in Vercel environment variables!');
             }
         });
     </script>
