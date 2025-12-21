@@ -1,73 +1,51 @@
 export default async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
-  
-  // Handle OPTIONS request for CORS
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  try {
-    const { from, to, date, travelers } = req.body;
-    
-    if (!from || !to || !date) {
-      return res.status(400).json({ error: 'Missing required parameters' });
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
     }
-
-    // Always return mock data for now - we'll fix AviationStack later
-    const mockFlight = {
-      flight: {
-        iata: 'AA' + Math.floor(Math.random() * 1000),
-        number: Math.floor(Math.random() * 1000)
-      },
-      airline: {
-        name: ['American Airlines', 'Delta', 'United', 'Southwest'][Math.floor(Math.random() * 4)]
-      },
-      departure: {
-        scheduled: '10:00',
-        delay: Math.floor(Math.random() * 60),
-        iata: from || 'JFK',
-        airport: `${from || 'JFK'} Airport`
-      },
-      arrival: {
-        scheduled: '12:00',
-        iata: to || 'LAX',
-        airport: `${to || 'LAX'} Airport`
-      },
-      flight_status: 'scheduled',
-      estimated_price: {
-        economy: 250 + Math.floor(Math.random() * 300),
-        business: 600 + Math.floor(Math.random() * 800),
-        currency: 'USD'
-      }
-    };
-
-    // Return success response with mock data
-    return res.status(200).json({
-      success: true,
-      data: [mockFlight]
-    });
     
-  } catch (error) {
-    console.error('Flights API error:', error);
-    return res.status(200).json({
-      success: true,
-      data: [{
-        flight: { iata: 'AA123', number: 123 },
-        airline: { name: 'American Airlines' },
-        departure: { scheduled: '10:00', delay: 0, iata: 'JFK', airport: 'JFK Airport' },
-        arrival: { scheduled: '12:00', iata: 'LAX', airport: 'LAX Airport' },
-        flight_status: 'scheduled'
-      }],
-      message: 'Using demo flight data'
-    });
-  }
+    const { from, to, date } = req.body;
+    
+    try {
+        // Use your actual AviationStack API key from Vercel env
+        const apiKey = process.env.AVIATIONSTACK_API_KEY;
+        
+        if (!apiKey) {
+            return res.status(500).json({ 
+                error: 'API key not configured',
+                message: 'Set AVIATIONSTACK_API_KEY in Vercel environment variables'
+            });
+        }
+        
+        // Construct AviationStack API URL
+        const params = new URLSearchParams({
+            access_key: apiKey,
+            dep_iata: from,
+            arr_iata: to,
+            flight_date: date,
+            limit: 1
+        });
+        
+        const response = await fetch(`http://api.aviationstack.com/v1/flights?${params}`);
+        const data = await response.json();
+        
+        if (data.error) {
+            return res.status(400).json({ 
+                error: data.error.message,
+                info: 'Check your AviationStack subscription and API key'
+            });
+        }
+        
+        // Return the data
+        res.status(200).json({
+            success: true,
+            data: data.data || []
+        });
+        
+    } catch (error) {
+        console.error('AviationStack API error:', error);
+        res.status(500).json({ 
+            error: 'Failed to fetch flight data',
+            details: error.message 
+        });
+    }
 }
