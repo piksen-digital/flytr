@@ -2229,22 +2229,34 @@ async function updateAirportInfo(airportCode) {
         document.getElementById('departure').value = tomorrow.toISOString().split('T')[0];
         
         // Test API connections on load
-        window.addEventListener('load', () => {
-            console.log('Flytr Flight Intelligence loaded');
-            console.log('API Configuration Status:');
-            console.log('- AviationStack:', API_CONFIG.aviationstack.key !== 'YOUR_AVIATIONSTACK_API_KEY_HERE' ? 'Configured' : 'Not configured');
-            console.log('- OpenWeatherMap:', API_CONFIG.openweather.key !== 'YOUR_OPENWEATHER_API_KEY_HERE' ? 'Configured' : 'Not configured');
-            console.log('- CurrencyFreaks:', API_CONFIG.currencyfreaks.key !== 'YOUR_CURRENCYFREAKS_API_KEY_HERE' ? 'Configured' : 'Not configured');
-            console.log('- Google TIM:', API_CONFIG.googleTim.key !== 'YOUR_GOOGLE_TIM_API_KEY_HERE' ? 'Configured' : 'Not configured');
-            console.log('- GNews:', API_CONFIG.gnews.key !== 'YOUR_GNEWS_API_KEY_HERE' ? 'Configured' : 'Not configured');
-            console.log('- Supabase:', API_CONFIG.supabase.url !== 'YOUR_SUPABASE_URL_HERE' ? 'Configured' : 'Not configured');
-            console.log('- OpenStreetMap: Unkeyed (Rate limited)');
-            console.log('- Travel Advisory API: Unkeyed');
+window.addEventListener('load', () => {
+    console.log('Flytr Flight Intelligence loaded');
+    
+    // Test if serverless functions are working
+    fetch('/api/health')
+        .then(res => res.json())
+        .then(data => {
+            console.log('API Health Check:', data);
             
-            if (API_CONFIG.aviationstack.key === 'YOUR_AVIATIONSTACK_API_KEY_HERE') {
-                console.warn('⚠️ Remember to replace ALL API keys with your actual keys in Vercel environment variables!');
+            // Check which APIs are configured server-side
+            if (data && data.apis_configured) {
+                const configured = Object.keys(data.apis_configured).filter(k => data.apis_configured[k]);
+                console.log('✅ Configured APIs:', configured);
+                
+                const notConfigured = Object.keys(data.apis_configured).filter(k => !data.apis_configured[k]);
+                if (notConfigured.length > 0) {
+                    console.log('❌ Not configured:', notConfigured);
+                    console.log('⚠️ Set environment variables in Vercel dashboard');
+                }
             }
+        })
+        .catch(error => {
+            console.warn('⚠️ Serverless functions not reachable. Check:');
+            console.warn('1. You have /api/*.js files in your Vercel project');
+            console.warn('2. Environment variables are set in Vercel dashboard');
+            console.warn('3. You have deployed after making changes');
         });
+});
     </script>
 </body>
 </html>
