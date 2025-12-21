@@ -862,64 +862,87 @@
         }
         
         // Fetch flight data via serverless function
-        async function fetchFlightData(fromCode, toCode, date) {
-            try {
-                const response = await fetch(API_CONFIG.serverless.flights, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        from: fromCode,
-                        to: toCode,
-                        date: date,
-                        travelers: document.getElementById('travelers').value
-                    })
-                });
-                
-                if (!response.ok) throw new Error('Flight API failed');
-                
-                const data = await response.json();
-                
-                if (data.success && data.data && data.data.length > 0) {
-                    const flight = data.data[0];
-                    const delay = flight.departure.delay || 0;
-                    const delayProb = Math.min(90, Math.max(10, Math.floor(delay / 10)));
-                    
-                    // Update delay predictor
-                    delayIndicator.style.width = `${delayProb}%`;
-                    delayPercentage.textContent = `${delayProb}%`;
-                    
-                    document.getElementById('delay-insights').innerHTML = `
-                        <p>Flight ${flight.flight.iata} by ${flight.airline.name} is ${delay > 0 ? `delayed by ${delay} minutes` : 'on time'}.</p>
-                        <p class="text-sm mt-2">Departure: ${flight.departure.scheduled} | Arrival: ${flight.arrival.scheduled}</p>
-                    `;
-                    
-                    if (delayProb > 50) {
-                        alternativeFlights.classList.remove('hidden');
-                        altFlightsText.textContent = `Due to delay probability (${delayProb}%), consider alternative flights or arriving at the airport earlier.`;
-                    }
-                    
-                    // Update travel timeline with real flight data
-                    updateTravelTimelineWithRealData(flight);
-                    
-                    // Update carbon info
-                    await updateCarbonInfoWithRealData(flight);
-                    
-                } else {
-                    throw new Error('No flight data found');
-                }
-                
-            } catch (error) {
-                console.error('Flight API Error:', error);
-                // Use mock data as fallback
-                const delayProb = Math.floor(Math.random() * 60) + 10;
-                delayIndicator.style.width = `${delayProb}%`;
-                delayPercentage.textContent = `${delayProb}%`;
-                document.getElementById('delay-insights').innerHTML = 
-                    '<p>Using estimated data. For real-time information, ensure your API keys are configured.</p>';
-            }
+async function fetchFlightData(fromCode, toCode, date) {
+    try {
+        const response = await fetch(API_CONFIG.serverless.flights, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                from: fromCode,
+                to: toCode,
+                date: date,
+                travelers: document.getElementById('travelers').value
+            })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Flight API failed');
         }
+        
+        const data = await response.json();
+        
+        if (data.success && data.data && data.data.length > 0) {
+            const flight = data.data[0];
+            const delay = flight.departure.delay || 0;
+            const delayProb = Math.min(90, Math.max(10, Math.floor(delay / 10)));
+            
+            // Update delay predictor
+            delayIndicator.style.width = `${delayProb}%`;
+            delayPercentage.textContent = `${delayProb}%`;
+            
+            document.getElementById('delay-insights').innerHTML = `
+                <p>Flight ${flight.flight.iata} by ${flight.airline.name} is ${delay > 0 ? `delayed by ${delay} minutes` : 'on time'}.</p>
+                <p class="text-sm mt-2">Departure: ${flight.departure.scheduled} | Arrival: ${flight.arrival.scheduled}</p>
+            `;
+            
+            if (delayProb > 50) {
+                alternativeFlights.classList.remove('hidden');
+                altFlightsText.textContent = `Due to delay probability (${delayProb}%), consider alternative flights or arriving at the airport earlier.`;
+            }
+            
+            // Update travel timeline with real flight data
+            updateTravelTimelineWithRealData(flight);
+            
+            // Update carbon info
+            await updateCarbonInfoWithRealData(flight);
+            
+            // ✅ ADD THIS: Update airport info with destination airport
+            await updateAirportInfo(toCode);
+            
+        } else {
+            // No flight data found - use mock data but still try to get airport info
+            const delayProb = Math.floor(Math.random() * 60) + 10;
+            delayIndicator.style.width = `${delayProb}%`;
+            delayPercentage.textContent = `${delayProb}%`;
+            document.getElementById('delay-insights').innerHTML = 
+                '<p>Using estimated data. Configure AviationStack API for real-time information.</p>';
+            
+            // Still update airport info even if no flight data
+            await updateAirportInfo(toCode);
+            
+            throw new Error('No flight data found');
+        }
+        
+    } catch (error) {
+        console.error('Flight API Error:', error);
+        // Use mock data as fallback
+        const delayProb = Math.floor(Math.random() * 60) + 10;
+        delayIndicator.style.width = `${delayProb}%`;
+        delayPercentage.textContent = `${delayProb}%`;
+        
+        // Show error message
+        document.getElementById('delay-insights').innerHTML = `
+            <p>Using estimated data. For real-time information, ensure your API keys are configured.</p>
+            <p class="text-sm text-gray-500 mt-1">Error: ${error.message}</p>
+        `;
+        
+        // ✅ ADD THIS: Still update airport info even on error
+        await updateAirportInfo(toCode);
+    }
+}
         
         // Fetch weather data via serverless function
         async function fetchWeatherData(destination) {
@@ -1660,41 +1683,103 @@
         }
         
         // Update airport info via serverless function
-        async function updateAirportInfo() {
-            try {
-                const response = await fetch(API_CONFIG.serverless.airport, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('airport-info').innerHTML = `
-                        <p class="text-sm text-gray-600 mb-3">Airport amenities include:</p>
-                        <ul class="list-disc pl-5 text-sm space-y-1">
-                            ${data.amenities ? data.amenities.map(amenity => `<li>${amenity}</li>`).join('') : '<li>Free Wi-Fi throughout terminals</li><li>Multiple dining options post-security</li><li>Lounges available for premium passengers</li><li>Charging stations near all gates</li>'}
-                        </ul>
-                    `;
-                } else {
-                    throw new Error('Airport API failed');
-                }
-            } catch (error) {
-                console.error('Airport API Error:', error);
-                document.getElementById('airport-info').innerHTML = `
-                    <p class="text-sm text-gray-600 mb-3">Airport amenities include:</p>
-                    <ul class="list-disc pl-5 text-sm space-y-1">
-                        <li>Free Wi-Fi throughout terminals</li>
-                        <li>Multiple dining options post-security</li>
-                        <li>Lounges available for premium passengers</li>
-                        <li>Charging stations near all gates</li>
-                    </ul>
-                `;
-            }
-        }
+    
+async function updateAirportInfo(airportCode) {
+    try {
+        const response = await fetch(API_CONFIG.serverless.airport, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                airport: airportCode
+            })
+        });
         
-        // Update loyalty optimizer
+        if (response.ok) {
+            const data = await response.json();
+            
+            // Create airport info HTML
+            let amenitiesHTML = '';
+            if (data.amenities && data.amenities.length > 0) {
+                amenitiesHTML = data.amenities.slice(0, 5).map(amenity => 
+                    `<li class="flex items-start mb-2">
+                        <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                        <span class="text-sm">${amenity}</span>
+                    </li>`
+                ).join('');
+            }
+            
+            document.getElementById('airport-info').innerHTML = `
+                <div class="mb-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-map-marker-alt text-red-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">${data.name || airportCode + ' Airport'}</h4>
+                            <p class="text-sm text-gray-600">${data.city || 'International Airport'}</p>
+                        </div>
+                    </div>
+                    
+                    <h5 class="font-medium text-gray-800 mb-2">Key Amenities:</h5>
+                    <ul class="space-y-1 mb-4">
+                        ${amenitiesHTML || `
+                            <li class="flex items-start mb-2">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span class="text-sm">Free Wi-Fi throughout terminals</span>
+                            </li>
+                            <li class="flex items-start mb-2">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span class="text-sm">Multiple dining options</span>
+                            </li>
+                            <li class="flex items-start mb-2">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span class="text-sm">Charging stations at gates</span>
+                            </li>
+                        `}
+                    </ul>
+                    
+                    ${data.services && data.services.length > 0 ? `
+                    <h5 class="font-medium text-gray-800 mb-2">Available Services:</h5>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        ${data.services.slice(0, 3).map(service => 
+                            `<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">${service}</span>`
+                        ).join('')}
+                    </div>
+                    ` : ''}
+                    
+                    ${data.source ? `<p class="text-xs text-gray-500 mt-3">Source: ${data.source}</p>` : ''}
+                </div>
+            `;
+        } else {
+            throw new Error('Airport API failed');
+        }
+    } catch (error) {
+        console.error('Airport API Error:', error);
+        // Fallback to static data
+        document.getElementById('airport-info').innerHTML = `
+            <div class="mb-4">
+                <h4 class="font-semibold text-gray-800 mb-3">${airportCode} Airport</h4>
+                <p class="text-sm text-gray-600 mb-3">Standard airport amenities include:</p>
+                <ul class="list-disc pl-5 text-sm space-y-1">
+                    <li>Free Wi-Fi throughout terminals</li>
+                    <li>Multiple dining options post-security</li>
+                    <li>Lounges available for premium passengers</li>
+                    <li>Charging stations near all gates</li>
+                </ul>
+                <div class="mt-4 p-3 bg-yellow-50 rounded-lg">
+                    <p class="text-xs text-yellow-700">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Configure AviationStack API for detailed airport information
+                    </p>
+                </div>
+            </div>
+        `;
+    }
+}
+
+       // Update loyalty optimizer
         function updateLoyaltyOptimizer() {
             document.getElementById('loyalty-optimizer').innerHTML = `
                 <div class="mb-4">
