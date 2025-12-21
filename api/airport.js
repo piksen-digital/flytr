@@ -1,3 +1,4 @@
+// /api/airport.js
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -8,11 +9,64 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // This endpoint can accept POST or GET
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
-    // Return static airport information
-    // In production, you could fetch this from a database or external API
+    const { airport } = req.body;
+    
+    if (!airport) {
+      return res.status(400).json({ error: 'Airport code required' });
+    }
+
+    // Try to get real airport data from AviationStack
+    const aviationstackKey = process.env.AVIATIONSTACK_API_KEY;
+    
+    if (aviationstackKey) {
+      // Fetch airports data
+      const response = await fetch(
+        `http://api.aviationstack.com/v1/airports?access_key=${aviationstackKey}&search=${airport}&limit=1`
+      );
+      
+      const data = await response.json();
+      
+      if (data.data && data.data.length > 0) {
+        const airportData = data.data[0];
+        
+        return res.status(200).json({
+          name: airportData.airport_name,
+          city: airportData.city_name,
+          country: airportData.country_name,
+          iata: airportData.iata_code,
+          timezone: airportData.timezone,
+          amenities: [
+            "Free Wi-Fi throughout terminals",
+            "Multiple dining options post-security",
+            `Terminal: ${airportData.terminal || 'Multiple terminals available'}`,
+            "Lounges available for premium passengers",
+            "Charging stations near all gates",
+            "Rest zones with comfortable seating",
+            "Business centers with printing facilities",
+            "Children's play areas",
+            "Medical facilities and pharmacies",
+            "Currency exchange and ATMs"
+          ],
+          services: [
+            "Baggage wrapping services",
+            "Luggage storage and lockers",
+            "Meet & greet services",
+            "Airport hotels for long layovers",
+            "Transportation to city center"
+          ],
+          source: 'AviationStack API'
+        });
+      }
+    }
+    
+    // Fallback to static data if AviationStack fails or no key
     const airportInfo = {
+      iata: airport,
       amenities: [
         "Free Wi-Fi throughout terminals",
         "Multiple dining options post-security",
@@ -38,7 +92,8 @@ export default async function handler(req, res) {
         "Meet & greet services",
         "Airport hotels for long layovers",
         "Transportation to city center"
-      ]
+      ],
+      source: 'Static data (configure AviationStack API for real data)'
     };
     
     return res.status(200).json(airportInfo);
@@ -52,7 +107,8 @@ export default async function handler(req, res) {
         "Lounges available for premium passengers",
         "Charging stations near all gates"
       ],
-      message: 'Basic airport amenities information'
+      message: 'Using static airport data',
+      error: error.message
     });
   }
 }
