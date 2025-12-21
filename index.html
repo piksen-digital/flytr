@@ -681,49 +681,7 @@
                 layover: '/api/layover',
                 fares: '/api/fares'
             },
-            
-            // Keyed APIs (keys will be stored in Vercel environment variables)
-            aviationstack: {
-                key: 'YOUR_AVIATIONSTACK_API_KEY_HERE',
-                base: 'https://api.aviationstack.com/v1'
-            },
-            openweather: {
-                key: 'YOUR_OPENWEATHER_API_KEY_HERE',
-                base: 'https://api.openweathermap.org/data/2.5'
-            },
-            currencyfreaks: {
-                key: 'YOUR_CURRENCYFREAKS_API_KEY_HERE',
-                base: 'https://api.currencyfreaks.com/v2.0'
-            },
-            googleTim: {
-                key: 'YOUR_GOOGLE_TIM_API_KEY_HERE',
-                base: 'https://travelimpactmodel.googleapis.com/v1'
-            },
-            gnews: {
-                key: 'YOUR_GNEWS_API_KEY_HERE',
-                base: 'https://gnews.io/api/v4'
-            },
-            supabase: {
-                url: 'YOUR_SUPABASE_URL_HERE',
-                key: 'YOUR_SUPABASE_ANON_KEY_HERE'
-            },
-            
-            // Unkeyed APIs (no API key required)
-            openstreetmap: {
-                nominatim: 'https://nominatim.openstreetmap.org/search',
-                overpass: 'https://overpass-api.de/api/interpreter'
-            },
-            travelAdvisory: {
-                base: 'https://www.travel-advisory.info/data-api'
-            }
-        };
-        
-        // Initialize Supabase client
-        let supabaseClient = null;
-        if (API_CONFIG.supabase.url !== 'YOUR_SUPABASE_URL_HERE' && API_CONFIG.supabase.key !== 'YOUR_SUPABASE_ANON_KEY_HERE') {
-            supabaseClient = supabase.createClient(API_CONFIG.supabase.url, API_CONFIG.supabase.key);
-        }
-        
+                 
         // Form submission with serverless API calls
         const searchForm = document.getElementById('flight-search-form');
         const intelligenceResults = document.getElementById('intelligence-results');
