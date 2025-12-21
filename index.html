@@ -1249,35 +1249,38 @@ async function fetchFlightData(fromCode, toCode, date) {
         }
         
         // Fetch exchange rates via serverless function
-        async function fetchExchangeRate(base, target) {
-            try {
-                const response = await fetch(API_CONFIG.serverless.currency, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        base: base,
-                        target: target
-                    })
-                });
-                
-                if (!response.ok) throw new Error('Currency API failed');
-                
-                const data = await response.json();
-                const rate = data.rate || 0.85;
-                
-                // Update fare calendar with currency info
-                document.getElementById('fare-calendar-content').innerHTML = `
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600 mb-2">Exchange rate: 1 ${base} = ${rate} ${target}</p>
-                    </div>
-                `;
-                
-            } catch (error) {
-                console.error('Currency API Error:', error);
-            }
-        }
+async function fetchExchangeRate(base, target) {
+    try {
+        const response = await fetch(API_CONFIG.serverless.currency, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                base: base,
+                target: target
+            })
+        });
+        
+        if (!response.ok) throw new Error('Currency API failed');
+        
+        const data = await response.json();
+        const rate = data.rate || 0.85;
+        
+        // Update exchange rate info separately (not in calendar content)
+        const exchangeRateInfo = document.getElementById('exchange-rate-info');
+        exchangeRateInfo.innerHTML = `
+            <p class="text-sm text-gray-600 mb-2">Exchange rate: 1 ${base} = ${rate.toFixed(3)} ${target}</p>
+        `;
+        
+        return rate;
+        
+    } catch (error) {
+        console.error('Currency API Error:', error);
+        // Don't show anything if exchange rate fails
+        return null;
+    }
+}
         
         // Fetch layover suggestions via serverless function
         async function fetchLayoverSuggestions(airportCode) {
