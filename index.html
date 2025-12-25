@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjQ1IiBmaWxsPSIjMDA2NkZGIi8+CiAgPHBhdGggZD0iTTMwLDUwSDcwTTUwLDMwSDcwTTUwLDcwSDcwIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjgiLz4KICA8cGF0aCBkPSJNNzAsNTBMNTAsNzBNNzAsNTBMNTAsMzEiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=">
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkZseXRyIiwKICAic2hvcnRfbmFtZSI6ICJGbHl0ciIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDA2NkZGIiwKICAidGhlbWVfY29sb3IiOiAiIzAwNjZGRiIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIZHBaSFJvUFNJeE1pSWdlRzFzYm5NOUltaDBkSEE2THk5M2QzY3Vkek11TDJsdVpHVjRMbkJvY0M5MGFYUnNaWEl0YzNsemRHVnRJaUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSEJ5YjJacGJHVXRiM1Z1WkdWa0lqNDhjR0YwYUNCa1BTSWlMejQ4TDNOMlp6ND0iLAogICAgICAic2l6ZXMiOiAiMTgweDE4MCIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9Cg==">
     <meta name="theme-color" content="#0066FF">
-    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIGZpbGw9IiMwMDY2RkYiLz4KICA8cGF0aCBkPSJNMzAsNTBINzBNNTAsMzBINzBNNTAsNzBINzAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIvPgogIDxwYXRoIGQ9Ik03MCw1MEw1MCw3MEw3MCw1MEw1MCwzMFoiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=" type="image/svg+xml">
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIGZpbGw9IiMwMDY2RkYiLz4KICA8cGF0aCBkPSJNMzAsNTBINzBNNTAsMzBINzBNNTAsNzBINzAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIvPgogIDxwYXRoIGQPSJNNzAsNTBMNTAsNzBNNzAsNTBMNTAsMzEiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=" type="image/svg+xml">
     <!-- End Favicon Section -->
 
     <!-- Travelpayouts verification code -->
@@ -129,6 +129,35 @@
         .price-expensive {
             background-color: #fee2e2;
             color: #991b1b;
+        }
+        /* Flight card styles */
+        .flight-card {
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        .flight-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        .flight-card.cheapest {
+            border-left-color: #10B981;
+        }
+        .flight-card.best-value {
+            border-left-color: #3B82F6;
+        }
+        .flight-card.shortest {
+            border-left-color: #8B5CF6;
+        }
+        .flight-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0066FF;
+        }
+        .share-btn {
+            transition: all 0.2s ease;
+        }
+        .share-btn:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -308,12 +337,56 @@
             
             <!-- Intelligence Results (Initially Hidden) -->
             <div id="intelligence-results" class="hidden max-w-6xl mx-auto">
-                <!-- Delay Predictor - Positioned prominently as a key feature -->
+                <!-- Bookable Flights Section -->
+                <div id="bookable-flights" class="hidden mb-12">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-semibold flex items-center">
+                            <i class="fas fa-plane-departure text-primary mr-2"></i> 
+                            Available Flights
+                            <span id="flights-count" class="ml-2 text-lg bg-primary text-white rounded-full px-3 py-1"></span>
+                        </h3>
+                        <div id="flights-sorting" class="hidden">
+                            <div class="flex space-x-2">
+                                <button class="sort-btn bg-primary text-white px-3 py-1 rounded-lg text-sm" data-sort="best">
+                                    Best
+                                </button>
+                                <button class="sort-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm" data-sort="price">
+                                    Price
+                                </button>
+                                <button class="sort-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm" data-sort="duration">
+                                    Duration
+                                </button>
+                                <button class="sort-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm" data-sort="departure">
+                                    Departure
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="flights-container" class="space-y-4">
+                        <!-- Flight cards will be inserted here -->
+                    </div>
+                    
+                    <div id="booking-disclaimer" class="hidden mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <p class="text-sm text-yellow-800">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Flight prices and availability are provided by our travel partners. By clicking "Book Now" you'll be redirected to their booking platform.
+                            Flytr may earn a commission on bookings made through these links.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Delay Predictor -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
-                    <h3 class="text-2xl font-semibold mb-4 flex items-center">
-                        <i class="fas fa-clock text-primary mr-2"></i> 
-                        Flight Delay Predictor
-                    </h3>
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-2xl font-semibold flex items-center">
+                            <i class="fas fa-clock text-primary mr-2"></i> 
+                            Flight Delay Predictor
+                        </h3>
+                        <button class="share-btn text-gray-500 hover:text-primary p-2" onclick="shareSection('delay-predictor')" title="Share this prediction">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    </div>
                     <div class="mb-4">
                         <div class="flex justify-between mb-1">
                             <span class="text-sm font-medium">Delay Probability</span>
@@ -332,145 +405,191 @@
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Fare Calendar -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-calendar-alt text-secondary mr-2"></i> 
-                            Cheapest Fare Calendar
-                        </h3>
-                        <div id="fare-calendar" class="text-center">
-                            <div id="fare-calendar-content">
+                <!-- Two-Column Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <!-- Left Column -->
+                    <div class="space-y-8">
+                        <!-- Fare Calendar -->
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-semibold flex items-center">
+                                    <i class="fas fa-calendar-alt text-secondary mr-2"></i> 
+                                    Cheapest Fare Calendar
+                                </h3>
+                                <button class="share-btn text-gray-500 hover:text-secondary p-2" onclick="shareSection('fare-calendar')" title="Share this calendar">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                            <div id="fare-calendar" class="text-center">
+                                <div id="fare-calendar-content">
+                                    <div class="animate-pulse">
+                                        <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                        <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                        <div class="h-4 bg-gray-200 rounded"></div>
+                                    </div>
+                                </div>
+                                <div id="calendar-heatmap" class="mt-4 hidden">
+                                    <!-- Calendar heatmap will be generated here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Packing Checklist -->
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-semibold flex items-center">
+                                    <i class="fas fa-suitcase text-purple-600 mr-2"></i> 
+                                    Smart Packing List
+                                </h3>
+                                <button class="share-btn text-gray-500 hover:text-purple-600 p-2" onclick="shareSection('packing-list')" title="Share packing list">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                            <div id="packing-checklist">
                                 <div class="animate-pulse">
                                     <div class="h-4 bg-gray-200 rounded mb-2"></div>
                                     <div class="h-4 bg-gray-200 rounded mb-2"></div>
                                     <div class="h-4 bg-gray-200 rounded"></div>
                                 </div>
                             </div>
-                            <div id="calendar-heatmap" class="mt-4 hidden">
-                                <!-- Calendar heatmap will be generated here -->
+                        </div>
+                        
+                        <!-- Travel Requirements -->
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-semibold flex items-center">
+                                    <i class="fas fa-passport text-yellow-600 mr-2"></i> 
+                                    Travel Requirements
+                                </h3>
+                                <button class="share-btn text-gray-500 hover:text-yellow-600 p-2" onclick="shareSection('travel-requirements')" title="Share requirements">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                            <div id="travel-requirements">
+                                <div class="animate-pulse">
+                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div class="h-4 bg-gray-200 rounded"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Packing Checklist -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-suitcase text-purple-600 mr-2"></i> 
-                            Smart Packing List
-                        </h3>
-                        <div id="packing-checklist">
-                            <div class="animate-pulse">
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded"></div>
+                    <!-- Right Column -->
+                    <div class="space-y-8">
+                        <!-- Airport Intelligence -->
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-semibold flex items-center">
+                                    <i class="fas fa-map-marked-alt text-red-600 mr-2"></i> 
+                                    Airport Intelligence
+                                </h3>
+                                <button class="share-btn text-gray-500 hover:text-red-600 p-2" onclick="shareSection('airport-info')" title="Share airport info">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                            <div id="airport-info">
+                                <div class="animate-pulse">
+                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div class="h-4 bg-gray-200 rounded"></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Travel Requirements -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-passport text-yellow-600 mr-2"></i> 
-                            Travel Requirements
-                        </h3>
-                        <div id="travel-requirements">
-                            <div class="animate-pulse">
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded"></div>
+                        
+                        <!-- Carbon Footprint -->
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-semibold flex items-center">
+                                    <i class="fas fa-leaf text-indigo-600 mr-2"></i> 
+                                    Carbon Footprint
+                                </h3>
+                                <button class="share-btn text-gray-500 hover:text-indigo-600 p-2" onclick="shareSection('carbon-footprint')" title="Share carbon info">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                            <div id="carbon-info">
+                                <div class="animate-pulse">
+                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div class="h-4 bg-gray-200 rounded"></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Airport Intelligence -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-map-marked-alt text-red-600 mr-2"></i> 
-                            Airport Intelligence
-                        </h3>
-                        <div id="airport-info">
-                            <div class="animate-pulse">
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded"></div>
+                        
+                        <!-- Travel Day Planner -->
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-semibold flex items-center">
+                                    <i class="fas fa-road text-green-600 mr-2"></i> 
+                                    Travel Day Planner
+                                </h3>
+                                <button class="share-btn text-gray-500 hover:text-green-600 p-2" onclick="shareSection('travel-planner')" title="Share travel plan">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                            <div id="travel-timeline">
+                                <div class="animate-pulse">
+                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div class="h-4 bg-gray-200 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Layover Suggestions -->
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-semibold flex items-center">
+                                    <i class="fas fa-bed text-blue-500 mr-2"></i> 
+                                    Layover Suggestions
+                                </h3>
+                                <button class="share-btn text-gray-500 hover:text-blue-500 p-2" onclick="shareSection('layover-suggestions')" title="Share layover tips">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                            <div id="layover-suggestions">
+                                <div class="animate-pulse">
+                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div class="h-4 bg-gray-200 rounded"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Additional Intelligence Features -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                    <!-- Carbon Footprint -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-leaf text-indigo-600 mr-2"></i> 
-                            Carbon Footprint
-                        </h3>
-                        <div id="carbon-info">
-                            <div class="animate-pulse">
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Enhanced Travel Timeline -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-road text-green-600 mr-2"></i> 
-                            Travel Day Planner
-                        </h3>
-                        <div id="travel-timeline">
-                            <div class="animate-pulse">
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- New Features Section -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                    <!-- Layover Suggestions -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
-                            <i class="fas fa-bed text-blue-500 mr-2"></i> 
-                            Layover Suggestions
-                        </h3>
-                        <div id="layover-suggestions">
-                            <div class="animate-pulse">
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Travel Risk Assessment -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                <!-- Travel Risk Assessment -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-semibold flex items-center">
                             <i class="fas fa-shield-alt text-orange-500 mr-2"></i> 
                             Travel Risk Assessment
                         </h3>
-                        <div id="risk-snapshot">
-                            <div class="animate-pulse">
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                <div class="h-4 bg-gray-200 rounded"></div>
-                            </div>
+                        <button class="share-btn text-gray-500 hover:text-orange-500 p-2" onclick="shareSection('risk-assessment')" title="Share risk assessment">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    </div>
+                    <div id="risk-snapshot">
+                        <div class="animate-pulse">
+                            <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                            <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                            <div class="h-4 bg-gray-200 rounded"></div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Loyalty Benefits Optimizer -->
-                <div class="bg-white rounded-2xl shadow-lg p-6 mt-8">
-                    <h3 class="text-xl font-semibold mb-4 flex items-center">
-                        <i class="fas fa-crown text-orange-600 mr-2"></i> 
-                        Loyalty Benefits Optimizer
-                    </h3>
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-semibold flex items-center">
+                            <i class="fas fa-crown text-orange-600 mr-2"></i> 
+                            Loyalty Benefits Optimizer
+                        </h3>
+                        <button class="share-btn text-gray-500 hover:text-orange-600 p-2" onclick="shareSection('loyalty-optimizer')" title="Share loyalty tips">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    </div>
                     <div id="loyalty-optimizer">
                         <div class="animate-pulse">
                             <div class="h-4 bg-gray-200 rounded mb-2"></div>
@@ -645,6 +764,24 @@
 
     <!-- Scripts -->
     <script>
+        // API Configuration - Updated for new serverless functions
+        const API_CONFIG = {
+            // Serverless function endpoints (these will call the actual APIs on the server)
+            serverless: {
+                flights: '/api/flights',      // OpenSky for real-time flight data
+                fares: '/api/fares',          // Travelpayouts for bookable flights (uses env vars server-side)
+                weather: '/api/weather',
+                advisory: '/api/advisory',    // Government travel advisories
+                currency: '/api/currency',
+                carbon: '/api/carbon',
+                news: '/api/news',
+                airport: '/api/airport',      // Merged airport.js and aerodatabox.js
+                layover: '/api/layover',
+                loyalty: '/api/loyalty',      // Supabase loyalty data
+                prediction: '/api/prediction' // Prediction logging
+            }
+        };
+        
         // Mobile menu functionality
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const closeMenuButton = document.getElementById('close-menu');
@@ -678,21 +815,6 @@
             }
         });
         
-        // API Configuration - Serverless Functions with API Keys (Replace with actual keys for production)
-        const API_CONFIG = {
-            // Serverless function endpoints (these will call the actual APIs on the server)
-            serverless: {
-                flights: '/api/flights',
-                weather: '/api/weather',
-                advisory: '/api/advisory',
-                currency: '/api/currency',
-                carbon: '/api/carbon',
-                news: '/api/news',
-                airport: '/api/airport',
-                layover: '/api/layover',
-                fares: '/api/fares'
-            },
-                 
         // Form submission with serverless API calls
         const searchForm = document.getElementById('flight-search-form');
         const intelligenceResults = document.getElementById('intelligence-results');
@@ -721,12 +843,18 @@
             // Show loading animation in all sections
             showLoadingStates();
             
+            // Hide bookable flights section until data is loaded
+            document.getElementById('bookable-flights').classList.add('hidden');
+            
             try {
                 // Extract airport codes
                 const fromCode = extractAirportCode(from);
                 const toCode = extractAirportCode(to);
                 
-                // Fetch all data in parallel using serverless functions
+                // Fetch bookable flights first (Travelpayouts)
+                await fetchBookableFlights(fromCode, toCode, date, travelers);
+                
+                // Then fetch all other data in parallel
                 await Promise.all([
                     fetchFlightData(fromCode, toCode, date),
                     fetchWeatherData(to),
@@ -754,229 +882,229 @@
             // Try to get from city name mapping
             const cityMapping = {
                 'new york': ['JFK', 'LGA', 'EWR'],
-        'london': ['LHR', 'LGW', 'STN', 'LCY'],
-        'los angeles': ['LAX', 'BUR', 'SNA', 'ONT'],
-        'chicago': ['ORD', 'MDW'],
-        'dallas': ['DFW', 'DAL'],
-        'san francisco': ['SFO', 'OAK', 'SJC'],
-        'miami': ['MIA', 'FLL'],
-        'las vegas': ['LAS'],
-        'orlando': ['MCO', 'SFB'],
-        'seattle': ['SEA', 'BFI'],
-        'denver': ['DEN'],
-        'atlanta': ['ATL'],
-        'boston': ['BOS'],
-        'washington': ['IAD', 'DCA', 'BWI'],
-        'philadelphia': ['PHL'],
-        'houston': ['IAH', 'HOU'],
-        'phoenix': ['PHX'],
-        'detroit': ['DTW'],
-        'minneapolis': ['MSP'],
-        'salt lake city': ['SLC'],
-        'portland': ['PDX'],
-        'san diego': ['SAN'],
-        'tampa': ['TPA'],
-        'charlotte': ['CLT'],
-        'raleigh': ['RDU'],
-        'nashville': ['BNA'],
-        'austin': ['AUS'],
-        'san antonio': ['SAT'],
-        'kansas city': ['MCI'],
-        'st louis': ['STL'],
-        'pittsburgh': ['PIT'],
-        'cincinnati': ['CVG'],
-        'cleveland': ['CLE'],
-        'indianapolis': ['IND'],
-        'columbus': ['CMH'],
-        'milwaukee': ['MKE'],
-        'oklahoma city': ['OKC'],
-        'memphis': ['MEM'],
-        'louisville': ['SDF'],
-        'albany': ['ALB'],
-        'albuquerque': ['ABQ'],
-        'anchorage': ['ANC'],
-        'aspen': ['ASE'],
-        'atlanta': ['ATL'],
-        'austin': ['AUS'],
-        'baltimore': ['BWI'],
-        'birmingham': ['BHM'],
-        'boise': ['BOI'],
-        'buffalo': ['BUF'],
-        'charleston': ['CHS'],
-        'charlotte': ['CLT'],
-        'chattanooga': ['CHA'],
-        'chicago': ['ORD', 'MDW'],
-        'cincinnati': ['CVG'],
-        'cleveland': ['CLE'],
-        'colorado springs': ['COS'],
-        'columbia': ['CAE'],
-        'columbus': ['CMH'],
-        'dallas': ['DFW', 'DAL'],
-        'dayton': ['DAY'],
-        'daytona beach': ['DAB'],
-        'denver': ['DEN'],
-        'des moines': ['DSM'],
-        'detroit': ['DTW'],
-        'el paso': ['ELP'],
-        'eugene': ['EUG'],
-        'fayetteville': ['XNA'],
-        'flint': ['FNT'],
-        'fort lauderdale': ['FLL'],
-        'fort myers': ['RSW'],
-        'fresno': ['FAT'],
-        'grand rapids': ['GRR'],
-        'greensboro': ['GSO'],
-        'greenville': ['GSP'],
-        'harrisburg': ['MDT'],
-        'hartford': ['BDL'],
-        'honolulu': ['HNL'],
-        'houston': ['IAH', 'HOU'],
-        'huntsville': ['HSV'],
-        'indianapolis': ['IND'],
-        'jackson': ['JAN'],
-        'jacksonville': ['JAX'],
-        'kansas city': ['MCI'],
-        'knoxville': ['TYS'],
-        'las vegas': ['LAS'],
-        'lexington': ['LEX'],
-        'little rock': ['LIT'],
-        'los angeles': ['LAX', 'BUR', 'SNA', 'ONT'],
-        'louisville': ['SDF'],
-        'lubbock': ['LBB'],
-        'madison': ['MSN'],
-        'memphis': ['MEM'],
-        'miami': ['MIA', 'FLL'],
-        'milwaukee': ['MKE'],
-        'minneapolis': ['MSP'],
-        'mobile': ['MOB'],
-        'nashville': ['BNA'],
-        'new orleans': ['MSY'],
-        'new york': ['JFK', 'LGA', 'EWR'],
-        'norfolk': ['ORF'],
-        'oklahoma city': ['OKC'],
-        'omaha': ['OMA'],
-        'orlando': ['MCO', 'SFB'],
-        'pensacola': ['PNS'],
-        'philadelphia': ['PHL'],
-        'phoenix': ['PHX'],
-        'pittsburgh': ['PIT'],
-        'portland': ['PDX'],
-        'providence': ['PVD'],
-        'raleigh': ['RDU'],
-        'reno': ['RNO'],
-        'richmond': ['RIC'],
-        'rochester': ['ROC'],
-        'sacramento': ['SMF'],
-        'salt lake city': ['SLC'],
-        'san antonio': ['SAT'],
-        'san diego': ['SAN'],
-        'san francisco': ['SFO', 'OAK', 'SJC'],
-        'san jose': ['SJC'],
-        'santa barbara': ['SBA'],
-        'sarasota': ['SRQ'],
-        'savannah': ['SAV'],
-        'seattle': ['SEA', 'BFI'],
-        'shreveport': ['SHV'],
-        'spokane': ['GEG'],
-        'springfield': ['SGF'],
-        'st louis': ['STL'],
-        'syracuse': ['SYR'],
-        'tallahassee': ['TLH'],
-        'tampa': ['TPA'],
-        'toledo': ['TOL'],
-        'tucson': ['TUS'],
-        'tulsa': ['TUL'],
-        'washington': ['IAD', 'DCA', 'BWI'],
-        'wichita': ['ICT'],
-        'wilmington': ['ILM'],
-        // International cities
-        'tokyo': ['HND', 'NRT'],
-        'paris': ['CDG', 'ORY'],
-        'frankfurt': ['FRA'],
-        'dubai': ['DXB'],
-        'singapore': ['SIN'],
-        'sydney': ['SYD'],
-        'toronto': ['YYZ', 'YTZ'],
-        'beijing': ['PEK', 'PKX'],
-        'shanghai': ['PVG', 'SHA'],
-        'hong kong': ['HKG'],
-        'seoul': ['ICN', 'GMP'],
-        'bangkok': ['BKK'],
-        'amsterdam': ['AMS'],
-        'istanbul': ['IST'],
-        'madrid': ['MAD'],
-        'rome': ['FCO', 'CIA'],
-        'milan': ['MXP', 'LIN'],
-        'barcelona': ['BCN'],
-        'munich': ['MUC'],
-        'zurich': ['ZRH'],
-        'vienna': ['VIE'],
-        'prague': ['PRG'],
-        'budapest': ['BUD'],
-        'warsaw': ['WAW'],
-        'stockholm': ['ARN'],
-        'copenhagen': ['CPH'],
-        'oslo': ['OSL'],
-        'helsinki': ['HEL'],
-        'dublin': ['DUB'],
-        'manchester': ['MAN'],
-        'brussels': ['BRU'],
-        'lisbon': ['LIS'],
-        'athens': ['ATH'],
-        'moscow': ['SVO', 'DME', 'VKO'],
-        'doha': ['DOH'],
-        'abu dhabi': ['AUH'],
-        'riyadh': ['RUH'],
-        'jakarta': ['CGK'],
-        'kuala lumpur': ['KUL'],
-        'manila': ['MNL'],
-        'delhi': ['DEL'],
-        'mumbai': ['BOM'],
-        'bangalore': ['BLR'],
-        'chennai': ['MAA'],
-        'hyderabad': ['HYD'],
-        'kolkata': ['CCU'],
-        'karachi': ['KHI'],
-        'lahore': ['LHE'],
-        'dhaka': ['DAC'],
-        'colombo': ['CMB'],
-        'kathmandu': ['KTM'],
-        'yangon': ['RGN'],
-        'ho chi minh': ['SGN'],
-        'hanoi': ['HAN'],
-        'phnom penh': ['PNH'],
-        'vientiane': ['VTE'],
-        'ulaanbaatar': ['ULN'],
-        'ulaanbatar': ['ULN'],
-        'tehran': ['IKA'],
-        'baghdad': ['BGW'],
-        'cairo': ['CAI'],
-        'casablanca': ['CMN'],
-        'algiers': ['ALG'],
-        'tunis': ['TUN'],
-        'accra': ['ACC'],
-        'lagos': ['LOS'],
-        'abuja': ['ABV'],
-        'nairobi': ['NBO'],
-        'dar es salaam': ['DAR'],
-        'johannesburg': ['JNB'],
-        'cape town': ['CPT'],
-        'durban': ['DUR'],
-        'harare': ['HRE'],
-        'lusaka': ['LUN'],
-        'addis ababa': ['ADD'],
-        'kampala': ['EBB'],
-        'kigali': ['KGL'],
-        'bujumbura': ['BJM'],
-        'antananarivo': ['TNR'],
-        'mahe': ['SEZ'],
-        'victoria': ['SEZ'],
-        'moroni': ['HAH'],
-        'mamoudzou': ['DZA'],
-        'saint-denis': ['RUN'],
-        'saint-pierre': ['ZSE'],
-        'saint-paul': ['ZSP']
-    };
+                'london': ['LHR', 'LGW', 'STN', 'LCY'],
+                'los angeles': ['LAX', 'BUR', 'SNA', 'ONT'],
+                'chicago': ['ORD', 'MDW'],
+                'dallas': ['DFW', 'DAL'],
+                'san francisco': ['SFO', 'OAK', 'SJC'],
+                'miami': ['MIA', 'FLL'],
+                'las vegas': ['LAS'],
+                'orlando': ['MCO', 'SFB'],
+                'seattle': ['SEA', 'BFI'],
+                'denver': ['DEN'],
+                'atlanta': ['ATL'],
+                'boston': ['BOS'],
+                'washington': ['IAD', 'DCA', 'BWI'],
+                'philadelphia': ['PHL'],
+                'houston': ['IAH', 'HOU'],
+                'phoenix': ['PHX'],
+                'detroit': ['DTW'],
+                'minneapolis': ['MSP'],
+                'salt lake city': ['SLC'],
+                'portland': ['PDX'],
+                'san diego': ['SAN'],
+                'tampa': ['TPA'],
+                'charlotte': ['CLT'],
+                'raleigh': ['RDU'],
+                'nashville': ['BNA'],
+                'austin': ['AUS'],
+                'san antonio': ['SAT'],
+                'kansas city': ['MCI'],
+                'st louis': ['STL'],
+                'pittsburgh': ['PIT'],
+                'cincinnati': ['CVG'],
+                'cleveland': ['CLE'],
+                'indianapolis': ['IND'],
+                'columbus': ['CMH'],
+                'milwaukee': ['MKE'],
+                'oklahoma city': ['OKC'],
+                'memphis': ['MEM'],
+                'louisville': ['SDF'],
+                'albany': ['ALB'],
+                'albuquerque': ['ABQ'],
+                'anchorage': ['ANC'],
+                'aspen': ['ASE'],
+                'atlanta': ['ATL'],
+                'austin': ['AUS'],
+                'baltimore': ['BWI'],
+                'birmingham': ['BHM'],
+                'boise': ['BOI'],
+                'buffalo': ['BUF'],
+                'charleston': ['CHS'],
+                'charlotte': ['CLT'],
+                'chattanooga': ['CHA'],
+                'chicago': ['ORD', 'MDW'],
+                'cincinnati': ['CVG'],
+                'cleveland': ['CLE'],
+                'colorado springs': ['COS'],
+                'columbia': ['CAE'],
+                'columbus': ['CMH'],
+                'dallas': ['DFW', 'DAL'],
+                'dayton': ['DAY'],
+                'daytona beach': ['DAB'],
+                'denver': ['DEN'],
+                'des moines': ['DSM'],
+                'detroit': ['DTW'],
+                'el paso': ['ELP'],
+                'eugene': ['EUG'],
+                'fayetteville': ['XNA'],
+                'flint': ['FNT'],
+                'fort lauderdale': ['FLL'],
+                'fort myers': ['RSW'],
+                'fresno': ['FAT'],
+                'grand rapids': ['GRR'],
+                'greensboro': ['GSO'],
+                'greenville': ['GSP'],
+                'harrisburg': ['MDT'],
+                'hartford': ['BDL'],
+                'honolulu': ['HNL'],
+                'houston': ['IAH', 'HOU'],
+                'huntsville': ['HSV'],
+                'indianapolis': ['IND'],
+                'jackson': ['JAN'],
+                'jacksonville': ['JAX'],
+                'kansas city': ['MCI'],
+                'knoxville': ['TYS'],
+                'las vegas': ['LAS'],
+                'lexington': ['LEX'],
+                'little rock': ['LIT'],
+                'los angeles': ['LAX', 'BUR', 'SNA', 'ONT'],
+                'louisville': ['SDF'],
+                'lubbock': ['LBB'],
+                'madison': ['MSN'],
+                'memphis': ['MEM'],
+                'miami': ['MIA', 'FLL'],
+                'milwaukee': ['MKE'],
+                'minneapolis': ['MSP'],
+                'mobile': ['MOB'],
+                'nashville': ['BNA'],
+                'new orleans': ['MSY'],
+                'new york': ['JFK', 'LGA', 'EWR'],
+                'norfolk': ['ORF'],
+                'oklahoma city': ['OKC'],
+                'omaha': ['OMA'],
+                'orlando': ['MCO', 'SFB'],
+                'pensacola': ['PNS'],
+                'philadelphia': ['PHL'],
+                'phoenix': ['PHX'],
+                'pittsburgh': ['PIT'],
+                'portland': ['PDX'],
+                'providence': ['PVD'],
+                'raleigh': ['RDU'],
+                'reno': ['RNO'],
+                'richmond': ['RIC'],
+                'rochester': ['ROC'],
+                'sacramento': ['SMF'],
+                'salt lake city': ['SLC'],
+                'san antonio': ['SAT'],
+                'san diego': ['SAN'],
+                'san francisco': ['SFO', 'OAK', 'SJC'],
+                'san jose': ['SJC'],
+                'santa barbara': ['SBA'],
+                'sarasota': ['SRQ'],
+                'savannah': ['SAV'],
+                'seattle': ['SEA', 'BFI'],
+                'shreveport': ['SHV'],
+                'spokane': ['GEG'],
+                'springfield': ['SGF'],
+                'st louis': ['STL'],
+                'syracuse': ['SYR'],
+                'tallahassee': ['TLH'],
+                'tampa': ['TPA'],
+                'toledo': ['TOL'],
+                'tucson': ['TUS'],
+                'tulsa': ['TUL'],
+                'washington': ['IAD', 'DCA', 'BWI'],
+                'wichita': ['ICT'],
+                'wilmington': ['ILM'],
+                // International cities
+                'tokyo': ['HND', 'NRT'],
+                'paris': ['CDG', 'ORY'],
+                'frankfurt': ['FRA'],
+                'dubai': ['DXB'],
+                'singapore': ['SIN'],
+                'sydney': ['SYD'],
+                'toronto': ['YYZ', 'YTZ'],
+                'beijing': ['PEK', 'PKX'],
+                'shanghai': ['PVG', 'SHA'],
+                'hong kong': ['HKG'],
+                'seoul': ['ICN', 'GMP'],
+                'bangkok': ['BKK'],
+                'amsterdam': ['AMS'],
+                'istanbul': ['IST'],
+                'madrid': ['MAD'],
+                'rome': ['FCO', 'CIA'],
+                'milan': ['MXP', 'LIN'],
+                'barcelona': ['BCN'],
+                'munich': ['MUC'],
+                'zurich': ['ZRH'],
+                'vienna': ['VIE'],
+                'prague': ['PRG'],
+                'budapest': ['BUD'],
+                'warsaw': ['WAW'],
+                'stockholm': ['ARN'],
+                'copenhagen': ['CPH'],
+                'oslo': ['OSL'],
+                'helsinki': ['HEL'],
+                'dublin': ['DUB'],
+                'manchester': ['MAN'],
+                'brussels': ['BRU'],
+                'lisbon': ['LIS'],
+                'athens': ['ATH'],
+                'moscow': ['SVO', 'DME', 'VKO'],
+                'doha': ['DOH'],
+                'abu dhabi': ['AUH'],
+                'riyadh': ['RUH'],
+                'jakarta': ['CGK'],
+                'kuala lumpur': ['KUL'],
+                'manila': ['MNL'],
+                'delhi': ['DEL'],
+                'mumbai': ['BOM'],
+                'bangalore': ['BLR'],
+                'chennai': ['MAA'],
+                'hyderabad': ['HYD'],
+                'kolkata': ['CCU'],
+                'karachi': ['KHI'],
+                'lahore': ['LHE'],
+                'dhaka': ['DAC'],
+                'colombo': ['CMB'],
+                'kathmandu': ['KTM'],
+                'yangon': ['RGN'],
+                'ho chi minh': ['SGN'],
+                'hanoi': ['HAN'],
+                'phnom penh': ['PNH'],
+                'vientiane': ['VTE'],
+                'ulaanbaatar': ['ULN'],
+                'ulaanbatar': ['ULN'],
+                'tehran': ['IKA'],
+                'baghdad': ['BGW'],
+                'cairo': ['CAI'],
+                'casablanca': ['CMN'],
+                'algiers': ['ALG'],
+                'tunis': ['TUN'],
+                'accra': ['ACC'],
+                'lagos': ['LOS'],
+                'abuja': ['ABV'],
+                'nairobi': ['NBO'],
+                'dar es salaam': ['DAR'],
+                'johannesburg': ['JNB'],
+                'cape town': ['CPT'],
+                'durban': ['DUR'],
+                'harare': ['HRE'],
+                'lusaka': ['LUN'],
+                'addis ababa': ['ADD'],
+                'kampala': ['EBB'],
+                'kigali': ['KGL'],
+                'bujumbura': ['BJM'],
+                'antananarivo': ['TNR'],
+                'mahe': ['SEZ'],
+                'victoria': ['SEZ'],
+                'moroni': ['HAH'],
+                'mamoudzou': ['DZA'],
+                'saint-denis': ['RUN'],
+                'saint-pierre': ['ZSE'],
+                'saint-paul': ['ZSP']
+            };
             
             const lowerInput = input.toLowerCase();
             for (const [city, code] of Object.entries(cityMapping)) {
@@ -1030,88 +1158,270 @@
             document.getElementById('delay-insights').innerHTML = '<p>Fetching real-time flight data...</p>';
         }
         
-        // Fetch flight data via serverless function
-async function fetchFlightData(fromCode, toCode, date) {
-    try {
-        const response = await fetch(API_CONFIG.serverless.flights, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                from: fromCode,
-                to: toCode,
-                date: date,
-                travelers: document.getElementById('travelers').value
-            })
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Flight API failed');
-        }
-        
-        const data = await response.json();
-        
-        if (data.success && data.data && data.data.length > 0) {
-            const flight = data.data[0];
-            const delay = flight.departure.delay || 0;
-            const delayProb = Math.min(90, Math.max(10, Math.floor(delay / 10)));
+        // Function to fetch and display bookable flights
+        async function fetchBookableFlights(fromCode, toCode, date, travelers) {
+            const container = document.getElementById('flights-container');
+            const section = document.getElementById('bookable-flights');
+            const countSpan = document.getElementById('flights-count');
+            const disclaimer = document.getElementById('booking-disclaimer');
             
-            // Update delay predictor
-            delayIndicator.style.width = `${delayProb}%`;
-            delayPercentage.textContent = `${delayProb}%`;
-            
-            document.getElementById('delay-insights').innerHTML = `
-                <p>Flight ${flight.flight.iata} by ${flight.airline.name} is ${delay > 0 ? `delayed by ${delay} minutes` : 'on time'}.</p>
-                <p class="text-sm mt-2">Departure: ${flight.departure.scheduled} | Arrival: ${flight.arrival.scheduled}</p>
+            // Show loading
+            container.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <p class="mt-2 text-gray-600">Searching for available flights...</p>
+                </div>
             `;
+            section.classList.remove('hidden');
             
-            if (delayProb > 50) {
-                alternativeFlights.classList.remove('hidden');
-                altFlightsText.textContent = `Due to delay probability (${delayProb}%), consider alternative flights or arriving at the airport earlier.`;
+            try {
+                // Call serverless function - credentials are handled server-side
+                const response = await fetch(API_CONFIG.serverless.fares, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        from: fromCode, 
+                        to: toCode, 
+                        date: date,
+                        travelers: travelers
+                        // NO credentials sent from client!
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.flights && result.flights.length > 0) {
+                    // Display flights - affiliate links already include marker server-side
+                    displayFlights(result.flights);
+                    countSpan.textContent = result.flights.length;
+                    disclaimer.classList.remove('hidden');
+                    
+                    // Add sorting functionality
+                    setupFlightSorting(result.flights);
+                    
+                } else {
+                    // No flights found
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-search text-3xl mb-2"></i>
+                            <p>No bookable flights found for these dates.</p>
+                            <p class="text-sm mt-2">Try adjusting your travel dates or check the fare calendar for better prices.</p>
+                        </div>
+                    `;
+                    countSpan.textContent = '0';
+                }
+                
+            } catch (error) {
+                console.error('Error fetching bookable flights:', error);
+                container.innerHTML = `
+                    <div class="text-center py-8 text-yellow-600">
+                        <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
+                        <p>Unable to load flight booking options.</p>
+                        <p class="text-sm mt-2">You can still use our intelligence features below.</p>
+                    </div>
+                `;
             }
-            
-            // Update travel timeline with real flight data
-            updateTravelTimelineWithRealData(flight);
-            
-            // Update carbon info
-            await updateCarbonInfoWithRealData(flight);
-            
-            // ✅ ADD THIS: Update airport info with destination airport
-            await updateAirportInfo(toCode);
-            
-        } else {
-            // No flight data found - use mock data but still try to get airport info
-            const delayProb = Math.floor(Math.random() * 60) + 10;
-            delayIndicator.style.width = `${delayProb}%`;
-            delayPercentage.textContent = `${delayProb}%`;
-            document.getElementById('delay-insights').innerHTML = 
-                '<p>Using estimated data. Configure AviationStack API for real-time information.</p>';
-            
-            // Still update airport info even if no flight data
-            await updateAirportInfo(toCode);
-            
-            throw new Error('No flight data found');
         }
         
-    } catch (error) {
-        console.error('Flight API Error:', error);
-        // Use mock data as fallback
-        const delayProb = Math.floor(Math.random() * 60) + 10;
-        delayIndicator.style.width = `${delayProb}%`;
-        delayPercentage.textContent = `${delayProb}%`;
+        // Function to display flight cards
+        function displayFlights(flights) {
+            const container = document.getElementById('flights-container');
+            
+            const flightCards = flights.map((flight, index) => {
+                // Determine badges
+                const badges = [];
+                if (flight.isCheapest) badges.push({ text: 'Cheapest', class: 'bg-green-100 text-green-800' });
+                if (flight.isBestValue) badges.push({ text: 'Best Value', class: 'bg-blue-100 text-blue-800' });
+                if (flight.isShortest) badges.push({ text: 'Shortest', class: 'bg-purple-100 text-purple-800' });
+                
+                // Calculate duration
+                const duration = flight.duration || '--h --m';
+                
+                // Build affiliate link - already includes marker from server
+                const affiliateLink = flight.deepLink || '#';
+                
+                return `
+                    <div class="flight-card bg-white border border-gray-200 rounded-xl p-4 ${flight.isCheapest ? 'cheapest' : ''} ${flight.isBestValue ? 'best-value' : ''}" data-price="${flight.price}" data-duration="${flight.durationMinutes || 0}" data-departure="${flight.departureTime || ''}">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center mb-2">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                                        <i class="fas fa-plane text-gray-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">${flight.airline || 'Multiple Airlines'}</h4>
+                                        <p class="text-sm text-gray-600">${flight.flightNumber || 'Flight details on booking site'}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3">
+                                    <div>
+                                        <p class="text-xs text-gray-500">Departure</p>
+                                        <p class="font-medium">${flight.departureTime || '--:--'}</p>
+                                        <p class="text-xs text-gray-600">${flight.origin || ''}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500">Arrival</p>
+                                        <p class="font-medium">${flight.arrivalTime || '--:--'}</p>
+                                        <p class="text-xs text-gray-600">${flight.destination || ''}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500">Duration</p>
+                                        <p class="font-medium">${duration}</p>
+                                        <p class="text-xs text-gray-600">${flight.stops === 0 ? 'Non-stop' : (flight.stops || '?') + ' stop(s)'}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500">Price per person</p>
+                                        <p class="text-2xl font-bold text-primary">$${flight.price || '0'}</p>
+                                        <p class="text-xs text-gray-600">${flight.currency || 'USD'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 md:mt-0 md:ml-6 md:text-right">
+                                <div class="mb-3 flex flex-wrap gap-2 justify-end">
+                                    ${badges.map(badge => `
+                                        <span class="px-2 py-1 text-xs font-medium rounded ${badge.class}">
+                                            ${badge.text}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                                <a href="${affiliateLink}" target="_blank" rel="noopener noreferrer" 
+                                   class="inline-block bg-primary hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300">
+                                    <i class="fas fa-external-link-alt mr-2"></i> Book Now
+                                </a>
+                                <p class="text-xs text-gray-500 mt-2">Total for ${document.getElementById('travelers').value || 1} traveler(s): <span class="font-medium">$${flight.totalPrice || flight.price}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = flightCards;
+        }
         
-        // Show error message
-        document.getElementById('delay-insights').innerHTML = `
-            <p>Using estimated data. For real-time information, ensure your API keys are configured.</p>
-            <p class="text-sm text-gray-500 mt-1">Error: ${error.message}</p>
-        `;
+        // Function to set up flight sorting
+        function setupFlightSorting(flights) {
+            const sortButtons = document.querySelectorAll('.sort-btn');
+            document.getElementById('flights-sorting').classList.remove('hidden');
+            
+            sortButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active button
+                    sortButtons.forEach(btn => {
+                        btn.classList.remove('bg-primary', 'text-white');
+                        btn.classList.add('bg-gray-200', 'text-gray-700');
+                    });
+                    this.classList.remove('bg-gray-200', 'text-gray-700');
+                    this.classList.add('bg-primary', 'text-white');
+                    
+                    // Sort flights
+                    const sortBy = this.dataset.sort;
+                    let sortedFlights = [...flights];
+                    
+                    switch(sortBy) {
+                        case 'price':
+                            sortedFlights.sort((a, b) => a.price - b.price);
+                            break;
+                        case 'duration':
+                            sortedFlights.sort((a, b) => (a.durationMinutes || 0) - (b.durationMinutes || 0));
+                            break;
+                        case 'departure':
+                            sortedFlights.sort((a, b) => (a.departureTime || '').localeCompare(b.departureTime || ''));
+                            break;
+                        default:
+                            // Best: default order (as returned by the API)
+                            break;
+                    }
+                    
+                    // Re-display sorted flights
+                    displayFlights(sortedFlights);
+                });
+            });
+        }
         
-        // ✅ ADD THIS: Still update airport info even on error
-        await updateAirportInfo(toCode);
-    }
-}
+        // Fetch flight data via serverless function
+        async function fetchFlightData(fromCode, toCode, date) {
+            try {
+                const response = await fetch(API_CONFIG.serverless.flights, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        from: fromCode,
+                        to: toCode,
+                        date: date,
+                        travelers: document.getElementById('travelers').value
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Flight API failed');
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.data && data.data.length > 0) {
+                    const flight = data.data[0];
+                    const delay = flight.departure.delay || 0;
+                    const delayProb = Math.min(90, Math.max(10, Math.floor(delay / 10)));
+                    
+                    // Update delay predictor
+                    delayIndicator.style.width = `${delayProb}%`;
+                    delayPercentage.textContent = `${delayProb}%`;
+                    
+                    document.getElementById('delay-insights').innerHTML = `
+                        <p>Flight ${flight.flight.iata} by ${flight.airline.name} is ${delay > 0 ? `delayed by ${delay} minutes` : 'on time'}.</p>
+                        <p class="text-sm mt-2">Departure: ${flight.departure.scheduled} | Arrival: ${flight.arrival.scheduled}</p>
+                    `;
+                    
+                    if (delayProb > 50) {
+                        alternativeFlights.classList.remove('hidden');
+                        altFlightsText.textContent = `Due to delay probability (${delayProb}%), consider alternative flights or arriving at the airport earlier.`;
+                    }
+                    
+                    // Update travel timeline with real flight data
+                    updateTravelTimelineWithRealData(flight);
+                    
+                    // Update carbon info
+                    await updateCarbonInfoWithRealData(flight);
+                    
+                    // Update airport info with destination airport
+                    await updateAirportInfo(toCode);
+                    
+                } else {
+                    // No flight data found - use mock data but still try to get airport info
+                    const delayProb = Math.floor(Math.random() * 60) + 10;
+                    delayIndicator.style.width = `${delayProb}%`;
+                    delayPercentage.textContent = `${delayProb}%`;
+                    document.getElementById('delay-insights').innerHTML = 
+                        '<p>Using estimated data. Configure OpenSky API for real-time information.</p>';
+                    
+                    // Still update airport info even if no flight data
+                    await updateAirportInfo(toCode);
+                    
+                    throw new Error('No flight data found');
+                }
+                
+            } catch (error) {
+                console.error('Flight API Error:', error);
+                // Use mock data as fallback
+                const delayProb = Math.floor(Math.random() * 60) + 10;
+                delayIndicator.style.width = `${delayProb}%`;
+                delayPercentage.textContent = `${delayProb}%`;
+                
+                // Show error message
+                document.getElementById('delay-insights').innerHTML = `
+                    <p>Using estimated data. For real-time information, ensure your API keys are configured.</p>
+                    <p class="text-sm text-gray-500 mt-1">Error: ${error.message}</p>
+                `;
+                
+                // Still update airport info even on error
+                await updateAirportInfo(toCode);
+            }
+        }
         
         // Fetch weather data via serverless function
         async function fetchWeatherData(destination) {
@@ -1168,7 +1478,7 @@ async function fetchFlightData(fromCode, toCode, date) {
             }
         }
         
-        // Fetch travel advisory data via serverless function
+        // Fetch travel advisory data via serverless function - Now uses government open data
         async function fetchTravelAdvisoryData(destination) {
             try {
                 const response = await fetch(API_CONFIG.serverless.advisory, {
@@ -1185,9 +1495,17 @@ async function fetchFlightData(fromCode, toCode, date) {
                 
                 const data = await response.json();
                 
-                // Process travel advisory data
-                const hasAdvisory = data.advisories && data.advisories.length > 0;
+                // Process travel advisory data from government sources
                 const riskLevel = data.riskLevel || 'Low';
+                const source = data.source || 'Government Travel Advisory';
+                const lastUpdated = data.lastUpdated || 'Recently';
+                
+                let riskDetails = '';
+                if (data.details) {
+                    riskDetails = data.details.slice(0, 2).map(detail => 
+                        `<li class="text-sm text-gray-600">• ${detail}</li>`
+                    ).join('');
+                }
                 
                 document.getElementById('travel-requirements').innerHTML = `
                     <p class="text-sm text-gray-600 mb-3">Travel requirements for ${destination}:</p>
@@ -1195,13 +1513,21 @@ async function fetchFlightData(fromCode, toCode, date) {
                         <div class="w-3 h-3 ${riskLevel === 'High' ? 'bg-red-500' : (riskLevel === 'Medium' ? 'bg-yellow-500' : 'bg-green-500')} rounded-full mr-2"></div>
                         <span class="font-medium">Risk Level: ${riskLevel}</span>
                     </div>
-                    <ul class="list-disc pl-5 text-sm space-y-1">
+                    <ul class="list-disc pl-5 text-sm space-y-1 mb-3">
                         <li>Passport valid for at least 6 months</li>
-                        <li>${hasAdvisory ? 'Check latest travel notices' : 'No special requirements'}</li>
+                        <li>${riskLevel === 'High' ? 'Check latest travel notices' : 'No special requirements'}</li>
                         <li>Travel insurance recommended</li>
-                        <li>COVID-19 vaccination may be required</li>
+                        <li>Check visa requirements for your nationality</li>
                     </ul>
-                    ${hasAdvisory ? '<p class="text-xs text-yellow-600 mt-3">⚠️ Check government travel advisories before departure</p>' : ''}
+                    ${riskDetails ? `
+                    <div class="mt-3 p-3 ${riskLevel === 'High' ? 'bg-red-50' : (riskLevel === 'Medium' ? 'bg-yellow-50' : 'bg-green-50')} rounded-lg">
+                        <p class="text-xs font-medium mb-1">${source} (${lastUpdated}):</p>
+                        <ul class="text-xs space-y-1">
+                            ${riskDetails}
+                        </ul>
+                    </div>
+                    ` : ''}
+                    <p class="text-xs text-gray-500 mt-3">Data from government travel advisories (US State Department, UK Foreign Office, WHO)</p>
                 `;
                 
             } catch (error) {
@@ -1213,45 +1539,46 @@ async function fetchFlightData(fromCode, toCode, date) {
                         <li>Check visa requirements</li>
                         <li>Travel insurance recommended</li>
                     </ul>
+                    <p class="text-xs text-gray-500 mt-3">Government advisory data temporarily unavailable</p>
                 `;
             }
         }
         
         // Fetch exchange rates via serverless function
-async function fetchExchangeRate(base, target) {
-    try {
-        const response = await fetch(API_CONFIG.serverless.currency, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                base: base,
-                target: target
-            })
-        });
+        async function fetchExchangeRate(base, target) {
+            try {
+                const response = await fetch(API_CONFIG.serverless.currency, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        base: base,
+                        target: target
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Currency API failed');
+                
+                const data = await response.json();
+                const rate = data.rate || 0.85;
+                
+                // Update exchange rate info
+                const requirements = document.getElementById('travel-requirements');
+                const currentHTML = requirements.innerHTML;
+                requirements.innerHTML = currentHTML + `
+                    <p class="text-xs text-gray-500 mt-3">Exchange rate: 1 ${base} = ${rate.toFixed(3)} ${target}</p>
+                `;
+                
+                return rate;
+                
+            } catch (error) {
+                console.error('Currency API Error:', error);
+                return null;
+            }
+        }
         
-        if (!response.ok) throw new Error('Currency API failed');
-        
-        const data = await response.json();
-        const rate = data.rate || 0.85;
-        
-        // Update exchange rate info separately (not in calendar content)
-        const exchangeRateInfo = document.getElementById('exchange-rate-info');
-        exchangeRateInfo.innerHTML = `
-            <p class="text-sm text-gray-600 mb-2">Exchange rate: 1 ${base} = ${rate.toFixed(3)} ${target}</p>
-        `;
-        
-        return rate;
-        
-    } catch (error) {
-        console.error('Currency API Error:', error);
-        // Don't show anything if exchange rate fails
-        return null;
-    }
-}
-        
-        // Fetch layover suggestions via serverless function
+        // Fetch layover suggestions via serverless function - NO hotel integration
         async function fetchLayoverSuggestions(airportCode) {
             try {
                 const response = await fetch(API_CONFIG.serverless.layover, {
@@ -1285,7 +1612,7 @@ async function fetchExchangeRate(base, target) {
                         </div>
                     </div>
                     <div class="mt-4 p-3 bg-blue-50 rounded-lg">
-                        <p class="text-xs text-blue-700">💡 <strong>Pro tip:</strong> Lounges available for $35/day with shower facilities</p>
+                        <p class="text-xs text-blue-700">💡 <strong>Pro tip:</strong> Check airport websites for lounge access and transit hotel information</p>
                     </div>
                 `;
                 
@@ -1855,103 +2182,102 @@ async function fetchExchangeRate(base, target) {
         }
         
         // Update airport info via serverless function
-    
-async function updateAirportInfo(airportCode) {
-    try {
-        const response = await fetch(API_CONFIG.serverless.airport, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                airport: airportCode
-            })
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            
-            // Create airport info HTML
-            let amenitiesHTML = '';
-            if (data.amenities && data.amenities.length > 0) {
-                amenitiesHTML = data.amenities.slice(0, 5).map(amenity => 
-                    `<li class="flex items-start mb-2">
-                        <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
-                        <span class="text-sm">${amenity}</span>
-                    </li>`
-                ).join('');
+        async function updateAirportInfo(airportCode) {
+            try {
+                const response = await fetch(API_CONFIG.serverless.airport, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        airport: airportCode
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Create airport info HTML
+                    let amenitiesHTML = '';
+                    if (data.amenities && data.amenities.length > 0) {
+                        amenitiesHTML = data.amenities.slice(0, 5).map(amenity => 
+                            `<li class="flex items-start mb-2">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span class="text-sm">${amenity}</span>
+                            </li>`
+                        ).join('');
+                    }
+                    
+                    document.getElementById('airport-info').innerHTML = `
+                        <div class="mb-4">
+                            <div class="flex items-center mb-3">
+                                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-map-marker-alt text-red-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">${data.name || airportCode + ' Airport'}</h4>
+                                    <p class="text-sm text-gray-600">${data.city || 'International Airport'}</p>
+                                </div>
+                            </div>
+                            
+                            <h5 class="font-medium text-gray-800 mb-2">Key Amenities:</h5>
+                            <ul class="space-y-1 mb-4">
+                                ${amenitiesHTML || `
+                                    <li class="flex items-start mb-2">
+                                        <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                        <span class="text-sm">Free Wi-Fi throughout terminals</span>
+                                    </li>
+                                    <li class="flex items-start mb-2">
+                                        <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                        <span class="text-sm">Multiple dining options</span>
+                                    </li>
+                                    <li class="flex items-start mb-2">
+                                        <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                        <span class="text-sm">Charging stations at gates</span>
+                                    </li>
+                                `}
+                            </ul>
+                            
+                            ${data.services && data.services.length > 0 ? `
+                            <h5 class="font-medium text-gray-800 mb-2">Available Services:</h5>
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                ${data.services.slice(0, 3).map(service => 
+                                    `<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">${service}</span>`
+                                ).join('')}
+                            </div>
+                            ` : ''}
+                            
+                            ${data.source ? `<p class="text-xs text-gray-500 mt-3">Source: ${data.source}</p>` : ''}
+                        </div>
+                    `;
+                } else {
+                    throw new Error('Airport API failed');
+                }
+            } catch (error) {
+                console.error('Airport API Error:', error);
+                // Fallback to static data
+                document.getElementById('airport-info').innerHTML = `
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-800 mb-3">${airportCode} Airport</h4>
+                        <p class="text-sm text-gray-600 mb-3">Standard airport amenities include:</p>
+                        <ul class="list-disc pl-5 text-sm space-y-1">
+                            <li>Free Wi-Fi throughout terminals</li>
+                            <li>Multiple dining options post-security</li>
+                            <li>Lounges available for premium passengers</li>
+                            <li>Charging stations near all gates</li>
+                        </ul>
+                        <div class="mt-4 p-3 bg-yellow-50 rounded-lg">
+                            <p class="text-xs text-yellow-700">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Configure Airport API for detailed airport information
+                            </p>
+                        </div>
+                    </div>
+                `;
             }
-            
-            document.getElementById('airport-info').innerHTML = `
-                <div class="mb-4">
-                    <div class="flex items-center mb-3">
-                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-map-marker-alt text-red-600"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold">${data.name || airportCode + ' Airport'}</h4>
-                            <p class="text-sm text-gray-600">${data.city || 'International Airport'}</p>
-                        </div>
-                    </div>
-                    
-                    <h5 class="font-medium text-gray-800 mb-2">Key Amenities:</h5>
-                    <ul class="space-y-1 mb-4">
-                        ${amenitiesHTML || `
-                            <li class="flex items-start mb-2">
-                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
-                                <span class="text-sm">Free Wi-Fi throughout terminals</span>
-                            </li>
-                            <li class="flex items-start mb-2">
-                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
-                                <span class="text-sm">Multiple dining options</span>
-                            </li>
-                            <li class="flex items-start mb-2">
-                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
-                                <span class="text-sm">Charging stations at gates</span>
-                            </li>
-                        `}
-                    </ul>
-                    
-                    ${data.services && data.services.length > 0 ? `
-                    <h5 class="font-medium text-gray-800 mb-2">Available Services:</h5>
-                    <div class="flex flex-wrap gap-2 mb-3">
-                        ${data.services.slice(0, 3).map(service => 
-                            `<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">${service}</span>`
-                        ).join('')}
-                    </div>
-                    ` : ''}
-                    
-                    ${data.source ? `<p class="text-xs text-gray-500 mt-3">Source: ${data.source}</p>` : ''}
-                </div>
-            `;
-        } else {
-            throw new Error('Airport API failed');
         }
-    } catch (error) {
-        console.error('Airport API Error:', error);
-        // Fallback to static data
-        document.getElementById('airport-info').innerHTML = `
-            <div class="mb-4">
-                <h4 class="font-semibold text-gray-800 mb-3">${airportCode} Airport</h4>
-                <p class="text-sm text-gray-600 mb-3">Standard airport amenities include:</p>
-                <ul class="list-disc pl-5 text-sm space-y-1">
-                    <li>Free Wi-Fi throughout terminals</li>
-                    <li>Multiple dining options post-security</li>
-                    <li>Lounges available for premium passengers</li>
-                    <li>Charging stations near all gates</li>
-                </ul>
-                <div class="mt-4 p-3 bg-yellow-50 rounded-lg">
-                    <p class="text-xs text-yellow-700">
-                        <i class="fas fa-info-circle mr-1"></i>
-                        Configure AviationStack API for detailed airport information
-                    </p>
-                </div>
-            </div>
-        `;
-    }
-}
-
-       // Update loyalty optimizer
+        
+        // Update loyalty optimizer
         function updateLoyaltyOptimizer() {
             document.getElementById('loyalty-optimizer').innerHTML = `
                 <div class="mb-4">
@@ -2129,6 +2455,30 @@ async function updateAirportInfo(airportCode) {
             }
         }
         
+        // Share section functionality
+        function shareSection(sectionId) {
+            const shareData = {
+                title: `Flytr Flight Intelligence - ${sectionId}`,
+                text: 'Check out this flight intelligence from Flytr!',
+                url: window.location.href
+            };
+            
+            if (navigator.share && navigator.canShare(shareData)) {
+                navigator.share(shareData)
+                    .then(() => console.log('Shared successfully'))
+                    .catch(error => console.error('Error sharing:', error));
+            } else {
+                // Fallback: copy URL to clipboard
+                navigator.clipboard.writeText(window.location.href)
+                    .then(() => {
+                        alert('Link copied to clipboard!');
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy: ', err);
+                    });
+            }
+        }
+        
         // Initialize sections
         updateAirportInfo();
         
@@ -2192,33 +2542,33 @@ async function updateAirportInfo(airportCode) {
         
         // Test API connections on load
         window.addEventListener('load', () => {
-    console.log('Flytr Flight Intelligence loaded');
-    
-    // Test if serverless functions are working
-    fetch('/api/health')
-        .then(res => res.json())
-        .then(data => {
-            console.log('API Health Check:', data);
+            console.log('Flytr Flight Intelligence loaded');
             
-            // Check which APIs are configured server-side
-            if (data && data.apis_configured) {
-                const configured = Object.keys(data.apis_configured).filter(k => data.apis_configured[k]);
-                console.log('✅ Configured APIs:', configured);
-                
-                const notConfigured = Object.keys(data.apis_configured).filter(k => !data.apis_configured[k]);
-                if (notConfigured.length > 0) {
-                    console.log('❌ Not configured:', notConfigured);
-                    console.log('⚠️ Set environment variables in Vercel dashboard');
-                }
-            }
-        })
-        .catch(error => {
-            console.warn('⚠️ Serverless functions not reachable. Check:');
-            console.warn('1. You have /api/*.js files in your Vercel project');
-            console.warn('2. Environment variables are set in Vercel dashboard');
-            console.warn('3. You have deployed after making changes');
+            // Test if serverless functions are working
+            fetch('/api/health')
+                .then(res => res.json())
+                .then(data => {
+                    console.log('API Health Check:', data);
+                    
+                    // Check which APIs are configured server-side
+                    if (data && data.apis_configured) {
+                        const configured = Object.keys(data.apis_configured).filter(k => data.apis_configured[k]);
+                        console.log('✅ Configured APIs:', configured);
+                        
+                        const notConfigured = Object.keys(data.apis_configured).filter(k => !data.apis_configured[k]);
+                        if (notConfigured.length > 0) {
+                            console.log('❌ Not configured:', notConfigured);
+                            console.log('⚠️ Set environment variables in Vercel dashboard');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.warn('⚠️ Serverless functions not reachable. Check:');
+                    console.warn('1. You have /api/*.js files in your Vercel project');
+                    console.warn('2. Environment variables are set in Vercel dashboard');
+                    console.warn('3. You have deployed after making changes');
+                });
         });
-});
     </script>
 </body>
 </html>
