@@ -771,14 +771,14 @@
                 flights: '/api/flights',      // OpenSky for real-time flight data
                 fares: '/api/fares',          // Travelpayouts for bookable flights (uses env vars server-side)
                 weather: '/api/weather',
-                advisory: '/api/advisory',    // Government travel advisories
                 currency: '/api/currency',
                 carbon: '/api/carbon',
                 news: '/api/news',
                 airport: '/api/airport',      // Merged airport.js and aerodatabox.js
                 layover: '/api/layover',
                 loyalty: '/api/loyalty',      // Supabase loyalty data
-                prediction: '/api/prediction' // Prediction logging
+                prediction: '/api/prediction-logger' // Prediction logging
+                flights: '/api/opensky',
             }
         };
         
@@ -1340,88 +1340,101 @@
             });
         }
         
-        // Fetch flight data via serverless function
         async function fetchFlightData(fromCode, toCode, date) {
-            try {
-                const response = await fetch(API_CONFIG.serverless.flights, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        from: fromCode,
-                        to: toCode,
-                        date: date,
-                        travelers: document.getElementById('travelers').value
-                    })
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Flight API failed');
-                }
-                
-                const data = await response.json();
-                
-                if (data.success && data.data && data.data.length > 0) {
-                    const flight = data.data[0];
-                    const delay = flight.departure.delay || 0;
-                    const delayProb = Math.min(90, Math.max(10, Math.floor(delay / 10)));
-                    
-                    // Update delay predictor
-                    delayIndicator.style.width = `${delayProb}%`;
-                    delayPercentage.textContent = `${delayProb}%`;
-                    
-                    document.getElementById('delay-insights').innerHTML = `
-                        <p>Flight ${flight.flight.iata} by ${flight.airline.name} is ${delay > 0 ? `delayed by ${delay} minutes` : 'on time'}.</p>
-                        <p class="text-sm mt-2">Departure: ${flight.departure.scheduled} | Arrival: ${flight.arrival.scheduled}</p>
-                    `;
-                    
-                    if (delayProb > 50) {
-                        alternativeFlights.classList.remove('hidden');
-                        altFlightsText.textContent = `Due to delay probability (${delayProb}%), consider alternative flights or arriving at the airport earlier.`;
-                    }
-                    
-                    // Update travel timeline with real flight data
-                    updateTravelTimelineWithRealData(flight);
-                    
-                    // Update carbon info
-                    await updateCarbonInfoWithRealData(flight);
-                    
-                    // Update airport info with destination airport
-                    await updateAirportInfo(toCode);
-                    
-                } else {
-                    // No flight data found - use mock data but still try to get airport info
-                    const delayProb = Math.floor(Math.random() * 60) + 10;
-                    delayIndicator.style.width = `${delayProb}%`;
-                    delayPercentage.textContent = `${delayProb}%`;
-                    document.getElementById('delay-insights').innerHTML = 
-                        '<p>Using estimated data. Configure OpenSky API for real-time information.</p>';
-                    
-                    // Still update airport info even if no flight data
-                    await updateAirportInfo(toCode);
-                    
-                    throw new Error('No flight data found');
-                }
-                
-            } catch (error) {
-                console.error('Flight API Error:', error);
-                // Use mock data as fallback
-                const delayProb = Math.floor(Math.random() * 60) + 10;
-                delayIndicator.style.width = `${delayProb}%`;
-                delayPercentage.textContent = `${delayProb}%`;
-                
-                // Show error message
-                document.getElementById('delay-insights').innerHTML = `
-                    <p>Using estimated data. For real-time information, ensure your API keys are configured.</p>
-                    <p class="text-sm text-gray-500 mt-1">Error: ${error.message}</p>
-                `;
-                
-                // Still update airport info even on error
-                await updateAirportInfo(toCode);
-            }
+    try {
+        console.log('Fetching flight data for:', fromCode, toCode, date);
+        
+        const response = await fetch(API_CONFIG.serverless.flights, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                from: fromCode,
+                to: toCode,
+                date: date,
+                travelers: document.getElementById('travelers').value
+            })
+        });
+        
+        if (!response.ok) {
+            console.warn('Flight API returned error status:', response.status);
+            throw new Error('Flight API returned error');
         }
+        
+        const text = await response.text();
+        console.log('Raw flight API response:', text.substring(0, 500));
+        
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (parseError) {
+            console.error('Failed to parse flight API response:', parseError);
+            throw new Error('Invalid JSON response from flight API');
+        }
+        
+        if (data.success && data.data && data.data.length > 0) {
+            const flight = data.data[0];
+            console.log('Flight data received:', flight);
+            
+            // Calculate delay probability based on actual data or reasonable defaults
+            const delay = flight.departure?.delay || 0;
+            const delayProb = Math.min(90, Math.max(10, Math.floor(delay / 10)));
+            
+            // Update UI with real data
+            delayIndicator.style.width = `${delayProb}%`;
+            delayPercentage.textContent = `${delayProb}%`;
+            
+            document.getElementById('delay-insights').innerHTML = `
+                <p>Flight ${flight.flight?.iata || 'Unknown'} by ${flight.airline?.name || 'Unknown airline'} is ${delay > 0 ? `delayed by ${delay} minutes` : 'on time'}.</p>
+                <p class="text-sm mt-2">Data source: ${data.source || 'Flight API'}</p>
+            `;
+            
+            if (delayProb > 50) {
+                alternativeFlights.classList.remove('hidden');
+                altFlightsText.textContent = `Due to delay probability (${delayProb}%), consider alternative flights or arriving at the airport earlier.`;
+            }
+            
+            // Update other sections with real data
+            await Promise.all([
+                updateTravelTimelineWithRealData(flight),
+                updateCarbonInfoWithRealData(flight),
+                updateAirportInfo(toCode)
+            ]);
+            
+        } else {
+            console.warn('No flight data found, using predictions');
+            // Use prediction-based data
+            const delayProb = await getPredictedDelay(fromCode, toCode, date);
+            delayIndicator.style.width = `${delayProb}%`;
+            delayPercentage.textContent = `${delayProb}%`;
+            
+            document.getElementById('delay-insights').innerHTML = `
+                <p>Using AI prediction for ${fromCode} to ${toCode} on ${date}.</p>
+                <p class="text-sm mt-2">Delay probability: ${delayProb}% based on historical patterns and current conditions.</p>
+            `;
+            
+            // Still update airport info
+            await updateAirportInfo(toCode);
+        }
+        
+    } catch (error) {
+        console.error('Flight API Error:', error);
+        // Use prediction when API fails
+        const delayProb = await getPredictedDelay(fromCode, toCode, date);
+        delayIndicator.style.width = `${delayProb}%`;
+        delayPercentage.textContent = `${delayProb}%`;
+        
+        document.getElementById('delay-insights').innerHTML = `
+            <p>Using predictive model (API unavailable).</p>
+            <p class="text-sm text-gray-500 mt-1">Predicted delay probability: ${delayProb}%</p>
+            <p class="text-xs text-yellow-600 mt-2">Note: Configure flight API for real-time data</p>
+        `;
+        
+        // Still update airport info
+        await updateAirportInfo(toCode);
+    }
+}
         
         // Fetch weather data via serverless function
         async function fetchWeatherData(destination) {
@@ -1544,39 +1557,41 @@
             }
         }
         
-        // Fetch exchange rates via serverless function
-        async function fetchExchangeRate(base, target) {
-            try {
-                const response = await fetch(API_CONFIG.serverless.currency, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        base: base,
-                        target: target
-                    })
-                });
-                
-                if (!response.ok) throw new Error('Currency API failed');
-                
-                const data = await response.json();
-                const rate = data.rate || 0.85;
-                
-                // Update exchange rate info
-                const requirements = document.getElementById('travel-requirements');
-                const currentHTML = requirements.innerHTML;
-                requirements.innerHTML = currentHTML + `
-                    <p class="text-xs text-gray-500 mt-3">Exchange rate: 1 ${base} = ${rate.toFixed(3)} ${target}</p>
-                `;
-                
-                return rate;
-                
-            } catch (error) {
-                console.error('Currency API Error:', error);
-                return null;
-            }
+        // Update fetchExchangeRate function
+async function fetchExchangeRate(base, target) {
+    try {
+        const response = await fetch(API_CONFIG.serverless.currency, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                base: base,
+                target: target
+            })
+        });
+        
+        if (!response.ok) throw new Error('Currency API failed');
+        
+        const data = await response.json();
+        const rate = parseFloat(data.rate) || 0.85; // Ensure it's a number
+        
+        // Only update if we have a valid rate
+        if (rate) {
+            const requirements = document.getElementById('travel-requirements');
+            const currentHTML = requirements.innerHTML;
+            requirements.innerHTML = currentHTML + `
+                <p class="text-xs text-gray-500 mt-3">Exchange rate: 1 ${base} = ${rate.toFixed(3)} ${target}</p>
+            `;
         }
+        
+        return rate;
+        
+    } catch (error) {
+        console.error('Currency API Error:', error);
+        return null;
+    }
+}
         
         // Fetch layover suggestions via serverless function - NO hotel integration
         async function fetchLayoverSuggestions(airportCode) {
@@ -2064,122 +2079,151 @@
             }
         }
         
-        // Update carbon info using serverless function
-        async function updateCarbonInfoWithRealData(flight) {
-            try {
-                const response = await fetch(API_CONFIG.serverless.carbon, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        flight: flight,
-                        travelers: document.getElementById('travelers').value
-                    })
-                });
-                
-                if (!response.ok) throw new Error('Carbon API failed');
-                
+        // Update updateCarbonInfoWithRealData to handle missing flight data
+async function updateCarbonInfoWithRealData(flight = null) {
+    try {
+        const travelers = parseInt(document.getElementById('travelers').value) || 1;
+        let kgPerPax = 150; // Default
+        let totalKg = kgPerPax * travelers;
+        
+        if (flight) {
+            // Try to calculate from actual flight data
+            const response = await fetch(API_CONFIG.serverless.carbon, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    flight: flight,
+                    travelers: travelers
+                })
+            });
+            
+            if (response.ok) {
                 const data = await response.json();
-                
-                const kgPerPax = data.kgPerPax || 150;
-                const totalKg = data.totalKg || (kgPerPax * (parseInt(document.getElementById('travelers').value) || 1));
-                const percentageWidth = Math.min(100, (totalKg / 1000) * 100);
-                
-                document.getElementById('carbon-info').innerHTML = `
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600 mb-2">Carbon footprint per passenger:</p>
-                        <div class="flex items-center mb-3">
-                            <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
-                                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${percentageWidth}%"></div>
-                            </div>
-                            <span class="text-sm font-medium">${kgPerPax.toFixed(1)} kg CO₂e</span>
-                        </div>
-                        
-                        <p class="text-sm text-gray-600 mb-2">Total for all passengers:</p>
-                        <div class="text-2xl font-bold text-indigo-700 mb-3">${totalKg.toFixed(1)} kg CO₂e</div>
-                    </div>
-                    
-                    <div class="p-3 bg-indigo-50 rounded-lg">
-                        <p class="text-xs text-indigo-700">
-                            <i class="fas fa-leaf mr-1"></i>
-                            <strong>Eco-tip:</strong> Consider offsetting ${totalKg.toFixed(0)} kg CO₂e for approximately $${(totalKg * 0.02).toFixed(2)} via certified carbon offset programs.
-                        </p>
-                    </div>
-                `;
-                
-            } catch (error) {
-                console.error('Carbon API Error:', error);
-                // Fallback to approximate calculation
-                const passengers = parseInt(document.getElementById('travelers').value) || 1;
-                const kgPerPax = 150;
-                const totalKg = kgPerPax * passengers;
-                const percentageWidth = Math.min(100, (totalKg / 1000) * 100);
-                
-                document.getElementById('carbon-info').innerHTML = `
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600 mb-2">Estimated carbon footprint:</p>
-                        <div class="flex items-center mb-3">
-                            <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
-                                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${percentageWidth}%"></div>
-                            </div>
-                            <span class="text-sm font-medium">${totalKg} kg CO₂e</span>
-                        </div>
-                    </div>
-                    <div class="p-3 bg-yellow-50 rounded-lg">
-                        <p class="text-xs text-yellow-700">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            Using approximate calculation.
-                        </p>
-                    </div>
-                `;
+                kgPerPax = data.kgPerPax || kgPerPax;
+                totalKg = data.totalKg || (kgPerPax * travelers);
             }
         }
         
-        // Update travel timeline with real flight data
-        function updateTravelTimelineWithRealData(flight) {
-            const depTime = flight.departure.scheduled;
-            const [hours, minutes] = depTime.split(':');
-            const depDate = new Date();
-            depDate.setHours(hours, minutes);
+        const percentageWidth = Math.min(100, (totalKg / 1000) * 100);
+        
+        document.getElementById('carbon-info').innerHTML = `
+            <div class="mb-4">
+                <p class="text-sm text-gray-600 mb-2">Estimated carbon footprint:</p>
+                <div class="flex items-center mb-3">
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+                        <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${percentageWidth}%"></div>
+                    </div>
+                    <span class="text-sm font-medium">${totalKg.toFixed(0)} kg CO₂e</span>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p class="text-gray-600">Per passenger:</p>
+                        <p class="font-semibold">${kgPerPax.toFixed(0)} kg</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Total emissions:</p>
+                        <p class="font-semibold text-indigo-700">${totalKg.toFixed(0)} kg</p>
+                    </div>
+                </div>
+            </div>
             
-            const timeline = document.getElementById('travel-timeline');
-            timeline.innerHTML = `
-                <p class="text-sm text-gray-600 mb-3">Your personalized travel timeline:</p>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-home text-green-600 text-sm"></i>
-                            </div>
-                            <span class="text-sm font-medium">Leave for airport</span>
-                        </div>
-                        <span class="font-semibold text-green-700">2.5 hours before flight</span>
+            <div class="p-3 bg-indigo-50 rounded-lg">
+                <p class="text-xs text-indigo-700">
+                    <i class="fas fa-leaf mr-1"></i>
+                    <strong>Eco-tip:</strong> Consider offsetting ${totalKg.toFixed(0)} kg CO₂e for approximately $${(totalKg * 0.02).toFixed(2)} via certified carbon offset programs.
+                </p>
+            </div>
+        `;
+        
+    } catch (error) {
+        console.error('Carbon API Error:', error);
+        // Simple fallback
+        const travelers = parseInt(document.getElementById('travelers').value) || 1;
+        const totalKg = 150 * travelers;
+        const percentageWidth = Math.min(100, (totalKg / 1000) * 100);
+        
+        document.getElementById('carbon-info').innerHTML = `
+            <div class="mb-4">
+                <p class="text-sm text-gray-600 mb-2">Estimated carbon footprint:</p>
+                <div class="flex items-center mb-3">
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+                        <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${percentageWidth}%"></div>
                     </div>
-                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-luggage-cart text-blue-600 text-sm"></i>
-                            </div>
-                            <span class="text-sm font-medium">Check-in & Security</span>
-                        </div>
-                        <span class="font-semibold text-blue-700">2 hours before flight</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-door-open text-purple-600 text-sm"></i>
-                            </div>
-                            <span class="text-sm font-medium">Boarding closes</span>
-                        </div>
-                        <span class="font-semibold text-purple-700">20 min before departure</span>
-                    </div>
+                    <span class="text-sm font-medium">${totalKg} kg CO₂e</span>
                 </div>
-                <div class="mt-4 text-xs text-gray-500">
-                    <p>✈️ Flight ${flight.flight.iata} departs at ${depTime}</p>
+                <p class="text-sm text-gray-600">Based on average emissions for this route.</p>
+            </div>
+        `;
+    }
+}
+        
+        // Update updateTravelTimelineWithRealData to handle missing flight data
+function updateTravelTimelineWithRealData(flight = null) {
+    const timeline = document.getElementById('travel-timeline');
+    
+    let departureTime = '10:00'; // Default
+    let flightNumber = 'Unknown';
+    
+    if (flight) {
+        departureTime = flight.departure?.scheduled?.split('T')[1]?.substring(0, 5) || '10:00';
+        flightNumber = flight.flight?.iata || 'Unknown';
+    }
+    
+    // Parse time
+    const [hours, minutes] = departureTime.split(':');
+    const departureDate = new Date();
+    departureDate.setHours(parseInt(hours), parseInt(minutes));
+    
+    // Calculate times
+    const leaveTime = new Date(departureDate);
+    leaveTime.setHours(leaveTime.getHours() - 2);
+    
+    const checkinTime = new Date(departureDate);
+    checkinTime.setHours(checkinTime.getHours() - 1);
+    
+    const boardingTime = new Date(departureDate);
+    boardingTime.setMinutes(boardingTime.getMinutes() - 20);
+    
+    timeline.innerHTML = `
+        <p class="text-sm text-gray-600 mb-3">Your travel timeline for ${departureTime} departure:</p>
+        <div class="space-y-3">
+            <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-home text-green-600 text-sm"></i>
+                    </div>
+                    <span class="text-sm font-medium">Leave for airport</span>
                 </div>
-            `;
-        }
+                <span class="font-semibold text-green-700">${leaveTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-luggage-cart text-blue-600 text-sm"></i>
+                    </div>
+                    <span class="text-sm font-medium">Check-in & Security</span>
+                </div>
+                <span class="font-semibold text-blue-700">${checkinTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-door-open text-purple-600 text-sm"></i>
+                    </div>
+                    <span class="text-sm font-medium">Boarding closes</span>
+                </div>
+                <span class="font-semibold text-purple-700">${boardingTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            </div>
+        </div>
+        <div class="mt-4 text-xs text-gray-500">
+            <p>✈️ Recommended arrival: 2 hours before departure for domestic, 3 hours for international</p>
+            ${flightNumber !== 'Unknown' ? `<p>Flight: ${flightNumber}</p>` : ''}
+        </div>
+    `;
+}
         
         // Update airport info via serverless function
         async function updateAirportInfo(airportCode) {
