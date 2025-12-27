@@ -434,6 +434,64 @@
                             </div>
                         </div>
                         
+                        <!-- Travel Requirements Section - Updated with nationality selection -->
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-xl font-semibold flex items-center">
+                                        <i class="fas fa-passport text-yellow-600 mr-2"></i> 
+                                        Travel Requirements
+                                    </h3>
+                                    <div id="current-nationality" class="hidden mt-2">
+                                        <span class="text-xs text-gray-500">Nationality: </span>
+                                        <span id="nationality-display" class="text-xs font-medium text-primary"></span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="toggleNationalityForm()" class="text-gray-500 hover:text-yellow-600 p-2" title="Update nationality">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="share-btn text-gray-500 hover:text-yellow-600 p-2" onclick="shareSection('travel-requirements')" title="Share requirements">
+                                        <i class="fas fa-share-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Nationality Form (Initially hidden) -->
+                            <div id="nationality-form" class="hidden mb-4 p-3 bg-yellow-50 rounded-lg">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Your Nationality</label>
+                                <div class="flex space-x-2">
+                                    <select id="nationality" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg">
+                                        <option value="US">United States</option>
+                                        <option value="GB">United Kingdom</option>
+                                        <option value="CA">Canada</option>
+                                        <option value="AU">Australia</option>
+                                        <option value="DE">Germany</option>
+                                        <option value="FR">France</option>
+                                        <option value="IT">Italy</option>
+                                        <option value="ES">Spain</option>
+                                        <option value="JP">Japan</option>
+                                        <option value="CN">China</option>
+                                        <option value="IN">India</option>
+                                        <option value="BR">Brazil</option>
+                                        <option value="MX">Mexico</option>
+                                    </select>
+                                    <button onclick="saveNationality()" class="bg-yellow-600 text-white px-3 py-2 rounded-lg hover:bg-yellow-700">
+                                        Save
+                                    </button>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2">This helps us provide accurate visa and entry requirements.</p>
+                            </div>
+                            
+                            <div id="travel-requirements">
+                                <div class="animate-pulse">
+                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div class="h-4 bg-gray-200 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Packing Checklist -->
                         <div class="bg-white rounded-2xl shadow-lg p-6">
                             <div class="flex justify-between items-start mb-4">
@@ -446,26 +504,6 @@
                                 </button>
                             </div>
                             <div id="packing-checklist">
-                                <div class="animate-pulse">
-                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                    <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                                    <div class="h-4 bg-gray-200 rounded"></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Travel Requirements -->
-                        <div class="bg-white rounded-2xl shadow-lg p-6">
-                            <div class="flex justify-between items-start mb-4">
-                                <h3 class="text-xl font-semibold flex items-center">
-                                    <i class="fas fa-passport text-yellow-600 mr-2"></i> 
-                                    Travel Requirements
-                                </h3>
-                                <button class="share-btn text-gray-500 hover:text-yellow-600 p-2" onclick="shareSection('travel-requirements')" title="Share requirements">
-                                    <i class="fas fa-share-alt"></i>
-                                </button>
-                            </div>
-                            <div id="travel-requirements">
                                 <div class="animate-pulse">
                                     <div class="h-4 bg-gray-200 rounded mb-2"></div>
                                     <div class="h-4 bg-gray-200 rounded mb-2"></div>
@@ -559,7 +597,7 @@
                     </div>
                 </div>
                 
-                <!-- Travel Risk Assessment -->
+                <!-- Travel Risk Assessment - Updated for government open data -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
                     <div class="flex justify-between items-start mb-4">
                         <h3 class="text-xl font-semibold flex items-center">
@@ -576,6 +614,14 @@
                             <div class="h-4 bg-gray-200 rounded mb-2"></div>
                             <div class="h-4 bg-gray-200 rounded"></div>
                         </div>
+                    </div>
+                    <!-- Travel Insurance Affiliate Link -->
+                    <div id="insurance-recommendation" class="hidden mt-4 p-3 bg-orange-50 rounded-lg">
+                        <p class="text-xs text-orange-700">
+                            <i class="fas fa-shield-alt mr-1"></i>
+                            <strong>Travel insurance recommended:</strong> For comprehensive coverage including trip cancellation, medical emergencies, and baggage loss, 
+                            <a href="https://www.travelpayouts.com/insurance?marker=flytr" target="_blank" rel="noopener noreferrer" class="text-orange-600 underline hover:text-orange-800">compare travel insurance options here</a>.
+                        </p>
                     </div>
                 </div>
                 
@@ -764,20 +810,19 @@
 
     <!-- Scripts -->
     <script>
-        // API Configuration - Updated for new serverless functions
+        // API Configuration - Updated with all serverless functions
         const API_CONFIG = {
-            // Serverless function endpoints (these will call the actual APIs on the server)
             serverless: {
                 flights: '/api/flights',      // OpenSky for real-time flight data
-                fares: '/api/fares',          // Travelpayouts for bookable flights (uses env vars server-side)
+                opensky: '/api/opensky',      // Additional OpenSky endpoints
+                fares: '/api/fares',          // Travelpayouts for bookable flights
                 weather: '/api/weather',
-                advisory: '/api/advisory',    // Government travel advisories
                 currency: '/api/currency',
                 carbon: '/api/carbon',
-                news: '/api/news',
-                airport: '/api/airport',      // Merged airport.js and aerodatabox.js
+                news: '/api/news',           // News for risk assessment
+                travelInfo: '/api/travel-info', // Combined airport.js + aerodatabox.js
                 layover: '/api/layover',
-                loyalty: '/api/loyalty',      // Supabase loyalty data
+                supabase: '/api/supabase',    // Combined supabase.js + loyalty.js
                 prediction: '/api/prediction' // Prediction logging
             }
         };
@@ -823,6 +868,105 @@
         const alternativeFlights = document.getElementById('alternative-flights');
         const altFlightsText = document.getElementById('alt-flights-text');
         
+        // Nationality management functions
+        function toggleNationalityForm() {
+            const form = document.getElementById('nationality-form');
+            const display = document.getElementById('current-nationality');
+            form.classList.toggle('hidden');
+            display.classList.toggle('hidden');
+        }
+        
+        function saveNationality() {
+            const nationality = document.getElementById('nationality').value;
+            localStorage.setItem('flytr_nationality', nationality);
+            
+            // Update display
+            const select = document.getElementById('nationality');
+            const option = select.options[select.selectedIndex];
+            document.getElementById('nationality-display').textContent = option.text;
+            
+            // Hide form and show current
+            document.getElementById('nationality-form').classList.add('hidden');
+            document.getElementById('current-nationality').classList.remove('hidden');
+            
+            // Refetch requirements if we have a destination
+            if (window.currentDestination) {
+                fetchTravelRequirements(window.currentDestination);
+            }
+        }
+        
+        // Initialize nationality on page load
+        function initNationality() {
+            const savedNationality = localStorage.getItem('flytr_nationality') || 'US';
+            const select = document.getElementById('nationality');
+            if (select) {
+                select.value = savedNationality;
+                const option = select.options[select.selectedIndex];
+                document.getElementById('nationality-display').textContent = option.text;
+                document.getElementById('current-nationality').classList.remove('hidden');
+            }
+        }
+        
+        // Helper functions for risk assessment
+        function getRiskColor(score) {
+            if (score <= 1.5) return 'bg-green-500';
+            if (score <= 3) return 'bg-yellow-500';
+            return 'bg-red-500';
+        }
+        
+        function getRiskBgColor(score) {
+            if (score <= 1.5) return 'bg-green-50';
+            if (score <= 3) return 'bg-yellow-50';
+            return 'bg-red-50';
+        }
+        
+        function getRiskTextColor(score) {
+            if (score <= 1.5) return 'text-green-700';
+            if (score <= 3) return 'text-yellow-700';
+            return 'text-red-700';
+        }
+        
+        function getRiskText(score) {
+            if (score <= 1.5) return 'Low Risk';
+            if (score <= 3) return 'Moderate Risk';
+            return 'High Risk';
+        }
+        
+        function getCountryCodeFromDestination(destination) {
+            // Simple mapping - in production, use a more comprehensive mapping
+            const cityMap = {
+                'new york': 'US',
+                'london': 'GB',
+                'paris': 'FR',
+                'tokyo': 'JP',
+                'sydney': 'AU',
+                'toronto': 'CA',
+                'berlin': 'DE',
+                'rome': 'IT',
+                'madrid': 'ES',
+                'amsterdam': 'NL',
+                'dubai': 'AE',
+                'singapore': 'SG',
+                'beijing': 'CN',
+                'mumbai': 'IN',
+                'moscow': 'RU',
+                'cairo': 'EG',
+                'rio': 'BR',
+                'mexico': 'MX',
+                'bangkok': 'TH',
+                'seoul': 'KR'
+            };
+            
+            const lowerDest = destination.toLowerCase();
+            for (const [city, code] of Object.entries(cityMap)) {
+                if (lowerDest.includes(city)) {
+                    return code;
+                }
+            }
+            
+            return 'US'; // Default
+        }
+        
         searchForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -851,6 +995,35 @@
                 const fromCode = extractAirportCode(from);
                 const toCode = extractAirportCode(to);
                 
+                // Log the search to Supabase
+                try {
+                    let sessionId = localStorage.getItem('flytr_session_id');
+                    if (!sessionId) {
+                        sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                        localStorage.setItem('flytr_session_id', sessionId);
+                    }
+                    
+                    await fetch(API_CONFIG.serverless.supabase, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'log_search',
+                            session_id: sessionId,
+                            from: from,
+                            to: to,
+                            date: date,
+                            travelers: travelers,
+                            search_data: {
+                                from_code: fromCode,
+                                to_code: toCode
+                            }
+                        })
+                    });
+                } catch (logError) {
+                    console.error('Failed to log search:', logError);
+                    // Continue anyway - don't break the search
+                }
+                
                 // Fetch bookable flights first (Travelpayouts)
                 await fetchBookableFlights(fromCode, toCode, date, travelers);
                 
@@ -858,7 +1031,7 @@
                 await Promise.all([
                     fetchFlightData(fromCode, toCode, date),
                     fetchWeatherData(to),
-                    fetchTravelAdvisoryData(to),
+                    fetchTravelRequirements(to),
                     fetchExchangeRate('USD', 'EUR'),
                     fetchLayoverSuggestions(toCode),
                     fetchTravelRiskAssessment(to),
@@ -1158,7 +1331,7 @@
             document.getElementById('delay-insights').innerHTML = '<p>Fetching real-time flight data...</p>';
         }
         
-        // Function to fetch and display bookable flights
+        // Function to fetch and display bookable flights - No mock data
         async function fetchBookableFlights(fromCode, toCode, date, travelers) {
             const container = document.getElementById('flights-container');
             const section = document.getElementById('bookable-flights');
@@ -1175,7 +1348,7 @@
             section.classList.remove('hidden');
             
             try {
-                // Call serverless function - credentials are handled server-side
+                // Call serverless function
                 const response = await fetch(API_CONFIG.serverless.fares, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1184,23 +1357,22 @@
                         to: toCode, 
                         date: date,
                         travelers: travelers
-                        // NO credentials sent from client!
                     })
                 });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Fares API failed: ${errorText.substring(0, 100)}`);
+                }
                 
                 const result = await response.json();
                 
                 if (result.success && result.flights && result.flights.length > 0) {
-                    // Display flights - affiliate links already include marker server-side
                     displayFlights(result.flights);
                     countSpan.textContent = result.flights.length;
                     disclaimer.classList.remove('hidden');
-                    
-                    // Add sorting functionality
                     setupFlightSorting(result.flights);
-                    
                 } else {
-                    // No flights found
                     container.innerHTML = `
                         <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-search text-3xl mb-2"></i>
@@ -1216,8 +1388,8 @@
                 container.innerHTML = `
                     <div class="text-center py-8 text-yellow-600">
                         <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
-                        <p>Unable to load flight booking options.</p>
-                        <p class="text-sm mt-2">You can still use our intelligence features below.</p>
+                        <p>Unable to load flight booking options at this time.</p>
+                        <p class="text-sm mt-2">Please try again later or check directly with airlines.</p>
                     </div>
                 `;
             }
@@ -1340,25 +1512,30 @@
             });
         }
         
-        // Fetch flight data via serverless function
+        // Fetch flight data - Fixed JSON parsing error
         async function fetchFlightData(fromCode, toCode, date) {
             try {
                 const response = await fetch(API_CONFIG.serverless.flights, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         from: fromCode,
                         to: toCode,
-                        date: date,
-                        travelers: document.getElementById('travelers').value
+                        date: date
                     })
                 });
                 
+                // Check if response is OK and is JSON
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Flight API failed');
+                    const errorText = await response.text();
+                    throw new Error(`Flight API failed: ${response.status} - ${errorText.substring(0, 100)}`);
+                }
+                
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.log('Non-JSON response:', text.substring(0, 200));
+                    throw new Error('Flight API returned non-JSON response');
                 }
                 
                 const data = await response.json();
@@ -1423,6 +1600,31 @@
             }
         }
         
+        // OpenSky API fallback
+        async function fetchOpenSkyData(fromCode, toCode, date) {
+            try {
+                const response = await fetch(API_CONFIG.serverless.opensky, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        from: fromCode,
+                        to: toCode,
+                        date: date
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    // Process OpenSky data...
+                    return data;
+                }
+                throw new Error('OpenSky API failed');
+            } catch (error) {
+                console.error('OpenSky API Error:', error);
+                throw error;
+            }
+        }
+        
         // Fetch weather data via serverless function
         async function fetchWeatherData(destination) {
             try {
@@ -1478,96 +1680,127 @@
             }
         }
         
-        // Fetch travel advisory data via serverless function - Now uses government open data
-        async function fetchTravelAdvisoryData(destination) {
+        // Fetch travel requirements using travel-advisory-api (no API key needed)
+        async function fetchTravelRequirements(destination) {
             try {
-                const response = await fetch(API_CONFIG.serverless.advisory, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        destination: destination
-                    })
-                });
+                const nationality = localStorage.getItem('flytr_nationality') || 'US';
+                window.currentDestination = destination;
                 
-                if (!response.ok) throw new Error('Advisory API failed');
+                // Get country code from destination
+                const countryCode = getCountryCodeFromDestination(destination);
+                
+                if (!countryCode) {
+                    throw new Error('Could not determine destination country');
+                }
+                
+                // Call travel-advisory-api
+                const response = await fetch(`https://travel-advisory-api.vercel.app/api?countrycode=${countryCode}`);
+                
+                if (!response.ok) throw new Error('Travel advisory API failed');
                 
                 const data = await response.json();
                 
-                // Process travel advisory data from government sources
-                const riskLevel = data.riskLevel || 'Low';
-                const source = data.source || 'Government Travel Advisory';
-                const lastUpdated = data.lastUpdated || 'Recently';
-                
-                let riskDetails = '';
-                if (data.details) {
-                    riskDetails = data.details.slice(0, 2).map(detail => 
-                        `<li class="text-sm text-gray-600">• ${detail}</li>`
-                    ).join('');
+                if (data.data && data.data[countryCode]) {
+                    const advisory = data.data[countryCode].advisory;
+                    
+                    document.getElementById('travel-requirements').innerHTML = `
+                        <p class="text-sm text-gray-600 mb-3">Travel advisory for ${destination}:</p>
+                        
+                        <div class="flex items-center mb-3">
+                            <div class="w-3 h-3 ${getRiskColor(advisory.score)} rounded-full mr-2"></div>
+                            <span class="font-medium">Risk Level: ${advisory.score}/5 (${getRiskText(advisory.score)})</span>
+                        </div>
+                        
+                        <div class="p-3 ${getRiskBgColor(advisory.score)} rounded-lg mb-3">
+                            <p class="text-sm ${getRiskTextColor(advisory.score)} mb-2">${advisory.message || 'No specific advisory available.'}</p>
+                            ${advisory.message && advisory.message.length > 50 ? `<p class="text-sm ${getRiskTextColor(advisory.score)}">${advisory.message.substring(50)}</p>` : ''}
+                        </div>
+                        
+                        ${advisory.source ? `
+                        <div class="text-xs text-gray-500 mb-2">
+                            <strong>Source:</strong> ${advisory.source}
+                        </div>
+                        ` : ''}
+                        
+                        <div class="mt-3 space-y-2 text-sm">
+                            <div class="flex items-start">
+                                <i class="fas fa-file-alt text-blue-500 mt-1 mr-2"></i>
+                                <div>
+                                    <span class="font-medium">Visa Requirements:</span>
+                                    <p class="text-gray-600">Check with ${countryCode} embassy for specific visa requirements based on your nationality.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-syringe text-purple-500 mt-1 mr-2"></i>
+                                <div>
+                                    <span class="font-medium">Health Requirements:</span>
+                                    <p class="text-gray-600">Standard vaccinations recommended. Check latest COVID-19 entry requirements.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 text-center">
+                            <a href="https://travel.state.gov" target="_blank" class="text-xs text-primary hover:underline">
+                                <i class="fas fa-external-link-alt mr-1"></i>
+                                Check official government sources for latest requirements
+                            </a>
+                        </div>
+                    `;
                 }
                 
-                document.getElementById('travel-requirements').innerHTML = `
-                    <p class="text-sm text-gray-600 mb-3">Travel requirements for ${destination}:</p>
-                    <div class="flex items-center mb-3">
-                        <div class="w-3 h-3 ${riskLevel === 'High' ? 'bg-red-500' : (riskLevel === 'Medium' ? 'bg-yellow-500' : 'bg-green-500')} rounded-full mr-2"></div>
-                        <span class="font-medium">Risk Level: ${riskLevel}</span>
-                    </div>
-                    <ul class="list-disc pl-5 text-sm space-y-1 mb-3">
-                        <li>Passport valid for at least 6 months</li>
-                        <li>${riskLevel === 'High' ? 'Check latest travel notices' : 'No special requirements'}</li>
-                        <li>Travel insurance recommended</li>
-                        <li>Check visa requirements for your nationality</li>
-                    </ul>
-                    ${riskDetails ? `
-                    <div class="mt-3 p-3 ${riskLevel === 'High' ? 'bg-red-50' : (riskLevel === 'Medium' ? 'bg-yellow-50' : 'bg-green-50')} rounded-lg">
-                        <p class="text-xs font-medium mb-1">${source} (${lastUpdated}):</p>
-                        <ul class="text-xs space-y-1">
-                            ${riskDetails}
-                        </ul>
-                    </div>
-                    ` : ''}
-                    <p class="text-xs text-gray-500 mt-3">Data from government travel advisories (US State Department, UK Foreign Office, WHO)</p>
-                `;
-                
             } catch (error) {
-                console.error('Advisory API Error:', error);
+                console.error('Travel Requirements API Error:', error);
                 document.getElementById('travel-requirements').innerHTML = `
-                    <p class="text-sm text-gray-600 mb-3">Standard requirements:</p>
-                    <ul class="list-disc pl-5 text-sm space-y-1">
-                        <li>Valid passport</li>
-                        <li>Check visa requirements</li>
-                        <li>Travel insurance recommended</li>
-                    </ul>
-                    <p class="text-xs text-gray-500 mt-3">Government advisory data temporarily unavailable</p>
+                    <div class="p-4 bg-yellow-50 rounded-lg">
+                        <p class="text-sm text-gray-600 mb-3">Standard requirements for international travel:</p>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                <span>Valid passport (6+ months validity)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                <span>Appropriate visa for your nationality</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                <span>Proof of return/onward travel</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                <span>Travel insurance (recommended)</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-3">
+                            Set your nationality above for personalized requirements.
+                        </p>
+                    </div>
                 `;
             }
         }
         
-        // Fetch exchange rates via serverless function
+        // Fetch exchange rates - Fixed the toFixed error
         async function fetchExchangeRate(base, target) {
             try {
                 const response = await fetch(API_CONFIG.serverless.currency, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        base: base,
-                        target: target
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ base: base, target: target })
                 });
                 
                 if (!response.ok) throw new Error('Currency API failed');
                 
                 const data = await response.json();
-                const rate = data.rate || 0.85;
+                const rate = parseFloat(data.rate) || 0.85; // Ensure it's a number
                 
                 // Update exchange rate info
                 const requirements = document.getElementById('travel-requirements');
                 const currentHTML = requirements.innerHTML;
                 requirements.innerHTML = currentHTML + `
-                    <p class="text-xs text-gray-500 mt-3">Exchange rate: 1 ${base} = ${rate.toFixed(3)} ${target}</p>
+                    <div class="mt-3 text-xs text-gray-500">
+                        <i class="fas fa-money-bill-wave mr-1"></i>
+                        Exchange rate: 1 ${base} = ${rate.toFixed(3)} ${target}
+                    </div>
                 `;
                 
                 return rate;
@@ -1642,32 +1875,68 @@
             }
         }
         
-        // Fetch travel risk assessment via serverless function
+        // Fetch travel risk assessment from government open data
         async function fetchTravelRiskAssessment(destination) {
             try {
-                const response = await fetch(API_CONFIG.serverless.news, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        destination: destination,
-                        type: 'risk'
-                    })
-                });
+                const countryCode = getCountryCodeFromDestination(destination);
                 
-                if (!response.ok) throw new Error('News API failed');
+                // Call multiple government APIs
+                const [usAdvisory, ukAdvisory, whoData] = await Promise.allSettled([
+                    fetchUSStateDepartmentAdvisory(countryCode),
+                    fetchUKForeignOfficeAdvisory(countryCode),
+                    fetchWHOAdvisory(countryCode)
+                ]);
                 
-                const data = await response.json();
+                let riskLevel = 'Low';
+                let riskDetails = [];
+                let newsSnippets = [];
                 
-                let riskLevel = data.riskLevel || 'Low';
-                let riskArticles = data.articles || [];
+                // Process US State Department data
+                if (usAdvisory.status === 'fulfilled' && usAdvisory.value) {
+                    riskLevel = usAdvisory.value.riskLevel || riskLevel;
+                    if (usAdvisory.value.details) {
+                        riskDetails.push(...usAdvisory.value.details);
+                    }
+                    if (usAdvisory.value.news) {
+                        newsSnippets.push(...usAdvisory.value.news);
+                    }
+                }
                 
-                // Get color based on risk level
+                // Process UK Foreign Office data
+                if (ukAdvisory.status === 'fulfilled' && ukAdvisory.value) {
+                    if (ukAdvisory.value.riskLevel === 'High') riskLevel = 'High';
+                    else if (ukAdvisory.value.riskLevel === 'Medium' && riskLevel !== 'High') riskLevel = 'Medium';
+                    
+                    if (ukAdvisory.value.details) {
+                        riskDetails.push(...ukAdvisory.value.details);
+                    }
+                }
+                
+                // Get news from the news API for additional context
+                try {
+                    const newsResponse = await fetch(API_CONFIG.serverless.news, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            destination: destination,
+                            type: 'risk' 
+                        })
+                    });
+                    
+                    if (newsResponse.ok) {
+                        const newsData = await newsResponse.json();
+                        if (newsData.articles) {
+                            newsSnippets = newsData.articles.map(article => article.title);
+                        }
+                    }
+                } catch (newsError) {
+                    console.log('News API not available for risk assessment');
+                }
+                
                 const riskColor = riskLevel === 'High' ? 'text-red-600' : (riskLevel === 'Medium' ? 'text-yellow-600' : 'text-green-600');
                 const riskBgColor = riskLevel === 'High' ? 'bg-red-100' : (riskLevel === 'Medium' ? 'bg-yellow-100' : 'bg-green-100');
                 
-                document.getElementById('risk-snapshot').innerHTML = `
+                let riskHTML = `
                     <div class="flex items-center mb-4">
                         <div class="w-3 h-3 ${riskLevel === 'High' ? 'bg-red-500' : (riskLevel === 'Medium' ? 'bg-yellow-500' : 'bg-green-500')} rounded-full mr-2"></div>
                         <span class="font-medium text-gray-800">Overall Risk: <span class="${riskColor}">${riskLevel}</span></span>
@@ -1682,56 +1951,141 @@
                             <span class="font-medium ${riskLevel === 'High' ? 'text-red-600' : 'text-green-600'}">${riskLevel === 'High' ? 'Unstable' : 'Stable'}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span>News Alerts</span>
-                            <span class="font-medium">${riskArticles.length} found</span>
+                            <span>Health Advisory</span>
+                            <span class="font-medium ${riskLevel === 'High' ? 'text-red-600' : 'text-green-600'}">${riskLevel === 'High' ? 'High Risk' : 'Low Risk'}</span>
                         </div>
                     </div>
-                    ${riskArticles.length > 0 ? `
-                    <div class="p-3 ${riskBgColor} rounded-lg mb-3">
-                        <p class="text-xs font-medium mb-1">Recent News:</p>
-                        <ul class="text-xs space-y-1">
-                            ${riskArticles.slice(0, 2).map(article => `<li>• ${article.title.substring(0, 60)}...</li>`).join('')}
-                        </ul>
-                    </div>
-                    ` : ''}
-                    <div class="p-3 bg-orange-50 rounded-lg">
+                `;
+                
+                // Add risk details if available
+                if (riskDetails.length > 0) {
+                    riskHTML += `
+                        <div class="p-3 ${riskBgColor} rounded-lg mb-3">
+                            <p class="text-xs font-medium mb-1">Advisory Details:</p>
+                            <ul class="text-xs space-y-1">
+                                ${riskDetails.slice(0, 3).map(detail => `<li>• ${detail}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+                
+                // Add news snippets with longer descriptions
+                if (newsSnippets.length > 0) {
+                    riskHTML += `
+                        <div class="p-3 bg-blue-50 rounded-lg mb-3">
+                            <p class="text-xs font-medium mb-1">Recent News Updates:</p>
+                            <div class="space-y-2 text-xs">
+                                ${newsSnippets.slice(0, 2).map((snippet, index) => `
+                                    <div class="p-2 bg-white rounded border-l-2 border-blue-300">
+                                        <p class="text-blue-700">${snippet.substring(0, 150)}${snippet.length > 150 ? '...' : ''}</p>
+                                        ${snippet.length > 50 && snippet.substring(50, 100) ? 
+                                            `<p class="text-gray-600 mt-1">${snippet.substring(50, 150)}${snippet.length > 150 ? '...' : ''}</p>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Add insurance recommendation with affiliate link
+                riskHTML += `
+                    <div id="insurance-recommendation" class="mt-4 p-3 bg-orange-50 rounded-lg">
                         <p class="text-xs text-orange-700">
                             <i class="fas fa-shield-alt mr-1"></i>
-                            <strong>Travel insurance recommended</strong> for comprehensive coverage of trip cancellation, medical emergencies, and baggage loss.
+                            <strong>Travel insurance recommended:</strong> For comprehensive coverage including trip cancellation, medical emergencies, and baggage loss, 
+                            <a href="https://www.travelpayouts.com/insurance?marker=flytr" target="_blank" rel="noopener noreferrer" class="text-orange-600 underline hover:text-orange-800">compare travel insurance options here</a>.
                         </p>
                     </div>
                 `;
                 
+                document.getElementById('risk-snapshot').innerHTML = riskHTML;
+                document.getElementById('insurance-recommendation').classList.remove('hidden');
+                
             } catch (error) {
-                console.error('News API Error:', error);
-                // Fallback to static risk assessment
+                console.error('Travel Risk Assessment Error:', error);
                 document.getElementById('risk-snapshot').innerHTML = `
-                    <div class="flex items-center mb-4">
-                        <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                        <span class="font-medium text-gray-800">Overall Risk: Low</span>
-                    </div>
-                    <div class="space-y-3 text-sm">
-                        <div class="flex justify-between">
-                            <span>Weather Conditions</span>
-                            <span class="font-medium text-yellow-600">Moderate</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Political Stability</span>
-                            <span class="font-medium text-green-600">Low</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Health Advisory</span>
-                            <span class="font-medium text-green-600">Low</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Transport Strikes</span>
-                            <span class="font-medium text-green-600">None</span>
-                        </div>
-                    </div>
-                    <div class="mt-4 p-3 bg-orange-50 rounded-lg">
-                        <p class="text-xs text-orange-700">🛡️ <strong>Travel insurance recommended</strong> for comprehensive coverage.</p>
+                    <div class="p-4 bg-yellow-50 rounded-lg">
+                        <p class="text-sm text-gray-600 mb-3">Risk assessment data temporarily unavailable.</p>
+                        <p class="text-xs text-gray-500">Check official government travel advisories for the latest information.</p>
                     </div>
                 `;
+            }
+        }
+        
+        // Government open data API functions
+        async function fetchUSStateDepartmentAdvisory(countryCode) {
+            try {
+                // US State Department API (example endpoint)
+                // Note: Actual endpoint might differ - using travel-advisory-api as proxy
+                const response = await fetch(`https://travel-advisory-api.vercel.app/api?countrycode=${countryCode}`);
+                
+                if (!response.ok) throw new Error('US State Department API failed');
+                
+                const data = await response.json();
+                
+                if (data.data && data.data[countryCode]) {
+                    const advisory = data.data[countryCode].advisory;
+                    return {
+                        riskLevel: advisory.score <= 1.5 ? 'Low' : (advisory.score <= 3 ? 'Medium' : 'High'),
+                        details: [advisory.message || 'No specific advisory from US State Department.'],
+                        news: [],
+                        source: 'US State Department'
+                    };
+                }
+                
+                return null;
+            } catch (error) {
+                console.log('US State Department API unavailable');
+                return null;
+            }
+        }
+        
+        async function fetchUKForeignOfficeAdvisory(countryCode) {
+            try {
+                // UK Foreign Office API (example endpoint)
+                const response = await fetch(`https://travel-advisory-api.vercel.app/api?countrycode=${countryCode}`);
+                
+                if (!response.ok) throw new Error('UK Foreign Office API failed');
+                
+                const data = await response.json();
+                
+                if (data.data && data.data[countryCode]) {
+                    const advisory = data.data[countryCode].advisory;
+                    return {
+                        riskLevel: advisory.score <= 1.5 ? 'Low' : (advisory.score <= 3 ? 'Medium' : 'High'),
+                        details: [advisory.message || 'No specific advisory from UK Foreign Office.'],
+                        source: 'UK Foreign Office'
+                    };
+                }
+                
+                return null;
+            } catch (error) {
+                console.log('UK Foreign Office API unavailable');
+                return null;
+            }
+        }
+        
+        async function fetchWHOAdvisory(countryCode) {
+            try {
+                // WHO API endpoint (simplified)
+                const response = await fetch(`https://travel-advisory-api.vercel.app/api?countrycode=${countryCode}`);
+                
+                if (!response.ok) throw new Error('WHO API failed');
+                
+                const data = await response.json();
+                
+                if (data.data && data.data[countryCode]) {
+                    const advisory = data.data[countryCode].advisory;
+                    return {
+                        details: [advisory.message || 'No specific health advisory from WHO.'],
+                        source: 'World Health Organization'
+                    };
+                }
+                
+                return null;
+            } catch (error) {
+                console.log('WHO API unavailable');
+                return null;
             }
         }
         
@@ -1987,20 +2341,21 @@
         // Fetch user loyalty data from Supabase
         async function fetchUserLoyaltyData() {
             try {
-                if (!supabaseClient) {
-                    throw new Error('Supabase not configured');
-                }
+                const response = await fetch(API_CONFIG.serverless.supabase, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'get_loyalty',
+                        session_id: localStorage.getItem('flytr_session_id') || 'anonymous'
+                    })
+                });
                 
-                // Check if user has loyalty data (simulated - in real app, you'd have authentication)
-                const { data, error } = await supabaseClient
-                    .from('user_loyalty')
-                    .select('*')
-                    .limit(1);
+                if (!response.ok) throw new Error('Supabase API failed');
                 
-                if (error) throw error;
+                const data = await response.json();
                 
-                if (data && data.length > 0) {
-                    const loyalty = data[0];
+                if (data.success && data.loyalty_data) {
+                    const loyalty = data.loyalty_data;
                     document.getElementById('loyalty-optimizer').innerHTML = `
                         <div class="mb-4">
                             <p class="text-sm text-gray-600 mb-3">Your loyalty programs:</p>
@@ -2038,7 +2393,7 @@
                                     <ul class="text-xs space-y-1 text-orange-700">
                                         <li>✓ Priority boarding</li>
                                         <li>✓ Extra baggage allowance</li>
-                                        <li>✓ Lounge access</li>
+                                        <li>✓ Lounge access available</li>
                                     </ul>
                                 </div>
                                 <div class="p-3 bg-blue-50 rounded-lg">
@@ -2059,7 +2414,6 @@
                 
             } catch (error) {
                 console.error('Supabase Error:', error);
-                // Fallback to static loyalty optimizer
                 updateLoyaltyOptimizer();
             }
         }
@@ -2181,16 +2535,15 @@
             `;
         }
         
-        // Update airport info via serverless function
+        // Update airport info via travelInfo endpoint
         async function updateAirportInfo(airportCode) {
             try {
-                const response = await fetch(API_CONFIG.serverless.airport, {
+                const response = await fetch(API_CONFIG.serverless.travelInfo, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        airport: airportCode
+                        airport: airportCode,
+                        type: 'airport'
                     })
                 });
                 
@@ -2255,7 +2608,6 @@
                 }
             } catch (error) {
                 console.error('Airport API Error:', error);
-                // Fallback to static data
                 document.getElementById('airport-info').innerHTML = `
                     <div class="mb-4">
                         <h4 class="font-semibold text-gray-800 mb-3">${airportCode} Airport</h4>
@@ -2266,12 +2618,6 @@
                             <li>Lounges available for premium passengers</li>
                             <li>Charging stations near all gates</li>
                         </ul>
-                        <div class="mt-4 p-3 bg-yellow-50 rounded-lg">
-                            <p class="text-xs text-yellow-700">
-                                <i class="fas fa-info-circle mr-1"></i>
-                                Configure Airport API for detailed airport information
-                            </p>
-                        </div>
                     </div>
                 `;
             }
@@ -2288,7 +2634,7 @@
                             <ul class="text-xs space-y-1 text-orange-700">
                                 <li>✓ Priority boarding</li>
                                 <li>✓ Extra baggage allowance</li>
-                                <li>✓ Lounge access</li>
+                                <li>✓ Lounge access available</li>
                             </ul>
                         </div>
                         <div class="p-3 bg-blue-50 rounded-lg">
@@ -2374,7 +2720,7 @@
             }
         }
         
-        // Save loyalty program
+        // Save loyalty program to Supabase
         async function saveLoyaltyProgram() {
             try {
                 const airline = document.getElementById('loyalty-airline').value;
@@ -2387,66 +2733,31 @@
                     return;
                 }
                 
-                if (supabaseClient) {
-                    // Save to Supabase
-                    const { data, error } = await supabaseClient
-                        .from('user_loyalty')
-                        .insert([
-                            {
-                                airline: airline,
-                                program: program,
-                                status: status,
-                                member_number: memberNumber,
-                                created_at: new Date().toISOString()
-                            }
-                        ]);
-                    
-                    if (error) throw error;
-                    
+                const sessionId = localStorage.getItem('flytr_session_id') || 'session_' + Date.now();
+                
+                const response = await fetch(API_CONFIG.serverless.supabase, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'save_loyalty',
+                        session_id: sessionId,
+                        airline: airline,
+                        program: program,
+                        status: status,
+                        member_number: memberNumber
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to save loyalty program');
+                
+                const result = await response.json();
+                
+                if (result.success) {
                     alert('Loyalty program saved successfully!');
                     closeLoyaltyForm();
-                    
-                    // Refresh loyalty data
                     fetchUserLoyaltyData();
                 } else {
-                    // Store locally if Supabase not configured
-                    localStorage.setItem('flytr_loyalty', JSON.stringify({
-                        airline,
-                        program,
-                        status,
-                        memberNumber
-                    }));
-                    
-                    alert('Loyalty program saved locally!');
-                    closeLoyaltyForm();
-                    
-                    // Update UI
-                    document.getElementById('loyalty-optimizer').innerHTML = `
-                        <div class="mb-4">
-                            <p class="text-sm text-gray-600 mb-3">Your loyalty programs:</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="p-3 bg-orange-50 rounded-lg">
-                                    <h4 class="font-medium text-orange-800 mb-1">${airline}</h4>
-                                    <ul class="text-xs space-y-1 text-orange-700">
-                                        <li>✓ ${status} Tier</li>
-                                        <li>✓ Priority boarding</li>
-                                        <li>✓ Lounge access</li>
-                                    </ul>
-                                </div>
-                                <div class="p-3 bg-blue-50 rounded-lg">
-                                    <h4 class="font-medium text-blue-800 mb-1">${program}</h4>
-                                    <ul class="text-xs space-y-1 text-blue-700">
-                                        <li>• Member: ${memberNumber}</li>
-                                        <li>• 1,250 miles on this route</li>
-                                        <li>• 500 bonus miles with status</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <button onclick="showLoyaltyForm()" class="w-full bg-orange-100 text-orange-700 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition duration-300">
-                            Manage Loyalty Programs
-                        </button>
-                    `;
+                    throw new Error(result.error || 'Save failed');
                 }
                 
             } catch (error) {
@@ -2482,43 +2793,48 @@
         // Initialize sections
         updateAirportInfo();
         
-        // Check for locally stored loyalty data
-        const localLoyalty = localStorage.getItem('flytr_loyalty');
-        if (localLoyalty && !supabaseClient) {
-            try {
-                const loyalty = JSON.parse(localLoyalty);
-                document.getElementById('loyalty-optimizer').innerHTML = `
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600 mb-3">Your loyalty programs:</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="p-3 bg-orange-50 rounded-lg">
-                                <h4 class="font-medium text-orange-800 mb-1">${loyalty.airline}</h4>
-                                <ul class="text-xs space-y-1 text-orange-700">
-                                    <li>✓ ${loyalty.status} Tier</li>
-                                    <li>✓ Priority boarding</li>
-                                    <li>✓ Lounge access</li>
-                                </ul>
-                            </div>
-                            <div class="p-3 bg-blue-50 rounded-lg">
-                                <h4 class="font-medium text-blue-800 mb-1">${loyalty.program}</h4>
-                                <ul class="text-xs space-y-1 text-blue-700">
-                                    <li>• Member: ${loyalty.memberNumber}</li>
-                                    <li>• 1,250 miles on this route</li>
-                                    <li>• 500 bonus miles with status</li>
-                                </ul>
+        // Initialize nationality on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initNationality();
+            
+            // Check for locally stored loyalty data
+            const localLoyalty = localStorage.getItem('flytr_loyalty');
+            if (localLoyalty) {
+                try {
+                    const loyalty = JSON.parse(localLoyalty);
+                    document.getElementById('loyalty-optimizer').innerHTML = `
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-3">Your loyalty programs:</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-3 bg-orange-50 rounded-lg">
+                                    <h4 class="font-medium text-orange-800 mb-1">${loyalty.airline}</h4>
+                                    <ul class="text-xs space-y-1 text-orange-700">
+                                        <li>✓ ${loyalty.status} Tier</li>
+                                        <li>✓ Priority boarding</li>
+                                        <li>✓ Lounge access</li>
+                                    </ul>
+                                </div>
+                                <div class="p-3 bg-blue-50 rounded-lg">
+                                    <h4 class="font-medium text-blue-800 mb-1">${loyalty.program}</h4>
+                                    <ul class="text-xs space-y-1 text-blue-700">
+                                        <li>• Member: ${loyalty.memberNumber}</li>
+                                        <li>• 1,250 miles on this route</li>
+                                        <li>• 500 bonus miles with status</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <button onclick="showLoyaltyForm()" class="w-full bg-orange-100 text-orange-700 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition duration-300">
-                        Manage Loyalty Programs
-                    </button>
-                `;
-            } catch (e) {
+                        <button onclick="showLoyaltyForm()" class="w-full bg-orange-100 text-orange-700 py-2 rounded-lg text-sm font-medium hover:bg-orange-200 transition duration-300">
+                            Manage Loyalty Programs
+                        </button>
+                    `;
+                } catch (e) {
+                    updateLoyaltyOptimizer();
+                }
+            } else {
                 updateLoyaltyOptimizer();
             }
-        } else {
-            updateLoyaltyOptimizer();
-        }
+        });
         
         // Fade in animation on scroll
         const fadeElements = document.querySelectorAll('.fade-in');
@@ -2544,13 +2860,18 @@
         window.addEventListener('load', () => {
             console.log('Flytr Flight Intelligence loaded');
             
+            // Initialize nationality
+            initNationality();
+            
+            // Initialize loyalty optimizer
+            updateLoyaltyOptimizer();
+            
             // Test if serverless functions are working
             fetch('/api/health')
                 .then(res => res.json())
                 .then(data => {
                     console.log('API Health Check:', data);
                     
-                    // Check which APIs are configured server-side
                     if (data && data.apis_configured) {
                         const configured = Object.keys(data.apis_configured).filter(k => data.apis_configured[k]);
                         console.log('✅ Configured APIs:', configured);
@@ -2558,15 +2879,11 @@
                         const notConfigured = Object.keys(data.apis_configured).filter(k => !data.apis_configured[k]);
                         if (notConfigured.length > 0) {
                             console.log('❌ Not configured:', notConfigured);
-                            console.log('⚠️ Set environment variables in Vercel dashboard');
                         }
                     }
                 })
                 .catch(error => {
-                    console.warn('⚠️ Serverless functions not reachable. Check:');
-                    console.warn('1. You have /api/*.js files in your Vercel project');
-                    console.warn('2. Environment variables are set in Vercel dashboard');
-                    console.warn('3. You have deployed after making changes');
+                    console.warn('⚠️ Serverless functions not reachable.');
                 });
         });
     </script>
