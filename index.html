@@ -1331,74 +1331,70 @@
             document.getElementById('delay-insights').innerHTML = '<p>Fetching real-time flight data...</p>';
         }
         
-        async function fetchBookableFlights(origin, destination, date, travelers) {
-  const token = process.env.TRAVELPAYOUTS_TOKEN;
-  const marker = process.env.TRAVELPAYOUTS_MARKER;
-
-  // 1️⃣ Create search
-  const searchRes = await fetch(
-    'https://api.travelpayouts.com/aviasales/v3/search',
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Access-Token': token
-      },
-      body: JSON.stringify({
-        adults: travelers,
-        segments: [
-          {
-            origin,
-            destination,
-            date
-          }
-        ],
-        trip_class: 0
-      })
-    }
-  );
-
-  const searchData = await searchRes.json();
-  const searchId = searchData.uuid;
-
-  if (!searchId) throw new Error('Search creation failed');
-
-  // 2️⃣ Poll results
-  const resultsRes = await fetch(
-    `https://api.travelpayouts.com/aviasales/v3/search_results?uuid=${searchId}`,
-    {
-      headers: {
-        'X-Access-Token': token
-      }
-    }
-  );
-
-  const results = await resultsRes.json();
-
-  if (!results.tickets) throw new Error('No tickets yet');
-
-  const flights = results.tickets.slice(0, 10).map(ticket => ({
-    airline: ticket.carrier,
-    price: ticket.price,
-    currency: ticket.currency,
-    stops: ticket.segments[0].stops.length,
-    departureTime: ticket.segments[0].departure_at,
-    arrivalTime: ticket.segments[0].arrival_at,
-    durationMinutes: ticket.segments[0].duration,
-    deepLink: `https://www.aviasales.com${ticket.link}&marker=${marker}`,
-    totalPrice: ticket.price
-  }));
-
-  flights.sort((a, b) => a.price - b.price);
-  if (flights[0]) flights[0].isCheapest = true;
-
-  return {
-    success: true,
-    source: 'travelpayouts',
-    flights
-  };
-}
-
+        // Function to fetch and display bookable flights - No mock data
+        async function fetchBookableFlights(fromCode, toCode, date, travelers) {
+            const container = document.getElementById('flights-container');
+            const section = document.getElementById('bookable-flights');
+            const countSpan = document.getElementById('flights-count');
+            const disclaimer = document.getElementById('booking-disclaimer');
+            
+            // Show loading
+            container.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <p class="mt-2 text-gray-600">Searching for available flights...</p>
+                </div>
+            `;
+            section.classList.remove('hidden');
+            
+            try {
+                // Call serverless function
+                const response = await fetch(API_CONFIG.serverless.fares, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        from: fromCode, 
+                        to: toCode, 
+                        date: date,
+                        travelers: travelers
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Fares API failed: ${errorText.substring(0, 100)}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success && result.flights && result.flights.length > 0) {
+                    displayFlights(result.flights);
+                    countSpan.textContent = result.flights.length;
+                    disclaimer.classList.remove('hidden');
+                    setupFlightSorting(result.flights);
+                } else {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-search text-3xl mb-2"></i>
+                            <p>No bookable flights found for these dates.</p>
+                            <p class="text-sm mt-2">Try adjusting your travel dates or check the fare calendar for better prices.</p>
+                        </div>
+                    `;
+                    countSpan.textContent = '0';
+                }
+                
+            } catch (error) {
+                console.error('Error fetching bookable flights:', error);
+                container.innerHTML = `
+                    <div class="text-center py-8 text-yellow-600">
+                        <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
+                        <p>Unable to load flight booking options at this time.</p>
+                        <p class="text-sm mt-2">Please try again later or check directly with airlines.</p>
+                    </div>
+                `;
+            }
+        }
+        
         // Function to display flight cards
         function displayFlights(flights) {
             const container = document.getElementById('flights-container');
