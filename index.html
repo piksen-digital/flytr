@@ -1512,93 +1512,60 @@
             });
         }
         
-        // Fetch flight data - Fixed JSON parsing error
-        async function fetchFlightData(fromCode, toCode, date) {
-            try {
-                const response = await fetch(API_CONFIG.serverless.flights, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        from: fromCode,
-                        to: toCode,
-                        date: date
-                    })
-                });
-                
-                // Check if response is OK and is JSON
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Flight API failed: ${response.status} - ${errorText.substring(0, 100)}`);
-                }
-                
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    const text = await response.text();
-                    console.log('Non-JSON response:', text.substring(0, 200));
-                    throw new Error('Flight API returned non-JSON response');
-                }
-                
-                const data = await response.json();
-                
-                if (data.success && data.data && data.data.length > 0) {
-                    const flight = data.data[0];
-                    const delay = flight.departure.delay || 0;
-                    const delayProb = Math.min(90, Math.max(10, Math.floor(delay / 10)));
-                    
-                    // Update delay predictor
-                    delayIndicator.style.width = `${delayProb}%`;
-                    delayPercentage.textContent = `${delayProb}%`;
-                    
-                    document.getElementById('delay-insights').innerHTML = `
-                        <p>Flight ${flight.flight.iata} by ${flight.airline.name} is ${delay > 0 ? `delayed by ${delay} minutes` : 'on time'}.</p>
-                        <p class="text-sm mt-2">Departure: ${flight.departure.scheduled} | Arrival: ${flight.arrival.scheduled}</p>
-                    `;
-                    
-                    if (delayProb > 50) {
-                        alternativeFlights.classList.remove('hidden');
-                        altFlightsText.textContent = `Due to delay probability (${delayProb}%), consider alternative flights or arriving at the airport earlier.`;
-                    }
-                    
-                    // Update travel timeline with real flight data
-                    updateTravelTimelineWithRealData(flight);
-                    
-                    // Update carbon info
-                    await updateCarbonInfoWithRealData(flight);
-                    
-                    // Update airport info with destination airport
-                    await updateAirportInfo(toCode);
-                    
-                } else {
-                    // No flight data found - use mock data but still try to get airport info
-                    const delayProb = Math.floor(Math.random() * 60) + 10;
-                    delayIndicator.style.width = `${delayProb}%`;
-                    delayPercentage.textContent = `${delayProb}%`;
-                    document.getElementById('delay-insights').innerHTML = 
-                        '<p>Using estimated data. Configure OpenSky API for real-time information.</p>';
-                    
-                    // Still update airport info even if no flight data
-                    await updateAirportInfo(toCode);
-                    
-                    throw new Error('No flight data found');
-                }
-                
-            } catch (error) {
-                console.error('Flight API Error:', error);
-                // Use mock data as fallback
-                const delayProb = Math.floor(Math.random() * 60) + 10;
-                delayIndicator.style.width = `${delayProb}%`;
-                delayPercentage.textContent = `${delayProb}%`;
-                
-                // Show error message
-                document.getElementById('delay-insights').innerHTML = `
-                    <p>Using estimated data. For real-time information, ensure your API keys are configured.</p>
-                    <p class="text-sm text-gray-500 mt-1">Error: ${error.message}</p>
-                `;
-                
-                // Still update airport info even on error
-                await updateAirportInfo(toCode);
-            }
-        }
+        async function fetchFlightData(from, to, date, travelers) {
+  const token = process.env.TRAVELPAYOUTS_TOKEN;
+  const marker = process.env.TRAVELPAYOUTS_MARKER;
+  
+  if (!token || !marker) {
+    throw new Error('Travelpayouts credentials not configured');
+  }
+
+  // V3 API URL: more reliable for "live-ish" pricing
+  const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=${from}&destination=${to}&departure_at=${date}&unique=true&sorting=price&direct=false&currency=usd&limit=10&token=${token}`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+  
+  // V3 returns data in a flat array called 'data'
+  if (!data.success || !data.data || data.data.length === 0) {
+    throw new Error('No flight data found for this route/date');
+  }
+  
+  const processedFlights = data.data.map((flight, index) => {
+    const durationTotal = flight.duration || 0;
+    const hours = Math.floor(durationTotal / 60);
+    const mins = durationTotal % 60;
+    
+    // Constructing the bookable link using the Standard Search URL
+    // Format: aviasales.com/search/IATA_DEPART_DATE_IATA_TRAVELERS
+    const searchDate = date.replace(/-/g, ''); // Converts 2023-12-01 to 20231201
+    const deepLink = `https://www.aviasales.com/search/${from}${searchDate}${to}${travelers}?marker=${marker}`;
+
+    return {
+      airline: flight.airline, // Returns IATA code (e.g., 'AA', 'DL')
+      flightNumber: flight.flight_number,
+      departureTime: new Date(flight.departure_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      arrivalTime: flight.return_at ? new Date(flight.return_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Check details',
+      origin: flight.origin,
+      destination: flight.destination,
+      duration: `${hours}h ${mins}m`,
+      durationMinutes: durationTotal,
+      price: flight.value,
+      currency: 'USD',
+      stops: flight.number_of_changes || 0,
+      deepLink: deepLink,
+      totalPrice: flight.value * travelers,
+      isCheapest: index === 0 // Sorting by price ensures the first is cheapest
+    };
+  });
+
+  return {
+    success: true,
+    flights: processedFlights,
+    source: 'travelpayouts_v3',
+    marker: marker
+  };
+}
         
         // OpenSky API fallback
         async function fetchOpenSkyData(fromCode, toCode, date) {
