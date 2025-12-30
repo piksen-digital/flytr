@@ -1,247 +1,288 @@
-// /api/fares.js - Updated with proper Travelpayouts V3 API handling
+// /api/fares.js - Handles both fare calendar and flight search (serverless)
+// Notes:
+// - Uses Travelpayouts v2 (month-matrix) for calendar and aviasales/v3 prices_for_dates for flight search.
+// - Adds a fetch timeout, robust response parsing, consistent response schema, and mock fallbacks.
+// - Requires TRAVELPAYOUTS_TOKEN and TRAVELPAYOUTS_MARKER set in environment variables.
+
 export default async function handler(req, res) {
+  // CORS (allow all for now; restrict in production)
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
+
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
-  
-  const { from, to, date, travelers = 1, mode = 'calendar' } = req.body;
-  
-  if (!from || !to) {
-    return res.status(400).json({ error: 'Missing route' });
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
-  
+
+  const { from, to, date, travelers = 1, mode = 'calendar' } = req.body || {};
+
+  if (!from || !to) {
+    return res.status(400).json({ success: false, error: 'Missing route (from/to required)' });
+  }
+
+  const token = process.env.TRAVELPAYOUTS_TOKEN;
+  const marker = process.env.TRAVELPAYOUTS_MARKER;
+
+  if (!token || !marker) {
+    // Graceful response so front-end can fall back to mock data
+    console.error('Travelpayouts credentials not configured');
+    const fallback = mode === 'flights'
+      ? { success: true, flights: generateMockFlightData(from, to, date, travelers), source: 'mock_fallback' }
+      : { success: true, fares: generateMockCalendarData(from, to, date), source: 'mock_fallback' };
+    return res.status(200).json(fallback);
+  }
+
   try {
-    const token = process.env.TRAVELPAYOUTS_TOKEN;
-    const marker = process.env.TRAVELPAYOUTS_MARKER || 'flytr';
-    
-    if (!token) {
-      throw new Error('Travelpayouts token not configured');
-    }
-    
     if (mode === 'calendar') {
-      const calendarData = await fetchCalendarData(from, to, date, token);
+      const calendarData = await fetchCalendarData(from, to, date, token, marker);
       return res.status(200).json(calendarData);
-    } else {
-      // For flights search
+    } else if (mode === 'flights') {
       const flightData = await fetchFlightData(from, to, date, travelers, token, marker);
       return res.status(200).json(flightData);
+    } else {
+      return res.status(400).json({ success: false, error: 'Invalid mode' });
     }
-    
   } catch (error) {
     console.error('Fares API Error:', error);
-    
-    // Return mock data as fallback
+    // Return mock data as a safe fallback with success:true to keep front-end stable
     if (mode === 'calendar') {
       return res.status(200).json({
         success: true,
         fares: generateMockCalendarData(from, to, date),
         source: 'mock_fallback',
-        note: 'API failed, showing sample data'
+        note: error.message
       });
     } else {
       return res.status(200).json({
         success: true,
         flights: generateMockFlightData(from, to, date, travelers),
         source: 'mock_fallback',
-        note: 'API failed, showing sample data'
+        note: error.message
       });
     }
   }
 }
 
-// Fetch calendar data using Travelpayouts V3 API
-async function fetchCalendarData(from, to, date, token) {
+// Helper: fetch with timeout using AbortController
+async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(id);
+    return response;
+  } catch (err) {
+    clearTimeout(id);
+    throw err;
+  }
+}
+
+// Fetch calendar data (month-matrix)
+async function fetchCalendarData(from, to, date, token, marker) {
   const month = date ? date.substring(0, 7) : new Date().toISOString().substring(0, 7);
-  
-  // Use the correct V3 API endpoint for calendar
-  const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates_calendar?origin=${from}&destination=${to}&month=${month}&currency=usd&calendar_type=departure_date`;
-  
-  const response = await fetch(url, {
+  const url = `https://api.travelpayouts.com/v2/prices/month-matrix?currency=USD&origin=${encodeURIComponent(from)}&destination=${encodeURIComponent(to)}&month=${month}&show_to_affiliates=true&token=${encodeURIComponent(token)}`;
+
+  const response = await fetchWithTimeout(url, {
     headers: {
       'Accept': 'application/json',
       'X-Access-Token': token
     }
-  });
-  
+  }, 8000);
+
   if (!response.ok) {
-    throw new Error(`Travelpayouts API error: ${response.status}`);
+    const t = await response.text().catch(() => '');
+    throw new Error(`Travelpayouts month-matrix error: ${response.status} ${t}`);
   }
-  
-  const data = await response.json();
-  
-  if (!data.success || !data.data) {
-    throw new Error('No fare data from Travelpayouts');
+
+  const json = await response.json().catch(() => null);
+  if (!json || (!json.success && !json.data)) {
+    throw new Error('No calendar data from Travelpayouts');
   }
-  
-  // Process calendar data
-  const fares = Object.entries(data.data).map(([dateStr, price]) => ({
-    date: dateStr,
-    price: price,
-    currency: 'USD',
-    isCheapest: false
-  }));
-  
-  // Sort by price and mark cheapest
-  fares.sort((a, b) => a.price - b.price);
-  if (fares.length > 0) {
-    fares[0].isCheapest = true;
+
+  // Normalize data.data which may be an array or object
+  let fares = [];
+  if (Array.isArray(json.data)) {
+    fares = json.data.map(item => ({
+      date: item.depart_date || item.date,
+      price: Number(item.value || item.price || 0),
+      currency: item.currency || 'USD',
+      airline: item.gate || item.airline || 'Unknown',
+      flight_number: item.flight_number || null,
+      isCheapest: false
+    }));
+  } else if (typeof json.data === 'object') {
+    // data could be keyed by dates or by routes; try to extract best values
+    for (const key of Object.keys(json.data)) {
+      const item = json.data[key];
+      if (item && item.depart_date && (item.value || item.price)) {
+        fares.push({
+          date: item.depart_date,
+          price: Number(item.value || item.price || 0),
+          currency: item.currency || 'USD',
+          airline: item.gate || item.airline || 'Unknown',
+          flight_number: item.flight_number || null,
+          isCheapest: false
+        });
+      } else if (Array.isArray(item)) {
+        item.forEach(i => {
+          fares.push({
+            date: i.depart_date || i.date,
+            price: Number(i.value || i.price || 0),
+            currency: i.currency || 'USD',
+            airline: i.gate || i.airline || 'Unknown',
+            flight_number: i.flight_number || null,
+            isCheapest: false
+          });
+        });
+      }
+    }
   }
-  
+
+  // Mark cheapest per date
+  const cheapestByDate = {};
+  fares.forEach(f => {
+    if (!cheapestByDate[f.date] || f.price < cheapestByDate[f.date].price) cheapestByDate[f.date] = f;
+  });
+  fares.forEach(f => f.isCheapest = cheapestByDate[f.date] && cheapestByDate[f.date].price === f.price);
+
   return {
     success: true,
-    fares: fares.slice(0, 30),
+    fares: fares.slice(0, 60),
     source: 'travelpayouts',
+    marker,
     currency: 'USD'
   };
 }
 
-// Fetch flight data using Travelpayouts V3 API
+// Fetch flight data (v3 prices_for_dates)
 async function fetchFlightData(from, to, date, travelers, token, marker) {
-  // Use the V3 API for flight search
-  const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=${from}&destination=${to}&departure_at=${date}&currency=usd&limit=10&sorting=price&direct=false&unique=false`;
-  
-  const response = await fetch(url, {
+  // V3 endpoint (aviasales)
+  const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=${encodeURIComponent(from)}&destination=${encodeURIComponent(to)}&departure_at=${encodeURIComponent(date)}&unique=true&sorting=price&direct=false&currency=usd&limit=10&token=${encodeURIComponent(token)}`;
+
+  const response = await fetchWithTimeout(url, {
     headers: {
-      'Accept': 'application/json',
-      'X-Access-Token': token
+      'Accept': 'application/json'
     }
-  });
-  
+  }, 9000);
+
   if (!response.ok) {
-    throw new Error(`Flight search API error: ${response.status}`);
+    const t = await response.text().catch(() => '');
+    throw new Error(`Travelpayouts v3 prices error: ${response.status} ${t}`);
   }
-  
-  const data = await response.json();
-  
-  if (!data.success || !data.data || data.data.length === 0) {
-    throw new Error('No flight data available for this route/date');
+
+  const json = await response.json().catch(() => null);
+  if (!json || !json.data || !Array.isArray(json.data) || json.data.length === 0) {
+    throw new Error('No flight data found for this route/date');
   }
-  
-  // Process flights
-  const flights = data.data.map((flight, index) => {
-    const duration = flight.duration || 0;
-    const hours = Math.floor(duration / 60);
-    const minutes = duration % 60;
-    
-    // Create deep link with marker
-    const searchDate = date.replace(/-/g, '');
-    const deepLink = `https://aviasales.com/search/${from}${searchDate}${to}${travelers}?marker=${marker}`;
-    
+
+  const processedFlights = json.data.map((f, index) => {
+    const durationTotal = Number(f.duration || f.duration_total || 0);
+    const hours = Math.floor(durationTotal / 60);
+    const mins = durationTotal % 60;
+
+    const searchDate = (date || '').replace(/-/g, '');
+    const deepLink = f.link || `https://www.aviasales.com/search/${from}${searchDate}${to}${travelers}?marker=${encodeURIComponent(marker)}`;
+
     return {
-      airline: getAirlineName(flight.airline) || 'Multiple Airlines',
-      flightNumber: flight.flight_number || `${flight.airline}${Math.floor(Math.random() * 1000)}`,
-      departureTime: formatTime(flight.departure_at),
-      arrivalTime: flight.return_at ? formatTime(flight.return_at) : '--:--',
-      origin: flight.origin || from,
-      destination: flight.destination || to,
-      duration: `${hours}h ${minutes}m`,
-      durationMinutes: duration,
-      price: flight.value,
+      airline: f.airline || f.airline_iata || 'N/A',
+      flightNumber: f.flight_number || null,
+      departureTime: safeFormatTime(f.departure_at),
+      arrivalTime: safeFormatTime(f.return_at) || (f.arrival_at ? safeFormatTime(f.arrival_at) : 'Check details'),
+      origin: f.origin || from,
+      destination: f.destination || to,
+      duration: `${hours}h ${mins}m`,
+      durationMinutes: durationTotal,
+      price: Number(f.value || f.price || 0),
       currency: 'USD',
-      stops: flight.number_of_changes || 0,
-      deepLink: deepLink,
-      totalPrice: flight.value * travelers,
-      isCheapest: index === 0,
-      isBestValue: index === 0 && (flight.number_of_changes || 0) === 0,
-      isShortest: false // Will be set after sorting
+      stops: Number(f.transfers || f.number_of_changes || 0),
+      deepLink,
+      totalPrice: (Number(f.value || f.price || 0)) * Number(travelers || 1),
+      isCheapest: false,
+      isBestValue: false,
+      isShortest: false
     };
   });
-  
-  // Sort by duration for shortest flight badge
-  const flightsByDuration = [...flights].sort((a, b) => a.durationMinutes - b.durationMinutes);
-  flights.forEach(flight => {
-    if (flight === flightsByDuration[0]) {
-      flight.isShortest = true;
-    }
-  });
-  
+
+  // Sort by price and tag cheapest / best value / shortest
+  processedFlights.sort((a, b) => a.price - b.price);
+  if (processedFlights.length > 0) {
+    processedFlights[0].isCheapest = true;
+    const nonStop = processedFlights.find(f => f.stops === 0);
+    if (nonStop) nonStop.isBestValue = true;
+    const shortest = processedFlights.reduce((s, c) => (c.durationMinutes < (s.durationMinutes || 1e9) ? c : s), processedFlights[0]);
+    if (shortest) shortest.isShortest = true;
+  }
+
   return {
     success: true,
-    flights: flights,
+    flights: processedFlights.slice(0, 10),
     source: 'travelpayouts_v3',
-    marker: marker,
+    marker,
     currency: 'USD'
   };
 }
 
-// Helper function to get airline name from IATA code
-function getAirlineName(iataCode) {
-  const airlines = {
-    'AA': 'American Airlines',
-    'DL': 'Delta Air Lines',
-    'UA': 'United Airlines',
-    'WN': 'Southwest Airlines',
-    'B6': 'JetBlue',
-    'AS': 'Alaska Airlines',
-    'F9': 'Frontier Airlines',
-    'NK': 'Spirit Airlines',
-    'HA': 'Hawaiian Airlines',
-    'BA': 'British Airways',
-    'AF': 'Air France',
-    'LH': 'Lufthansa',
-    'TK': 'Turkish Airlines',
-    'EK': 'Emirates',
-    'QR': 'Qatar Airways',
-    'SQ': 'Singapore Airlines',
-    'CX': 'Cathay Pacific',
-    'JL': 'Japan Airlines',
-    'NH': 'ANA All Nippon Airways',
-    'KE': 'Korean Air'
-  };
-  
-  return airlines[iataCode] || iataCode;
-}
-
-function formatTime(timestamp) {
-  if (!timestamp) return '--:--';
-  try {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  } catch (e) {
-    return '--:--';
+// Safe time formatter (handles epoch seconds, ms, or ISO strings)
+function safeFormatTime(ts) {
+  if (!ts) return '--:--';
+  // If numeric string or number assume seconds or ms
+  if (typeof ts === 'number') {
+    // if ts looks like seconds (10-digit), convert
+    if (String(ts).length === 10) return new Date(ts * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
+  if (typeof ts === 'string') {
+    // try to parse ISO or numeric
+    if (/^\d{10}$/.test(ts)) return new Date(Number(ts) * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (/^\d{13}$/.test(ts)) return new Date(Number(ts)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const d = new Date(ts);
+    if (!isNaN(d.getTime())) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  return '--:--';
 }
 
-// Mock data generators (fallback)
+/* -------------------------
+   Mock Data Generators
+   ------------------------- */
+
 function generateMockCalendarData(from, to, selectedDate) {
-  const fares = [];
+  const selected = new Date(selectedDate || new Date());
   const today = new Date();
-  const selected = new Date(selectedDate);
-  
+  const fareData = [];
+  const basePrice = 450;
+
   for (let i = -15; i <= 15; i++) {
-    const date = new Date(selected);
-    date.setDate(selected.getDate() + i);
-    
-    if (date < today) continue;
-    
-    const basePrice = 300;
-    let priceMultiplier = 1.0;
-    const dayOfWeek = date.getDay();
-    
-    if (dayOfWeek === 0 || dayOfWeek === 6) priceMultiplier = 1.3;
-    else if (dayOfWeek === 5) priceMultiplier = 1.2;
-    else if (dayOfWeek === 1 || dayOfWeek === 2) priceMultiplier = 0.9;
-    
-    const price = Math.round(basePrice * priceMultiplier * (0.9 + Math.random() * 0.2));
-    
-    fares.push({
-      date: date.toISOString().split('T')[0],
-      price: price,
-      currency: 'USD',
-      isCheapest: false
+    const d = new Date(selected);
+    d.setDate(selected.getDate() + i);
+    if (d < today) continue;
+
+    let priceMultiplier = 1;
+    const wd = d.getDay();
+    if (wd === 0 || wd === 6) priceMultiplier = 1.25;
+    else if (wd === 5) priceMultiplier = 1.15;
+    else if (wd === 2 || wd === 3) priceMultiplier = 0.9;
+
+    const daysDiff = Math.abs(i);
+    if (daysDiff <= 3) priceMultiplier *= 1.08;
+    else if (daysDiff <= 7) priceMultiplier *= 1.03;
+
+    priceMultiplier *= (0.96 + Math.random() * 0.08);
+    const price = Math.round(basePrice * priceMultiplier);
+
+    fareData.push({
+      date: d.toISOString().split('T')[0],
+      price,
+      dayOfWeek: wd,
+      isSelected: i === 0,
+      isCheapest: price <= basePrice * 0.9,
+      isExpensive: price >= basePrice * 1.2
     });
   }
-  
-  if (fares.length > 0) {
-    fares.sort((a, b) => a.price - b.price);
-    fares[0].isCheapest = true;
-  }
-  
-  return fares;
+  return fareData;
 }
 
 function generateMockFlightData(from, to, date, travelers) {
@@ -253,44 +294,57 @@ function generateMockFlightData(from, to, date, travelers) {
     { code: 'WN', name: 'Southwest Airlines' },
     { code: 'B6', name: 'JetBlue' }
   ];
-  
-  const basePrice = 250 + Math.random() * 400;
-  
+
+  const basePrice = 150 + Math.random() * 400;
+
   for (let i = 0; i < 5; i++) {
     const airline = airlines[Math.floor(Math.random() * airlines.length)];
     const departureHour = 6 + Math.floor(Math.random() * 12);
-    const departureTime = `${departureHour.toString().padStart(2, '0')}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`;
-    
-    const durationHours = Math.floor(Math.random() * 6) + 2;
+    const departureMinute = Math.floor(Math.random() * 60);
+    const departureTime = `${String(departureHour).padStart(2, '0')}:${String(departureMinute).padStart(2, '0')}`;
+
+    const durationHours = Math.floor(Math.random() * 8) + 1;
     const durationMinutes = Math.floor(Math.random() * 60);
     const duration = `${durationHours}h ${durationMinutes}m`;
-    
-    const priceMultiplier = 0.8 + Math.random() * 0.4;
+
+    const priceMultiplier = 0.85 + Math.random() * 0.45;
     const price = Math.round(basePrice * priceMultiplier);
     const stops = Math.random() > 0.6 ? 1 : 0;
-    
-    const arrivalHour = (departureHour + durationHours) % 24;
-    const arrivalTime = `${arrivalHour.toString().padStart(2, '0')}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`;
-    
+
     flights.push({
-      airline: airline.name,
-      flightNumber: `${airline.code}${Math.floor(Math.random() * 2000) + 100}`,
-      departureTime: departureTime,
-      arrivalTime: arrivalTime,
+      airline: airline.code,
+      flightNumber: `${airline.code}${Math.floor(Math.random() * 900) + 100}`,
+      departureTime,
+      arrivalTime: calculateMockArrival(departureTime, durationHours, durationMinutes),
       origin: from,
       destination: to,
-      duration: duration,
+      duration,
       durationMinutes: durationHours * 60 + durationMinutes,
-      price: price,
+      price,
       currency: 'USD',
-      stops: stops,
-      deepLink: `https://www.example.com/book?flight=${from}-${to}-${date}&marker=flytr`,
+      stops,
+      deepLink: `https://www.aviasales.com/search/${from}${(date || '').replace(/-/g, '')}${to}${travelers}?marker=flytr`,
       totalPrice: price * travelers,
       isCheapest: i === 0,
       isBestValue: i === 0 && stops === 0,
-      isShortest: i === 2
+      isShortest: i === 0
     });
   }
-  
+
   return flights;
+}
+
+function calculateMockArrival(departureTime, hours, minutes) {
+  const [h, m] = departureTime.split(':').map(Number);
+  let arrivalHours = h + hours;
+  let arrivalMinutes = m + minutes;
+
+  if (arrivalMinutes >= 60) {
+    arrivalHours += Math.floor(arrivalMinutes / 60);
+    arrivalMinutes = arrivalMinutes % 60;
+  }
+
+  if (arrivalHours >= 24) arrivalHours -= 24;
+
+  return `${String(arrivalHours).padStart(2, '0')}:${String(arrivalMinutes).padStart(2, '0')}`;
 }
