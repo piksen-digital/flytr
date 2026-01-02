@@ -318,22 +318,14 @@
                         <input type="date" id="departure" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" required>
                     </div>
                     <div>
-                        <label for="travelers" class="block text-sm font-medium text-gray-700 mb-1">Travelers & Seat Class</label>
-                        <div class="flex items-center space-x-2">
-                            <select id="travelers" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
-                                <option value="1">1 Traveler</option>
-                                <option value="2" selected>2 Travelers</option>
-                                <option value="3">3 Travelers</option>
-                                <option value="4">4 Travelers</option>
-                                <option value="5">5+ Travelers</option>
-                            </select>
-                            <select id="seat-class" title="Seat class (affects carbon estimate)" class="px-2 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary text-sm">
-                                <option value="economy" selected>Economy</option>
-                                <option value="premium">Premium</option>
-                                <option value="business">Business</option>
-                                <option value="first">First</option>
-                            </select>
-                        </div>
+                        <label for="travelers" class="block text-sm font-medium text-gray-700 mb-1">Travelers</label>
+                        <select id="travelers" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
+                            <option value="1">1 Traveler</option>
+                            <option value="2" selected>2 Travelers</option>
+                            <option value="3">3 Travelers</option>
+                            <option value="4">4 Travelers</option>
+                            <option value="5">5+ Travelers</option>
+                        </select>
                     </div>
                     <div class="md:col-span-2 lg:col-span-4 flex justify-center mt-4">
                         <button type="submit" class="bg-primary hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 flex items-center">
@@ -818,15 +810,15 @@
 
     <!-- Scripts -->
     <script>
-        // API Configuration - Removed standalone carbon endpoint per architecture decision.
+        // API Configuration - Updated with all serverless functions
         const API_CONFIG = {
             serverless: {
-                flights: '/api/flights',      // OpenSky for real-time flight data (and consolidated carbon)
+                flights: '/api/flights',      // OpenSky for real-time flight data
                 opensky: '/api/opensky',      // Additional OpenSky endpoints
                 fares: '/api/fares',          // Travelpayouts for bookable flights
                 weather: '/api/weather',
                 currency: '/api/currency',
-                // carbon: '/api/carbon',     <-- removed: carbon is delivered by /api/flights
+                carbon: '/api/carbon',
                 news: '/api/news',           // News for risk assessment
                 travelInfo: '/api/travel-info', // Combined airport.js + aerodatabox.js
                 layover: '/api/layover',
@@ -965,7 +957,7 @@
                 'seoul': 'KR'
             };
             
-            const lowerDest = (destination || '').toLowerCase();
+            const lowerDest = destination.toLowerCase();
             for (const [city, code] of Object.entries(cityMap)) {
                 if (lowerDest.includes(city)) {
                     return code;
@@ -1066,13 +1058,14 @@
                 'london': ['LHR', 'LGW', 'STN', 'LCY'],
                 'los angeles': ['LAX', 'BUR', 'SNA', 'ONT'],
                 'chicago': ['ORD', 'MDW'],
+                // ... trimmed for brevity, full mapping retained in original file
                 'tokyo': ['HND', 'NRT'],
                 'paris': ['CDG', 'ORY'],
                 'frankfurt': ['FRA'],
                 'dubai': ['DXB']
             };
             
-            const lowerInput = (input || '').toLowerCase();
+            const lowerInput = input.toLowerCase();
             for (const [city, code] of Object.entries(cityMapping)) {
                 if (lowerInput.includes(city)) {
                     return code[0]; // return primary iata
@@ -1080,7 +1073,7 @@
             }
             
             // Return first 3 letters uppercase as fallback
-            return (input || '').substring(0, 3).toUpperCase();
+            return input.substring(0, 3).toUpperCase();
         }
         
         // Helper function to extract airport code
@@ -1116,14 +1109,12 @@
             });
             
             // Hide calendar heatmap during loading
-            const heatmap = document.getElementById('calendar-heatmap');
-            if (heatmap) heatmap.classList.add('hidden');
+            document.getElementById('calendar-heatmap').classList.add('hidden');
             
             // Update delay predictor loading
             delayIndicator.style.width = '0%';
             delayPercentage.textContent = '--%';
-            const di = document.getElementById('delay-insights');
-            if (di) di.innerHTML = '<p>Fetching real-time flight data...</p>';
+            document.getElementById('delay-insights').innerHTML = '<p>Fetching real-time flight data...</p>';
         }
         
         // Function to fetch and display bookable flights - now sends mode: 'flights'
@@ -1325,7 +1316,7 @@
             });
         }
         
-        // Fetch flight data - Fixed JSON parsing error and consolidated carbon logic
+        // Fetch flight data - Fixed JSON parsing error
         async function fetchFlightData(fromCode, toCode, date) {
             try {
                 const response = await fetch(API_CONFIG.serverless.flights, {
@@ -1379,11 +1370,11 @@
                         alternativeFlights.classList.add('hidden');
                     }
                     
-                    // Determine carbon object from response: flights.js should include carbon at top-level or inside data
-                    const carbon = data.carbon || flight.carbon || {};
+                    // Update travel timeline with real flight data
+                    updateTravelTimelineWithRealData(flight);
                     
-                    // Update carbon card and planner using the flight and carbon returned by /api/flights
-                    updateCarbonAndPlanner(flight, carbon, data);
+                    // Update carbon info
+                    await updateCarbonInfoWithRealData(flight);
                     
                     // Update airport info with destination airport
                     await updateAirportInfo(toCode);
@@ -1398,9 +1389,6 @@
                     
                     // Still update airport info even if no flight data
                     await updateAirportInfo(toCode);
-                    
-                    // Render fallback carbon & planner using defaults
-                    updateCarbonAndPlanner(null, null, null);
                     
                     throw new Error('No flight data found');
                 }
@@ -1419,281 +1407,8 @@
                 `;
                 
                 // Still update airport info even on error but guard if toCode missing
-                await updateAirportInfo();
-                
-                // Fallback carbon & planner
-                updateCarbonAndPlanner(null, null, null);
+                await updateAirportInfo(toCode);
             }
-        }
-        
-        // Consolidated Carbon + Planner rendering (uses carbon from /api/flights or flight.carbon)
-        async function updateCarbonAndPlanner(flight, carbon = {}, fullResponse = {}) {
-            try {
-                // Seat class multipliers
-                const seatMultipliers = {
-                    economy: 1,
-                    premium: 1.4,
-                    business: 3,
-                    first: 4
-                };
-                
-                // Airline efficiency heuristic (positive = more efficient, negative = worse)
-                const airlineEfficiency = {
-                    'British Airways': -12,
-                    'Delta': -8,
-                    'United': -5,
-                    'Southwest': -15,
-                    'KLM': -10,
-                    'Lufthansa': -6,
-                    'Air France': -9
-                };
-                
-                const passengers = parseInt(document.getElementById('travelers').value) || 1;
-                const seatClass = document.getElementById('seat-class') ? document.getElementById('seat-class').value : 'economy';
-                const seatMultiplier = seatMultipliers[seatClass] || 1;
-                
-                // Normalize carbon fields with safe fallbacks
-                const kgPerPaxRaw = parseFloat(carbon.kgPerPax || carbon.kg_per_pax || carbon.kg || 150) || 150;
-                const distanceKm = parseFloat(carbon.distance || carbon.km || carbon.distance_km) || (carbon.distance === 0 ? 0 : null);
-                const aircraftType = carbon.aircraftType || carbon.aircraft_type || (flight && (flight.aircraft || flight.aircraftType)) || 'Unknown';
-                const emissionFactor = carbon.emissionFactor || carbon.emission_factor || null;
-                const offsetTrees = carbon.offsetTrees || carbon.offset_trees || Math.max(1, Math.round((kgPerPaxRaw * passengers) / 10));
-                const offsetCost = carbon.offsetCost || carbon.offset_cost || (offsetTrees * 1.5);
-                
-                // Apply seat-class multiplier
-                const kgPerPaxAdjusted = kgPerPaxRaw * seatMultiplier;
-                const totalKgAdjusted = (carbon.totalKg || carbon.total || (kgPerPaxRaw * passengers)) * seatMultiplier;
-                const totalKg = Number.isFinite(totalKgAdjusted) ? totalKgAdjusted : kgPerPaxAdjusted * passengers;
-                
-                const percentageWidth = Math.min(100, (totalKg / 1000) * 100); // for progress bar display
-                
-                // Airline efficiency display
-                let airlineName = 'Unknown';
-                if (flight) {
-                    airlineName = (flight.airline && flight.airline.name) ? flight.airline.name : (flight.airline || flight.callsign || 'Unknown');
-                } else if (fullResponse && fullResponse.data && fullResponse.data.airline) {
-                    airlineName = fullResponse.data.airline.name || fullResponse.data.airline;
-                }
-                const efficiencyDelta = airlineEfficiency[airlineName];
-                const airlineEfficiencyText = (efficiencyDelta !== undefined) ? `${Math.abs(efficiencyDelta)}% ${efficiencyDelta < 0 ? 'less' : 'more'} emissions than average` : null;
-                
-                // Train comparison heuristic (short-haul)
-                const showTrainComparison = (distanceKm !== null && distanceKm !== undefined && distanceKm < 800);
-                const trainSavingRatio = showTrainComparison ? 0.85 : null;
-                
-                // Carbon budget tracker
-                const annualBudget = 1500; // kg CO2 per year for travel (heuristic)
-                const percentUsed = Math.round((totalKg / annualBudget) * 100);
-                
-                // Build HTML for carbon card
-                const carbonHTML = `
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600 mb-2">Carbon footprint per passenger (adjusted for seat class: <strong>${seatClass}</strong>):</p>
-                        <div class="flex items-center mb-3">
-                            <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
-                                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${percentageWidth}%"></div>
-                            </div>
-                            <span class="text-sm font-medium">${kgPerPaxAdjusted.toFixed(1)} kg CO₂e</span>
-                        </div>
-                        
-                        <p class="text-sm text-gray-600 mb-2">Total for all passengers:</p>
-                        <div class="text-2xl font-bold text-indigo-700 mb-3">${totalKg.toFixed(1)} kg CO₂e</div>
-                        
-                        <div class="grid grid-cols-1 gap-2 text-sm">
-                            <div class="flex justify-between text-xs text-gray-500">
-                                <span>Aircraft</span>
-                                <span class="font-medium">${(aircraftType || 'Unknown').toUpperCase()}</span>
-                            </div>
-                            <div class="flex justify-between text-xs text-gray-500">
-                                <span>Distance</span>
-                                <span class="font-medium">${distanceKm ? `${Math.round(distanceKm)} km` : 'Estimated'}</span>
-                            </div>
-                            ${emissionFactor ? `
-                            <div class="flex justify-between text-xs text-gray-500">
-                                <span>Emission factor</span>
-                                <span class="font-medium">${emissionFactor}</span>
-                            </div>` : ''}
-                        </div>
-                    </div>
-                    
-                    <div class="p-3 bg-indigo-50 rounded-lg mb-3">
-                        <p class="text-xs text-indigo-700">
-                            <i class="fas fa-leaf mr-1"></i>
-                            <strong>Eco-tip:</strong> Consider offsetting ${Math.round(totalKg)} kg CO₂e for approximately $${(offsetCost).toFixed(2)} or planting ${offsetTrees} tree(s).
-                        </p>
-                    </div>
-                    
-                    <div class="p-3 bg-green-50 rounded-lg mb-3">
-                        <p class="text-xs text-green-700">
-                            <i class="fas fa-seedling mr-1"></i>
-                            This trip uses <strong>${percentUsed}%</strong> of a recommended annual travel carbon budget (${annualBudget} kg CO₂).
-                        </p>
-                    </div>
-                    
-                    ${airlineEfficiencyText ? `
-                    <div class="p-3 bg-yellow-50 rounded-lg mb-3">
-                        <p class="text-xs text-yellow-700"><i class="fas fa-info-circle mr-1"></i> Airline efficiency: <strong>${airlineName}</strong> — ${airlineEfficiencyText}</p>
-                    </div>` : `
-                    <div class="p-3 bg-gray-50 rounded-lg mb-3">
-                        <p class="text-xs text-gray-500"><i class="fas fa-info-circle mr-1"></i> Airline efficiency data unavailable</p>
-                    </div>`}
-                    
-                    ${showTrainComparison ? `
-                    <div class="p-3 bg-blue-50 rounded-lg mb-3">
-                        <p class="text-xs text-blue-700"><i class="fas fa-train mr-1"></i> Short-haul alternative: Traveling by train on this route can emit ~${Math.round(trainSavingRatio*100)}% less CO₂ for equivalent passenger transfers.</p>
-                    </div>` : ''}
-                `;
-                
-                document.getElementById('carbon-info').innerHTML = carbonHTML;
-                
-                // After updating carbon UI, update planner UI (pass flight and carbon for calculations)
-                updateTravelTimelineWithRealData(flight, carbon, fullResponse);
-                
-            } catch (err) {
-                console.error('Error updating carbon card:', err);
-                // Fallback simple carbon presentation
-                const passengers = parseInt(document.getElementById('travelers').value) || 1;
-                const kgPerPax = 150;
-                const totalKg = kgPerPax * passengers;
-                const fallbackHTML = `
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600 mb-2">Estimated carbon footprint:</p>
-                        <div class="flex items-center mb-3">
-                            <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
-                                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${Math.min(100, (totalKg/1000)*100)}%"></div>
-                            </div>
-                            <span class="text-sm font-medium">${totalKg} kg CO₂e</span>
-                        </div>
-                    </div>
-                    <div class="p-3 bg-yellow-50 rounded-lg">
-                        <p class="text-xs text-yellow-700">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            Using approximate calculation.
-                        </p>
-                    </div>
-                `;
-                document.getElementById('carbon-info').innerHTML = fallbackHTML;
-            }
-        }
-        
-        // Update travel timeline with real flight data and planner heuristics
-        function updateTravelTimelineWithRealData(flight, carbon = {}, fullResponse = {}) {
-            // Buffers (minutes)
-            const buffers = {
-                domestic: 90,
-                international: 180
-            };
-            
-            // Determine departure time
-            let depTimeStr = null;
-            if (flight && flight.departure) {
-                depTimeStr = flight.departure.scheduled || flight.departure.estimated || depTimeStr;
-            } else if (fullResponse && fullResponse.data && fullResponse.data.departure) {
-                depTimeStr = fullResponse.data.departure.scheduled || fullResponse.data.departure.estimated || depTimeStr;
-            }
-            
-            let depDate = null;
-            if (depTimeStr) {
-                depDate = new Date(depTimeStr);
-            }
-            
-            // Decide domestic/international via heuristic (distance if available)
-            const distanceKm = parseFloat(carbon.distance || carbon.distance_km || carbon.km) || null;
-            const isDomestic = (distanceKm !== null && distanceKm < 800);
-            const bufferMin = isDomestic ? buffers.domestic : buffers.international;
-            
-            // Compute leave-by time: departure - (buffer + 45 traffic buffer)
-            let leaveByText = 'TBD';
-            if (depDate) {
-                const leaveBy = new Date(depDate.getTime() - ((bufferMin + 45) * 60000));
-                leaveByText = leaveBy.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            }
-            
-            // Connection risk assessment
-            const connectionTime = (flight && (flight.connectionTimeMinutes || flight.layoverMinutes || flight.connectionTime)) || (fullResponse && fullResponse.connectionTimeMinutes) || null;
-            let connectionRiskHTML = '';
-            if (connectionTime !== null && connectionTime !== undefined) {
-                const connMin = Number(connectionTime);
-                let risk = 0;
-                if (connMin < 30) risk = 80;
-                else if (connMin < 45) risk = 55;
-                else if (connMin < 60) risk = 30;
-                else risk = 10;
-                
-                connectionRiskHTML = `
-                    <div class="p-3 bg-yellow-50 rounded-lg mb-3">
-                        <p class="text-xs text-yellow-800"><i class="fas fa-exclamation-triangle mr-1"></i> Connection time: <strong>${connMin} min</strong>. Estimated miss-risk: <strong>${risk}%</strong></p>
-                    </div>
-                `;
-            }
-            
-            // Alternate routing suggestions (use alternatives array if present)
-            let alternativesHTML = '';
-            const alternatives = (fullResponse && fullResponse.alternatives) || (flight && flight.alternatives) || [];
-            if (Array.isArray(alternatives) && alternatives.length > 0) {
-                const list = alternatives.slice(0,2).map(alt => {
-                    const via = alt.via || alt.viaAirport || alt.stops && alt.stops[0] || 'Alternate';
-                    const dep = alt.departureTime || alt.departure || '';
-                    return `<li class="text-sm">• ${alt.summary || `Depart ${dep} via ${via}`}</li>`;
-                }).join('');
-                
-                alternativesHTML = `
-                    <div class="p-3 bg-blue-50 rounded-lg mb-3">
-                        <p class="text-sm text-blue-700 font-medium mb-2">Backup options:</p>
-                        <ul class="text-xs text-blue-800">${list}</ul>
-                    </div>
-                `;
-            }
-            
-            // Static airport procedure timeline
-            const timelineHTML = `
-                <p class="text-sm text-gray-600 mb-3">Your personalized travel timeline:</p>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-home text-green-600 text-sm"></i>
-                            </div>
-                            <div>
-                                <div class="text-sm font-medium">Leave for airport</div>
-                                <div class="text-xs text-gray-500">Allow extra time for traffic</div>
-                            </div>
-                        </div>
-                        <span class="font-semibold text-green-700">${leaveByText}</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-luggage-cart text-blue-600 text-sm"></i>
-                            </div>
-                            <div>
-                                <div class="text-sm font-medium">Check-in & Security</div>
-                                <div class="text-xs text-gray-500">Check-in opens early; aim to be there before check-in closes</div>
-                            </div>
-                        </div>
-                        <span class="font-semibold text-blue-700">T-120 to T-60</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-door-open text-purple-600 text-sm"></i>
-                            </div>
-                            <div>
-                                <div class="text-sm font-medium">Boarding closes</div>
-                                <div class="text-xs text-gray-500">Be at gate on time</div>
-                            </div>
-                        </div>
-                        <span class="font-semibold text-purple-700">T-30</span>
-                    </div>
-                </div>
-                ${connectionRiskHTML}
-                ${alternativesHTML}
-                <div class="mt-4 text-xs text-gray-500">
-                    <p>✈️ Flight ${flight && (flight.flight?.iata || flight.callsign) ? (flight.flight?.iata || flight.callsign) : 'N/A'} departs ${depDate ? `at ${depDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'at TBD'}</p>
-                </div>
-            `;
-            
-            document.getElementById('travel-timeline').innerHTML = timelineHTML;
         }
         
         // OpenSky API fallback
@@ -2531,6 +2246,227 @@
             }
         }
         
+        // Update carbon info using serverless function
+        async function updateCarbonInfoWithRealData(flight) {
+            try {
+                const response = await fetch(API_CONFIG.serverless.carbon, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        flight: flight,
+                        travelers: document.getElementById('travelers').value
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Carbon API failed');
+                
+                const data = await response.json();
+                
+                const kgPerPax = data.kgPerPax || 150;
+                const totalKg = data.totalKg || (kgPerPax * (parseInt(document.getElementById('travelers').value) || 1));
+                const percentageWidth = Math.min(100, (totalKg / 1000) * 100);
+                
+                document.getElementById('carbon-info').innerHTML = `
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-2">Carbon footprint per passenger:</p>
+                        <div class="flex items-center mb-3">
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+                                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${percentageWidth}%"></div>
+                            </div>
+                            <span class="text-sm font-medium">${kgPerPax.toFixed(1)} kg CO₂e</span>
+                        </div>
+                        
+                        <p class="text-sm text-gray-600 mb-2">Total for all passengers:</p>
+                        <div class="text-2xl font-bold text-indigo-700 mb-3">${totalKg.toFixed(1)} kg CO₂e</div>
+                    </div>
+                    
+                    <div class="p-3 bg-indigo-50 rounded-lg">
+                        <p class="text-xs text-indigo-700">
+                            <i class="fas fa-leaf mr-1"></i>
+                            <strong>Eco-tip:</strong> Consider offsetting ${totalKg.toFixed(0)} kg CO₂e for approximately $${(totalKg * 0.02).toFixed(2)} via certified carbon offset programs.
+                        </p>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Carbon API Error:', error);
+                // Fallback to approximate calculation
+                const passengers = parseInt(document.getElementById('travelers').value) || 1;
+                const kgPerPax = 150;
+                const totalKg = kgPerPax * passengers;
+                const percentageWidth = Math.min(100, (totalKg / 1000) * 100);
+                
+                document.getElementById('carbon-info').innerHTML = `
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-2">Estimated carbon footprint:</p>
+                        <div class="flex items-center mb-3">
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+                                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${percentageWidth}%"></div>
+                            </div>
+                            <span class="text-sm font-medium">${totalKg} kg CO₂e</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-yellow-50 rounded-lg">
+                        <p class="text-xs text-yellow-700">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Using approximate calculation.
+                        </p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Update travel timeline with real flight data
+        function updateTravelTimelineWithRealData(flight) {
+            const depTime = (flight.departure && (flight.departure.scheduled || flight.departure.estimated)) ? (flight.departure.scheduled || flight.departure.estimated) : null;
+            let depDisplay = 'TBD';
+            if (depTime) {
+                const depDate = new Date(depTime);
+                depDisplay = depDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            
+            const timeline = document.getElementById('travel-timeline');
+            timeline.innerHTML = `
+                <p class="text-sm text-gray-600 mb-3">Your personalized travel timeline:</p>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-home text-green-600 text-sm"></i>
+                            </div>
+                            <span class="text-sm font-medium">Leave for airport</span>
+                        </div>
+                        <span class="font-semibold text-green-700">2.5 hours before flight</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-luggage-cart text-blue-600 text-sm"></i>
+                            </div>
+                            <span class="text-sm font-medium">Check-in & Security</span>
+                        </div>
+                        <span class="font-semibold text-blue-700">2 hours before flight</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-door-open text-purple-600 text-sm"></i>
+                            </div>
+                            <span class="text-sm font-medium">Boarding closes</span>
+                        </div>
+                        <span class="font-semibold text-purple-700">20 min before departure</span>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-gray-500">
+                    <p>✈️ Flight ${flight.flight?.iata || flight.callsign || 'N/A'} departs at ${depDisplay}</p>
+                </div>
+            `;
+        }
+        
+        // Update airport info via travelInfo endpoint (guarded)
+        async function updateAirportInfo(airportCode) {
+            const target = document.getElementById('airport-info');
+            if (!airportCode) {
+                // If no airport provided, show placeholder and return
+                if (target) {
+                    target.innerHTML = `
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-gray-800 mb-3">Airport information</h4>
+                            <p class="text-sm text-gray-600">Enter a destination or search to load airport details.</p>
+                        </div>
+                    `;
+                }
+                return;
+            }
+            
+            try {
+                const response = await fetch(API_CONFIG.serverless.travelInfo, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        airport: airportCode,
+                        type: 'airport'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Create airport info HTML
+                    let amenitiesHTML = '';
+                    if (data.amenities && data.amenities.length > 0) {
+                        amenitiesHTML = data.amenities.slice(0, 5).map(amenity => 
+                            `<li class="flex items-start mb-2">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span class="text-sm">${amenity}</span>
+                            </li>`
+                        ).join('');
+                    }
+                    
+                    document.getElementById('airport-info').innerHTML = `
+                        <div class="mb-4">
+                            <div class="flex items-center mb-3">
+                                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-map-marker-alt text-red-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">${data.name || airportCode + ' Airport'}</h4>
+                                    <p class="text-sm text-gray-600">${data.city || 'International Airport'}</p>
+                                </div>
+                            </div>
+                            
+                            <h5 class="font-medium text-gray-800 mb-2">Key Amenities:</h5>
+                            <ul class="space-y-1 mb-4">
+                                ${amenitiesHTML || `
+                                    <li class="flex items-start mb-2">
+                                        <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                        <span class="text-sm">Free Wi-Fi throughout terminals</span>
+                                    </li>
+                                    <li class="flex items-start mb-2">
+                                        <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                        <span class="text-sm">Multiple dining options</span>
+                                    </li>
+                                    <li class="flex items-start mb-2">
+                                        <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                        <span class="text-sm">Charging stations at gates</span>
+                                    </li>
+                                `}
+                            </ul>
+                            
+                            ${data.services && data.services.length > 0 ? `
+                            <h5 class="font-medium text-gray-800 mb-2">Available Services:</h5>
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                ${data.services.slice(0, 3).map(service => 
+                                    `<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">${service}</span>`
+                                ).join('')}
+                            </div>
+                            ` : ''}
+                            
+                            ${data.source ? `<p class="text-xs text-gray-500 mt-3">Source: ${data.source}</p>` : ''}
+                        </div>
+                    `;
+                } else {
+                    throw new Error('Airport API failed');
+                }
+            } catch (error) {
+                console.error('Airport API Error:', error);
+                document.getElementById('airport-info').innerHTML = `
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-800 mb-3">${airportCode} Airport</h4>
+                        <p class="text-sm text-gray-600 mb-3">Standard airport amenities include:</p>
+                        <ul class="list-disc pl-5 text-sm space-y-1">
+                            <li>Free Wi-Fi throughout terminals</li>
+                            <li>Multiple dining options post-security</li>
+                            <li>Lounges available for premium passengers</li>
+                            <li>Charging stations near all gates</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+        
         // Update loyalty optimizer
         function updateLoyaltyOptimizer() {
             document.getElementById('loyalty-optimizer').innerHTML = `
@@ -2570,9 +2506,6 @@
             // Show error message
             const delayInsights = document.getElementById('delay-insights');
             delayInsights.innerHTML = '<p class="text-yellow-600">⚠️ Using demo data. Configure API keys for real-time information.</p>';
-            
-            // Fallback carbon & planner
-            updateCarbonAndPlanner(null, null, null);
         }
         
         // Loyalty form popup
